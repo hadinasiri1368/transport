@@ -1,0 +1,17 @@
+server:
+  port: 8082
+
+spring:
+  datasource:
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    url: jdbc:sqlserver://;serverName=localhost;databaseName=way;encrypt=true;trustServerCertificate=true;
+    username: sa
+    password: asd123!@#
+  jpa:
+    hibernate.ddl-auto: none
+    generate-ddl: false
+    show-sql: false
+
+
+serviceUrl:
+  authentication: http://localhost:8081
