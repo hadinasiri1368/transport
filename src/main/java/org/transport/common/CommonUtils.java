@@ -6,6 +6,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.client.RestTemplate;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,6 +42,10 @@ public class CommonUtils {
             return false;
         }
         return o == null ? true : false;
+    }
+
+    public static <E> E isNull(E expr1, E expr2) {
+        return (!isNull(expr1)) ? expr1 : expr2;
     }
 
     public static String checkValidation(String token, String targetUrl) {
