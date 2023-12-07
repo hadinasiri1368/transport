@@ -20,4 +20,6 @@ public class DetailLedger extends BaseEntity {
     private int number;
     @Column(columnDefinition = "NVARCHAR(50)")
     private String name;
+    @Column(columnDefinition = "DECIMAL(18,0)")
+    private Long userId;
 }
