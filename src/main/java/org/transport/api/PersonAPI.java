@@ -39,7 +39,7 @@ public class PersonAPI {
         return service.findOne(Person.class, id);
     }
 
-    @GetMapping(path = "/api/Person")
+    @GetMapping(path = "/api/person")
     public List<Person> listPerson() {
         return service.findAll(Person.class);
     }
