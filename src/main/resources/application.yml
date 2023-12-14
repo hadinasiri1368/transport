@@ -15,3 +15,4 @@ spring:
 
 serviceUrl:
   authentication: http://localhost:8081
+  basicData: http://localhost:8080

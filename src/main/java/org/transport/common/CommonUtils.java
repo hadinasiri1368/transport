@@ -24,6 +24,66 @@ public class CommonUtils {
         }
     }
 
+    public static Long getCarCapacityId(String token,Long id) {
+        try {
+            String url = ApplicationProperties.getServiceUrlBasicData() + "/carCapacity/"+id;
+            url += "?token=" + token;
+            return callService(url, HttpMethod.GET, null, null, Long.class, null);
+        } catch (Exception e) {
+            log.error("checkValidation error: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static Long getCarGroupId(String token) {
+        try {
+            String url = ApplicationProperties.getServiceUrlBasicData() + "/carGroup/{id}";
+            url += "?token=" + token;
+            return callService(url, HttpMethod.GET, null, null, Long.class, null);
+        } catch (Exception e) {
+            log.error("checkValidation error: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static Long getFuelTypeId(String token) {
+        try {
+            String url = ApplicationProperties.getServiceUrlBasicData() + "/getFuelType/{id}";
+            url += "?token=" + token;
+            return callService(url, HttpMethod.GET, null, null, Long.class, null);
+        } catch (Exception e) {
+            log.error("checkValidation error: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static Long getFleetTypeId(String token) {
+        try {
+            String url = ApplicationProperties.getServiceUrlBasicData() + "/fleetType/{id}";
+            url += "?token=" + token;
+            return callService(url, HttpMethod.GET, null, null, Long.class, null);
+        } catch (Exception e) {
+            log.error("checkValidation error: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static Long getDriverLicenseType(String token) {
+        try {
+            String url = ApplicationProperties.getServiceUrlBasicData() + "/driverLicenseType/{id}";
+            url += "?token=" + token;
+            return callService(url, HttpMethod.GET, null, null, Long.class, null);
+        } catch (Exception e) {
+            log.error("checkValidation error: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public static String getToken(HttpServletRequest request) {
         if (CommonUtils.isNull(request.getHeader("Authorization")))
             return null;
@@ -47,6 +107,7 @@ public class CommonUtils {
     public static <E> E isNull(E expr1, E expr2) {
         return (!isNull(expr1)) ? expr1 : expr2;
     }
+
 
     public static String checkValidation(String token, String targetUrl) {
         try {
@@ -84,5 +145,6 @@ public class CommonUtils {
                 return null;
             }
     }
+
 }
 
