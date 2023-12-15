@@ -22,7 +22,7 @@ public class DriverAPI {
         Driver driver = new Driver();
         Person person = new Person();
         driver.setId(driverDto.getId());
-        driver.setTrackingCode(driver.getTrackingCode());
+        driver.setTrackingCode(driverDto.getTrackingCode());
         person.setId(driverDto.getPersonId());
         driver.setPerson(person);
         Long driverLicenseTypeId = CommonUtils.getDriverLicenseType(CommonUtils.getToken(request), driverDto.getDriverLicenseTypeId());

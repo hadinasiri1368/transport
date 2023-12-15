@@ -12,6 +12,6 @@ public class DriverDto {
     private String trackingCode;
     private Long personId;
     private Long driverLicenseTypeId;
-    private Long driverLicenseIssueDate;
+    private String driverLicenseIssueDate;
     private Integer driverLicenseValidDuration;
 }

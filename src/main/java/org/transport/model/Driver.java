@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Table(name = "driver", schema = "tpt")
-@Entity(name = "carGroup")
+@Entity(name = "driver")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -24,7 +24,7 @@ public class Driver extends BaseEntity {
     @Column(columnDefinition = "NVARCHAR(50)", name = "f_driver_license_type_id")
     private Long driverLicenseTypeId;
     @Column(columnDefinition = "NVARCHAR(10)", name = "driver_license_issue_date")
-    private Long driverLicenseIssueDate;
-    @Column(columnDefinition = "INT", name = "driver_license_valid_duration")
+    private String driverLicenseIssueDate;
+    @Column(columnDefinition = "NVARCHAR(50)", name = "driver_license_valid_duration")
     private Integer driverLicenseValidDuration;
 }
