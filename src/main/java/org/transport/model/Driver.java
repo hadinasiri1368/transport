@@ -16,5 +16,15 @@ public class Driver extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    @ManyToOne
+    @JoinColumn(name = "f_person_id")
+    private Person person;
+    @Column(columnDefinition = "NVARCHAR(15)", name = "tracking_code")
+    private String trackingCode;
+    @Column(columnDefinition = "NVARCHAR(50)", name = "f_driver_license_type_id")
+    private Long driverLicenseTypeId;
+    @Column(columnDefinition = "NVARCHAR(10)", name = "driver_license_issue_date")
+    private Long driverLicenseIssueDate;
+    @Column(columnDefinition = "INT", name = "driver_license_valid_duration")
+    private Integer driverLicenseValidDuration;
 }

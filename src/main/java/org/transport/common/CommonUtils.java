@@ -24,9 +24,9 @@ public class CommonUtils {
         }
     }
 
-    public static Long getCarCapacityId(String token,Long id) {
+    public static Long getCarCapacityId(String token, Long id) {
         try {
-            String url = ApplicationProperties.getServiceUrlBasicData() + "/carCapacity/"+id;
+            String url = ApplicationProperties.getServiceUrlBasicData() + "/carCapacity/" + id;
             url += "?token=" + token;
             return callService(url, HttpMethod.GET, null, null, Long.class, null);
         } catch (Exception e) {
@@ -36,9 +36,9 @@ public class CommonUtils {
         }
     }
 
-    public static Long getCarGroupId(String token) {
+    public static Long getCarGroupId(String token, Long id) {
         try {
-            String url = ApplicationProperties.getServiceUrlBasicData() + "/carGroup/{id}";
+            String url = ApplicationProperties.getServiceUrlBasicData() + "/carGroup/" + id;
             url += "?token=" + token;
             return callService(url, HttpMethod.GET, null, null, Long.class, null);
         } catch (Exception e) {
@@ -48,9 +48,9 @@ public class CommonUtils {
         }
     }
 
-    public static Long getFuelTypeId(String token) {
+    public static Long getFuelTypeId(String token, Long id) {
         try {
-            String url = ApplicationProperties.getServiceUrlBasicData() + "/getFuelType/{id}";
+            String url = ApplicationProperties.getServiceUrlBasicData() + "/getFuelType/" + id;
             url += "?token=" + token;
             return callService(url, HttpMethod.GET, null, null, Long.class, null);
         } catch (Exception e) {
@@ -60,9 +60,9 @@ public class CommonUtils {
         }
     }
 
-    public static Long getFleetTypeId(String token) {
+    public static Long getFleetTypeId(String token, Long id) {
         try {
-            String url = ApplicationProperties.getServiceUrlBasicData() + "/fleetType/{id}";
+            String url = ApplicationProperties.getServiceUrlBasicData() + "/fleetType/" + id;
             url += "?token=" + token;
             return callService(url, HttpMethod.GET, null, null, Long.class, null);
         } catch (Exception e) {
@@ -72,9 +72,21 @@ public class CommonUtils {
         }
     }
 
-    public static Long getDriverLicenseType(String token) {
+    public static Long getDriverLicenseType(String token, Long id) {
         try {
-            String url = ApplicationProperties.getServiceUrlBasicData() + "/driverLicenseType/{id}";
+            String url = ApplicationProperties.getServiceUrlBasicData() + "/driverLicenseType/" + id;
+            url += "?token=" + token;
+            return callService(url, HttpMethod.GET, null, null, Long.class, null);
+        } catch (Exception e) {
+            log.error("checkValidation error: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static Long getPlaqueTagPersianPart(String token, Long id) {
+        try {
+            String url = ApplicationProperties.getServiceUrlBasicData() + "/plaqueTagPersianPart/" + id;
             url += "?token=" + token;
             return callService(url, HttpMethod.GET, null, null, Long.class, null);
         } catch (Exception e) {
