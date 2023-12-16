@@ -38,14 +38,7 @@ public class CarAPI {
         car.setTrackingCode(car.getTrackingCode());
         plaque.setId(carDto.getId());
         car.setPlaque(plaque);
-        Long fuelTypeId = CommonUtils.getFuelTypeId(CommonUtils.getToken(request),carDto.getFuelTypeId());
-        Long carGroupId = CommonUtils.getCarGroupId(CommonUtils.getToken(request),carDto.getCarGroupId());
-        Long carCapacityId = CommonUtils.getCarCapacityId(CommonUtils.getToken(request),carDto.getCarCapacityId());
-        Long fleetTypeId = CommonUtils.getFleetTypeId(CommonUtils.getToken(request),carDto.getFleetTypeId());
-        carDto.setFuelTypeId(fuelTypeId);
-        carDto.setCarGroupId(carGroupId);
-        carDto.setCarCapacityId(carCapacityId);
-        carDto.setFleetTypeId(fleetTypeId);
+
 
         service.insert(car, userId);
         return car.getId();
