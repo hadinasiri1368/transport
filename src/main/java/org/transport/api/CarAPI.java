@@ -2,9 +2,7 @@ package org.transport.api;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.transport.common.CommonUtils;
 import org.transport.dto.*;
 import org.transport.model.Car;
@@ -12,6 +10,8 @@ import org.transport.model.Driver;
 import org.transport.model.Person;
 import org.transport.model.Plaque;
 import org.transport.service.GenericService;
+
+import java.util.List;
 
 @RestController
 public class CarAPI {
@@ -50,4 +50,28 @@ public class CarAPI {
         service.insert(car, userId);
         return car.getId();
     }
+
+    @PostMapping(path = "/api/car/edit")
+    public Long editCar(@RequestBody Car car, HttpServletRequest request) {
+        Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
+        service.update(car, userId);
+        return car.getId();
+    }
+
+    @PostMapping(path = "/api/car/remove/{id}")
+    public Long removeCar(@PathVariable Long id) {
+        service.delete(id, Car.class);
+        return id;
+    }
+
+    @GetMapping(path = "/api/car/{id}")
+    public Car getCar(@PathVariable Long id) {
+        return service.findOne(Car.class, id);
+    }
+
+    @GetMapping(path = "/api/car")
+    public List<Car> listCar() {
+        return service.findAll(Car.class);
+    }
+
 }
