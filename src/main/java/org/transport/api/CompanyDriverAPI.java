@@ -15,7 +15,7 @@ public class CompanyDriverAPI {
     @Autowired
     private GenericService<CompanyDriver> service;
     @PostMapping(path = "/api/companyDriver/add")
-    public Long addCompanyDriver(@RequestBody CompanyDriverDto companyDriverDto,RequestStatusDto requestStatusDto, HttpServletRequest request) {
+    public Long addCompanyDriver(@RequestBody CompanyDriverDto companyDriverDto, HttpServletRequest request) {
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
         CompanyDriver companyDriver = new CompanyDriver();
         Person person = new Person();
@@ -25,8 +25,7 @@ public class CompanyDriverAPI {
         companyDriver.setPerson(person);
         driver.setId(companyDriverDto.getDriverId());
         companyDriver.setDriver(driver);
-        requestStatusDto.setId(companyDriverDto.getRequestStatusId());
-        companyDriver.setRequestStatusId(requestStatusDto.getId());
+        companyDriver.setRequestStatusId(companyDriverDto.getRequestStatusId());
         service.insert(companyDriver, userId);
         return companyDriver.getId();
     }

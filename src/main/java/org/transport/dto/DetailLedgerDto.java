@@ -7,8 +7,9 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class CarCapacityDto {
+public class DetailLedgerDto {
     private Long id;
-    private String code;
+    private int number;
     private String name;
+    private Long userId;
 }

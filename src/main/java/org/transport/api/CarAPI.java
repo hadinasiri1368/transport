@@ -19,8 +19,7 @@ public class CarAPI {
     private GenericService<Car> service;
 
     @PostMapping(path = "/api/car/add")
-    public Long addCar(@RequestBody CarDto carDto, FleetTypeDto fleetTypeDto, FuelTypeDto fuelTypeDto,
-                       CarGroupDto carGroupDto, CarCapacityDto carCapacityDto, HttpServletRequest request) {
+    public Long addCar(@RequestBody CarDto carDto, HttpServletRequest request) {
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
         Car car = new Car();
         Plaque plaque = new Plaque();
@@ -31,16 +30,12 @@ public class CarAPI {
         car.setPerson(person);
         driver.setId(carDto.getDriverId());
         car.setDriver(driver);
-        fuelTypeDto.setId(carDto.getFuelTypeId());
-        car.setFuelTypeId(fuelTypeDto.getId());
-        carGroupDto.setId(carDto.getCarGroupId());
-        car.setCarGroupId(carGroupDto.getId());
-        carCapacityDto.setId(carDto.getCarCapacityId());
-        car.setCarCapacityId(carCapacityDto.getId());
+        car.setFuelTypeId(carDto.getFuelTypeId());
+        car.setCarGroupId(carDto.getCarGroupId());
+        car.setCarCapacityId(carDto.getCarCapacityId());
         plaque.setId(carDto.getId());
         car.setPlaque(plaque);
-        fleetTypeDto.setId(carDto.getFleetTypeId());
-        car.setFleetTypeId(fleetTypeDto.getId());
+        car.setFleetTypeId(carDto.getFleetTypeId());
         car.setVIN(carDto.getVIN());
         car.setChassieNumber(carDto.getChassieNumber());
         car.setEngineNumber(carDto.getEngineNumber());
