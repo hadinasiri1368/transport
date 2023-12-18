@@ -39,6 +39,19 @@ public class VoucherService {
         checkVoucher(voucher.getId());
     }
 
+    @Transactional
+    public void insert(Long voucherId, List<VoucherDetail> voucherDetails, Long userId) {
+        Voucher voucher = findOne(Voucher.class, voucherId);
+        for (VoucherDetail voucherDetail : voucherDetails) {
+            voucherDetail.setId(null);
+            voucherDetail.setVoucher(voucher);
+            voucherDetail.setInsertedUserId(userId);
+            voucherDetail.setInsertedDateTime(new Date());
+            genericVoucherDetailJPA.save(voucherDetail);
+        }
+        checkVoucher(voucher.getId());
+    }
+
     public void update(Voucher voucher, Long userId) {
         voucher.setUpdatedUserId(userId);
         voucher.setUpdatedDateTime(new Date());
@@ -100,8 +113,8 @@ public class VoucherService {
 
     @Transactional
     public int delete(Long voucherId) {
-        entityManager.createQuery("delete from voucherDetail where voucherDetail.voucher.id=" + voucherId).executeUpdate();
-        return entityManager.createQuery("delete from voucher where voucher.id=" + voucherId).executeUpdate();
+        entityManager.createQuery("delete from voucherDetail where voucherDetail.voucher.id=:voucherId").setParameter("voucherId",voucherId).executeUpdate();
+        return entityManager.createQuery("delete from voucher where voucher.id=:voucherId").setParameter("voucherId",voucherId).executeUpdate();
     }
 
     public Voucher findOne(Class<Voucher> aClass, Long id) {
@@ -113,7 +126,9 @@ public class VoucherService {
     }
 
     private void checkVoucher(Long voucherId) {
-        List<VoucherDetail> voucherDetails = genericVoucherJPA.findOne(Voucher.class, voucherId).getVoucherDetails();
+        Query query = entityManager.createQuery("select entity from voucherDetail entity where entity.voucher.id=:voucherId");
+        query.setParameter("voucherId", voucherId);
+        List<VoucherDetail> voucherDetails = (List<VoucherDetail>) query.getResultList();
         long sumCredit = 0, sumDebit = 0;
         for (VoucherDetail voucherDetail : voucherDetails) {
             if (CommonUtils.isNull(voucherDetail.getDetailLedger()))

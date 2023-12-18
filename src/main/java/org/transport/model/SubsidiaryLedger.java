@@ -17,7 +17,7 @@ public class SubsidiaryLedger extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(columnDefinition = "INT")
-    private int number;
+    private Integer number;
     @Column(columnDefinition = "NVARCHAR(50)")
     private String name;
     @ManyToOne

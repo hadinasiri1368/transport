@@ -17,9 +17,10 @@ public class DetailLedger extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(columnDefinition = "INT")
-    private int number;
+    private Integer number;
     @Column(columnDefinition = "NVARCHAR(50)")
     private String name;
-    @Column(columnDefinition = "DECIMAL(18,0)")
+    @Column(columnDefinition = "DECIMAL(18,0)",name="f_user_id")
     private Long userId;
 }
+
