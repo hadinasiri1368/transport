@@ -22,10 +22,10 @@ public class PersonAPI {
     }
 
     @PostMapping(path = "/api/person/edit")
-    public Long editPerson(@RequestBody Person Person, HttpServletRequest request) {
+    public Long editPerson(@RequestBody Person person, HttpServletRequest request) {
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
-        service.update(Person, userId);
-        return Person.getId();
+        service.update(person, userId);
+        return person.getId();
     }
 
     @PostMapping(path = "/api/person/remove/{id}")
