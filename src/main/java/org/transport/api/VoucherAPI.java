@@ -17,7 +17,7 @@ public class VoucherAPI {
     @PostMapping(path = "/api/voucher/add")
     public Long addVoucher(@RequestBody Voucher voucher, HttpServletRequest request) {
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
-        service.update(voucher, userId);
+        service.insert(voucher, userId);
         return voucher.getId();
     }
 

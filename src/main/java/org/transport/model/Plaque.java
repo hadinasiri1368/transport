@@ -20,7 +20,7 @@ public class Plaque extends BaseEntity{
     private boolean isFreeZone;
     @Column(columnDefinition = "NVARCHAR(2)", name = "left_plaque_tag")
     private String leftPlaqueTag;
-    @Column(columnDefinition = "NVARCHAR(50)", name = "f_plaque_tag_persian_part_id")
+    @Column(columnDefinition = "DECIMAL(18,0)", name = "f_plaque_tag_persian_part_id")
     private Long plaqueTagPersianPartId;
     @Column(columnDefinition = "NVARCHAR(3)", name = "middle_plaque_tag")
     private String middlePlaqueTag;

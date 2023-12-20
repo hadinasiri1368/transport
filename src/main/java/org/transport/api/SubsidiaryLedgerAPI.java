@@ -26,7 +26,7 @@ public class SubsidiaryLedgerAPI {
         subsidiaryLedger.setGeneralLedger(generalLedger);
         subsidiaryLedger.setNumber(subsidiaryLedgerDto.getNumber());
         subsidiaryLedger.setName(subsidiaryLedgerDto.getName());
-        service.update(subsidiaryLedger, userId);
+        service.insert(subsidiaryLedger, userId);
         return subsidiaryLedger.getId();
     }
 

@@ -18,7 +18,7 @@ public class CompanyDriver extends BaseEntity {
     private Long id;
     @ManyToOne
     @JoinColumn(name = "f_company_id")
-    private Person person;
+    private Person company;
     @ManyToOne
     @JoinColumn(name = "f_driver_id")
     private Driver driver;
