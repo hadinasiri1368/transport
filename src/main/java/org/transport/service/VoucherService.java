@@ -41,7 +41,7 @@ public class VoucherService {
 
     @Transactional
     public void insert(Long voucherId, List<VoucherDetail> voucherDetails, Long userId) {
-        Voucher voucher = findOne(Voucher.class, voucherId);
+        Voucher voucher = findOne(voucherId);
         for (VoucherDetail voucherDetail : voucherDetails) {
             voucherDetail.setId(null);
             voucherDetail.setVoucher(voucher);
@@ -113,12 +113,12 @@ public class VoucherService {
 
     @Transactional
     public int delete(Long voucherId) {
-        entityManager.createQuery("delete from voucherDetail where voucherDetail.voucher.id=:voucherId").setParameter("voucherId",voucherId).executeUpdate();
-        return entityManager.createQuery("delete from voucher where voucher.id=:voucherId").setParameter("voucherId",voucherId).executeUpdate();
+        entityManager.createQuery("delete from voucherDetail entity where entity.voucher.id=:voucherId").setParameter("voucherId",voucherId).executeUpdate();
+        return entityManager.createQuery("delete from voucher entity where entity.id=:voucherId").setParameter("voucherId",voucherId).executeUpdate();
     }
 
-    public Voucher findOne(Class<Voucher> aClass, Long id) {
-        return genericVoucherJPA.findOne(aClass, id);
+    public Voucher findOne(Long id) {
+        return genericVoucherJPA.findOne(Voucher.class, id);
     }
 
     public List<Voucher> findAll(Class<Voucher> aClass) {

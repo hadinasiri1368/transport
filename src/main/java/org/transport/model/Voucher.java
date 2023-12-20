@@ -1,5 +1,6 @@
 package org.transport.model;
 
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,7 +23,8 @@ public class Voucher extends BaseEntity {
     private String description;
     @Column(columnDefinition = "NVARCHAR(10)", name = "voucher_date")
     private String voucherDate;
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "f_voucher_id")
+    @JsonManagedReference
     private List<VoucherDetail> voucherDetails;
 }

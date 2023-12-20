@@ -22,7 +22,7 @@ public class CompanyDriverAPI {
         Driver driver = new Driver();
         companyDriver.setId(companyDriverDto.getId());
         person.setId(companyDriverDto.getCompanyId());
-        companyDriver.setPerson(person);
+        companyDriver.setCompany(person);
         driver.setId(companyDriverDto.getDriverId());
         companyDriver.setDriver(driver);
         companyDriver.setRequestStatusId(companyDriverDto.getRequestStatusId());

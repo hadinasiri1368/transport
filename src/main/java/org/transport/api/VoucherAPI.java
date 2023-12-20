@@ -64,11 +64,12 @@ public class VoucherAPI {
 
     @GetMapping(path = "/api/voucher/{id}")
     public Voucher getVoucher(@PathVariable Long id) {
-        return service.findOne(Voucher.class, id);
+        return service.findOne(id);
     }
 
     @GetMapping(path = "/api/voucher")
     public List<Voucher> listVoucher() {
+
         return service.findAll(Voucher.class);
     }
 }
