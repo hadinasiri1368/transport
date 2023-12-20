@@ -17,7 +17,7 @@ public class GeneralLedgerAPI {
     @PostMapping(path = "/api/generalLedger/add")
     public Long addGeneralLedger(@RequestBody GeneralLedger generalLedger, HttpServletRequest request) {
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
-        service.update(generalLedger, userId);
+        service.insert(generalLedger, userId);
         return generalLedger.getId();
     }
 

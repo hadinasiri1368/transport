@@ -22,7 +22,7 @@ public class Voucher extends BaseEntity {
     private String description;
     @Column(columnDefinition = "NVARCHAR(10)", name = "voucher_date")
     private String voucherDate;
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "f_voucher_id")
     private List<VoucherDetail> voucherDetails;
 }
