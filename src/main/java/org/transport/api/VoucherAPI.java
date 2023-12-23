@@ -15,6 +15,7 @@ import org.transport.service.GenericService;
 import org.transport.service.VoucherService;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 public class VoucherAPI {
@@ -50,13 +51,16 @@ public class VoucherAPI {
 
     @PostMapping(path = "/api/voucherDetailList/edit")
     public Long editVoucherDetailList(@RequestBody List<VoucherDetailDto> voucherDetailDtos, HttpServletRequest request) {
+        int voucherCount = voucherDetailDtos.stream().collect(Collectors.groupingBy(a -> a.getVoucherId())).size();
+        if (voucherCount > 1)
+            throw new RuntimeException("voucherId must be the same");
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
         List<VoucherDetail> voucherDetails = MapperUtil.mapToVoucherDetail(voucherDetailDtos);
         service.updateVoucherDetail(voucherDetailDtos.get(0).getVoucherId(), voucherDetails, userId);
         return voucherDetailDtos.get(0).getVoucherId();
-    }//check voucherId
+    }
 
-    @PostMapping(path = "/api/voucher/removeVoucher/{id}")
+    @PostMapping(path = "/api/voucher/remove/{id}")
     public Long removeVoucher(@PathVariable Long id) {
         service.delete(id);
         return id;
@@ -69,7 +73,6 @@ public class VoucherAPI {
 
     @GetMapping(path = "/api/voucher")
     public List<Voucher> listVoucher() {
-
         return service.findAll(Voucher.class);
     }
 }
