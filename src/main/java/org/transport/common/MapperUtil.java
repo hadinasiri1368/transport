@@ -1,6 +1,7 @@
 package org.transport.common;
 
 import org.transport.dto.OrderDetailDto;
+import org.transport.dto.OrderDto;
 import org.transport.dto.VoucherDetailDto;
 import org.transport.model.*;
 
@@ -33,6 +34,19 @@ public class MapperUtil {
     public static List<OrderDetail> mapToOrderDetail(List<OrderDetailDto> orderDetailDtos) {
         return orderDetailDtos.stream()
                 .map(entity -> mapToOrderDetail(entity))
+                .collect(Collectors.toList());
+    }
+
+    public static Order mapToOrder(OrderDto orderDto) {
+        Order order = ObjectMapperUtils.map(orderDto, Order.class);
+        order.setCar(Car.builder().id(orderDto.getCarId()).build());
+        order.setDriver(Driver.builder().id(orderDto.getDriverId()).build());
+        return order;
+    }
+
+    public static List<Order> mapToOrder(List<OrderDto> orderDtos) {
+        return orderDtos.stream()
+                .map(entity -> mapToOrder(entity))
                 .collect(Collectors.toList());
     }
 }

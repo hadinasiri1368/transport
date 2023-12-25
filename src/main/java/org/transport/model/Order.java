@@ -17,6 +17,14 @@ public class Order extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(name = "f_user_id")
+    private Long userId;
+    @ManyToOne
+    @JoinColumn(name = "f_driver_id")
+    private Driver driver;
+    @ManyToOne
+    @JoinColumn(name = "f_car_id")
+    private Car car;
     @Column(name = "f_source_id")
     private Long sourceId;
     @Column(name = "f_destination_id")
@@ -41,6 +49,8 @@ public class Order extends BaseEntity {
     private Long price;
     @Column(columnDefinition = "BIGINT", name = "min_price")
     private Long minPrice;
+    @Column(columnDefinition = "BIT", name = "only_my_company_driver")
+    private Boolean onlyMyCompanyDriver;
     @OneToMany(fetch = FetchType.LAZY, targetEntity = OrderDetail.class)
     @JoinColumn(name = "f_order_id")
     @JsonManagedReference

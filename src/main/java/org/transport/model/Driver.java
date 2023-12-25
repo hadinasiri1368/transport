@@ -1,10 +1,7 @@
 package org.transport.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Table(name = "driver", schema = "tpt")
 @Entity(name = "driver")
@@ -12,6 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class Driver extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

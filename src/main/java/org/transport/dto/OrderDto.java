@@ -14,7 +14,10 @@ import java.util.List;
 @Setter
 public class OrderDto {
     private Long id;
+    private Long userId;
     private Long sourceId;
+    private Long driverId;
+    private Long carId;
     private Long destinationId;
     private Long orderStatusId;
     private Long carPropertyId;
@@ -26,5 +29,6 @@ public class OrderDto {
     private String description;
     private Long price;
     private Long minPrice;
+    private Boolean onlyMyCompanyDriver;
     private List<OrderDetailDto> orderDetails;
 }
