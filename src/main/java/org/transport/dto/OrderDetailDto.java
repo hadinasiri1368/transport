@@ -17,6 +17,6 @@ public class OrderDetailDto {
     private Long carGroupId;
     private Long carCapacityId;
     private Float weight;
-    private Integer pakageCount;
+    private Integer packageCount;
     private Long valuePrice;
 }

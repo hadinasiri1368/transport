@@ -2,18 +2,29 @@ package org.transport.service;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.servlet.function.ServerRequest;
+import org.transport.common.ApplicationProperties;
 import org.transport.common.CommonUtils;
+import org.transport.common.Const;
+import org.transport.common.ObjectMapperUtils;
+import org.transport.dto.OrderDto;
+import org.transport.dto.RoleDto;
+import org.transport.dto.UserDto;
 import org.transport.model.*;
 import org.transport.repository.JPA;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Service
+@Slf4j
 public class OrderService {
     @Autowired
     private JPA<Order, Long> orderJPA;
@@ -185,8 +196,109 @@ public class OrderService {
         }
     }
 
-    public List<Order> findAll() {
-        return orderJPA.findAll(Order.class);
+    private List<RoleDto> getUserRole(String token) throws Exception {
+        try {
+            String url = ApplicationProperties.getServiceUrlAuthentication() + "/api/user/role";
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Authorization", token);
+            return CommonUtils.callService(url, HttpMethod.GET, headers, null, null, RoleDto.class);
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+    private List<UserDto> getUserColleague(String token) throws Exception {
+        return getUserColleague(token, null);
+    }
+
+    private List<UserDto> getUserColleague(String token, List<Long> userIds) throws Exception {
+        try {
+            HttpMethod httpMethod;
+            Object body;
+            if (CommonUtils.isNull(userIds)) {
+                httpMethod = HttpMethod.GET;
+                body = null;
+            } else {
+                httpMethod = HttpMethod.POST;
+                body = userIds;
+            }
+            String url = ApplicationProperties.getServiceUrlAuthentication() + "/api/user/colleague";
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Authorization", token);
+            return CommonUtils.callService(url, httpMethod, headers, body, null, UserDto.class);
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+    public List<Order> findAll(Long userId, String token) throws Exception {
+        List<Order> returnValue = new ArrayList<>();
+        List<RoleDto> roleDtos = new ArrayList<>();
+        try {
+            String hql;
+            List<Long> orderIds = new ArrayList<>();
+            roleDtos = getUserRole(token);
+            if (roleDtos.stream().filter(a -> a.getId() == Const.ROLE_CUSTOMER).count() > 0) {
+                hql = "select o from order o where o.userId=:userId";
+                Query query = entityManager.createQuery(hql);
+                Map<String, Object> param = new HashMap<>();
+                param.put("userId", userId);
+                returnValue.addAll(orderJPA.listByQuery(query, param));
+                orderIds = returnValue.stream().map(entity -> entity.getId()).collect(Collectors.toList());
+            }
+            if (roleDtos.stream().filter(a -> a.getId() == Const.ROLE_COMPANY).count() > 0) {
+                List<UserDto> userDtos = getUserColleague(token);
+                List<Long> userIds = userDtos.stream().map(entity -> entity.getId()).collect(Collectors.toList());
+                hql = "select o from order o where o.userId in (:userIds) and o.id not in (:orderids)";
+                Query query = entityManager.createQuery(hql);
+                Map<String, Object> param = new HashMap<>();
+                param.put("userIds", userIds);
+                param.put("orderids", orderIds);
+                returnValue.addAll(orderJPA.listByQuery(query, param));
+                orderIds = returnValue.stream().map(entity -> entity.getId()).collect(Collectors.toList());
+            }
+            if (roleDtos.stream().filter(a -> a.getId() == Const.ROLE_DRIVER).count() > 0) {
+                hql = "select o from order o \n" +
+                        "where o.onlyMyCompanyDriver = false \n" +
+                        "and o.orderStatusId in (:orderStatusId) \n" +
+                        "and o.car is null \n" +
+                        "and o.driver is null \n" +
+                        "and o.id not in (:orderIds)";
+                Query query = entityManager.createQuery(hql);
+                Map<String, Object> param = new HashMap<>();
+                param.put("orderStatusId", Const.ORDER_STATUS_WAIT_FOR_CONFIRM);
+                param.put("orderIds", orderIds);
+                returnValue.addAll(orderJPA.listByQuery(query, param));
+                orderIds = returnValue.stream().map(entity -> entity.getId()).collect(Collectors.toList());
+
+                hql = "select cd from companyDriver cd where cd.requestStatusId in (:requestStatusId) " +
+                        "and cd.driver.id in (select d.id from driver d where d.person.id = :userId)";
+                query = entityManager.createQuery(hql);
+                param = new HashMap<>();
+                param.put("requestStatusId", Const.REQUEST_STATUS_CONFIRM);
+                param.put("userId", userId);
+                List<CompanyDriver> companyDrivers = orderJPA.listByQuery(query, param);
+                List<Long> companyIds = companyDrivers.stream().map(entity -> entity.getCompany().getId()).collect(Collectors.toList());
+                List<UserDto> userDtos = getUserColleague(token, companyIds);
+                List<Long> userIds = userDtos.stream().map(entity -> entity.getId()).collect(Collectors.toList());
+                hql = "select o from order o \n" +
+                        "where o.onlyMyCompanyDriver = true \n" +
+                        "and o.orderStatusId in (:orderStatusId) \n" +
+                        "and o.userId in (:userIds) \n" +
+                        "and o.car is null \n" +
+                        "and o.driver is null \n" +
+                        "and o.id not in (:orderIds)";
+                query = entityManager.createQuery(hql);
+                param = new HashMap<>();
+                param.put("orderStatusId", Const.ORDER_STATUS_WAIT_FOR_CONFIRM);
+                param.put("userIds", userIds);
+                param.put("orderIds", orderIds);
+                returnValue.addAll(orderJPA.listByQuery(query, param));
+            }
+        } catch (Exception e) {
+            throw e;
+        }
+        return returnValue;
     }
 
     public Order findOne(Long id) {

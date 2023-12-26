@@ -33,8 +33,8 @@ public class OrderDetail extends BaseEntity{
     private Long carCapacityId;
     @Column(columnDefinition = "FLOAT")
     private Float weight;
-    @Column(columnDefinition = "INT",name = "pakage_count")
-    private Integer pakageCount;
+    @Column(columnDefinition = "INT",name = "package_count")
+    private Integer packageCount;
     @Column(columnDefinition = "BIGINT",name = "value_price")
     private Long valuePrice;
 }

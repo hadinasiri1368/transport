@@ -6,8 +6,10 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Repository;
+import org.transport.common.CommonUtils;
 
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public class JPA<ENTITY, ID> {
@@ -36,6 +38,14 @@ public class JPA<ENTITY, ID> {
     public List<ENTITY> findAll(Class<ENTITY> aClass) {
         Entity entity = aClass.getAnnotation(Entity.class);
         Query query = entityManager.createQuery("select entity from " + entity.name() + " entity");
+        return query.getResultList();
+    }
+
+    public List listByQuery(Query query, Map<String, Object> param) {
+        if (!CommonUtils.isNull(param) && param.size() > 0)
+            for (String key : param.keySet()) {
+                query.setParameter(key, param.get(key));
+            }
         return query.getResultList();
     }
 }

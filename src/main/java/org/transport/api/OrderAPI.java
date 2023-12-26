@@ -74,8 +74,14 @@ public class OrderAPI {
     }
 
     @GetMapping(path = "/api/order")
-    public List<Order> listOrder() {
-        return service.findAll();
+    public List<Order> listOrder(HttpServletRequest request) throws Exception {
+        Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
+        String token = CommonUtils.getToken(request);
+        try {
+            return service.findAll(userId, token);
+        } catch (Exception e) {
+            throw e;
+        }
     }
 
     private void validationData(List<OrderDetailDto> orderDetailDtos, List<OrderImage> orderImages) {

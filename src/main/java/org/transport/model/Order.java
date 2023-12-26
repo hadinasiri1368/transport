@@ -19,10 +19,10 @@ public class Order extends BaseEntity {
     private Long id;
     @Column(name = "f_user_id")
     private Long userId;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "f_driver_id")
     private Driver driver;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "f_car_id")
     private Car car;
     @Column(name = "f_source_id")

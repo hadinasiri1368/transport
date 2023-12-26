@@ -1,5 +1,6 @@
 package org.transport.common;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
@@ -7,8 +8,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.lang.reflect.Array;
+import java.util.*;
 
 @Slf4j
 public class CommonUtils {
@@ -70,6 +71,15 @@ public class CommonUtils {
             params = new HashMap<>();
         HttpEntity<T> response = restTemplate.exchange(url, httpMethod, httpEntity, aClass, params);
         return response.getBody();
+    }
+
+    public static <T> List<T> callService(String url, HttpMethod httpMethod, HttpHeaders headers, Object body, Map<String, Object> params, Class<T> aClass) throws Exception {
+        RestTemplate restTemplate = new RestTemplate();
+        HttpEntity httpEntity = new HttpEntity(body, headers);
+        if (CommonUtils.isNull(params))
+            params = new HashMap<>();
+        HttpEntity<List> response = restTemplate.exchange(url, httpMethod, httpEntity, List.class, params);
+        return ObjectMapperUtils.mapAll(response.getBody(), aClass);
     }
 
     public static Long longValue(Object number) {
