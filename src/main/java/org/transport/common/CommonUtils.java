@@ -7,6 +7,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.client.RestTemplate;
+import org.transport.dto.UserDto;
 
 import java.lang.reflect.Array;
 import java.util.*;
@@ -61,6 +62,19 @@ public class CommonUtils {
             log.error("checkValidation error: " + e.getMessage());
             e.printStackTrace();
             return e.getMessage();
+        }
+    }
+
+    public static UserDto getUser(String token) {
+        try {
+            String url = ApplicationProperties.getServiceUrlAuthentication() + "/getUser";
+            url += "?token=" + token;
+            Map returnValue = callService(url, HttpMethod.GET, null, null, Map.class, null);
+            return ObjectMapperUtils.map(returnValue, UserDto.class);
+        } catch (Exception e) {
+            log.error("getUser error: " + e.getMessage());
+            e.printStackTrace();
+            return null;
         }
     }
 

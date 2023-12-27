@@ -235,8 +235,14 @@ public class OrderService {
         List<Order> returnValue = new ArrayList<>();
         List<RoleDto> roleDtos = new ArrayList<>();
         try {
+            UserDto userDto = CommonUtils.getUser(token);
+            if (CommonUtils.isNull(userDto))
+                throw new RuntimeException("can not identify token");
             String hql;
             List<Long> orderIds = new ArrayList<>();
+            if (userDto.isAdmin()) {
+                return orderJPA.findAll(Order.class);
+            }
             roleDtos = getUserRole(token);
             if (roleDtos.stream().filter(a -> a.getId() == Const.ROLE_CUSTOMER).count() > 0) {
                 hql = "select o from order o where o.userId=:userId";
