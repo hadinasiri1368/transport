@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.transport.common.CommonUtils;
 import org.transport.common.MapperUtil;
-import org.transport.dto.OrderCarDriverDto;
 import org.transport.dto.OrderDetailDto;
 import org.transport.dto.OrderDto;
 import org.transport.model.*;
@@ -80,10 +79,14 @@ public class OrderAPI {
     }
 
     @PostMapping(path = "/api/acceptOrderCarDriver")
-    public Long acceptOrderCarDriver(@RequestBody OrderCarDriverDto orderCarDriverDto, HttpServletRequest request) throws Exception {
+    public Long acceptOrderCarDriver(@ModelAttribute("orderId") Long orderId, @ModelAttribute("carId") Long carId, HttpServletRequest request) throws Exception {
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
-        service.acceptOrderCarDriver(orderCarDriverDto, userId, CommonUtils.getToken(request));
-        return orderCarDriverDto.getOrderId();
+        try {
+            service.acceptOrderCarDriver(orderId, carId, userId, CommonUtils.getToken(request));
+        } catch (Exception e) {
+            throw e;
+        }
+        return orderId;
     }
 
 

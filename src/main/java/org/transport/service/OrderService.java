@@ -8,13 +8,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.servlet.function.ServerRequest;
 import org.transport.common.ApplicationProperties;
 import org.transport.common.CommonUtils;
 import org.transport.common.Const;
-import org.transport.common.ObjectMapperUtils;
-import org.transport.dto.OrderCarDriverDto;
-import org.transport.dto.OrderDto;
 import org.transport.dto.RoleDto;
 import org.transport.dto.UserDto;
 import org.transport.model.*;
@@ -317,23 +313,23 @@ public class OrderService {
     }
 
     @Transactional
-    public void acceptOrderCarDriver(OrderCarDriverDto orderCarDriverDto, Long userId, String token) throws Exception {
-        Order order = findOne(orderCarDriverDto.getOrderId());
+    public void acceptOrderCarDriver(Long orderId, Long carId, Long userId, String token) throws Exception {
+        Order order = findOne(orderId);
         if (CommonUtils.isNull(order))
             throw new RuntimeException("Order not found");
 
         if (!order.getOrderStatusId().equals(Const.ORDER_STATUS_WAIT_FOR_CONFIRM))
             throw new RuntimeException("Order status not in pending confirmation");
 
-        Car car = carJPA.findOne(Car.class, orderCarDriverDto.getCarId());
+        Car car = carJPA.findOne(Car.class, carId);
         if (CommonUtils.isNull(car))
             throw new RuntimeException("Car not found");
 
         List<Order> orders = findAll(userId, token);
         if (orders.isEmpty())
-            throw new RuntimeException("شما به هیچ درخواستی دسترسی ندارید");
-        if (orders.stream().filter(a -> a.getId().equals(orderCarDriverDto.getOrderId())).count() <= 0L)
-            throw new RuntimeException("شما به این درخواست دسترسی ندارید");
+            throw new RuntimeException("no orders available");
+        if (orders.stream().filter(a -> a.getId().equals(carId)).count() <= 0L)
+            throw new RuntimeException("this order not available");
 
         UserDto userDto = CommonUtils.getUser(token);
         if (CommonUtils.isNull(userDto))
@@ -349,8 +345,6 @@ public class OrderService {
         order.setCar(car);
         order.setDriver(driver);
         update(order, userId);
-        //request accept
     }
-
 }
 
