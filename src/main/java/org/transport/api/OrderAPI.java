@@ -3,15 +3,11 @@ package org.transport.api;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest;
 import org.transport.common.CommonUtils;
 import org.transport.common.MapperUtil;
-import org.transport.common.ObjectMapperUtils;
+import org.transport.dto.OrderCarDriverDto;
 import org.transport.dto.OrderDetailDto;
 import org.transport.dto.OrderDto;
 import org.transport.model.*;
@@ -19,7 +15,6 @@ import org.transport.service.OrderService;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -83,6 +78,20 @@ public class OrderAPI {
             throw e;
         }
     }
+
+    @PostMapping(path = "/api/acceptOrderCarDriver")
+    public Long acceptOrderCarDriver(@RequestBody OrderCarDriverDto orderCarDriverDto, HttpServletRequest request) throws Exception {
+        Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
+        service.acceptOrderCarDriver(orderCarDriverDto, userId,CommonUtils.getToken(request));
+        return orderCarDriverDto.getOrderId();
+    }
+
+//    @PostMapping(path = "/api/acceptOrderCarDriver")
+//    public Long changeOrderStatus(@RequestBody OrderCarDriverDto orderCarDriverDto, HttpServletRequest request) {
+//        Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
+//        service.changeStatus(orderCarDriverDto, userId);
+//        return orderCarDriverDto.getOrderId();
+//    }
 
     private void validationData(List<OrderDetailDto> orderDetailDtos, List<OrderImage> orderImages) {
         if (!CommonUtils.isNull(orderDetailDtos) && orderDetailDtos.size() > 0) {

@@ -13,6 +13,7 @@ import org.transport.common.ApplicationProperties;
 import org.transport.common.CommonUtils;
 import org.transport.common.Const;
 import org.transport.common.ObjectMapperUtils;
+import org.transport.dto.OrderCarDriverDto;
 import org.transport.dto.OrderDto;
 import org.transport.dto.RoleDto;
 import org.transport.dto.UserDto;
@@ -34,6 +35,10 @@ public class OrderService {
     private JPA<OrderImage, Long> orderImageJPA;
     @Autowired
     private EntityManager entityManager;
+    @Autowired
+    private JPA<Car, Long> carJPA;
+    @Autowired
+    private JPA<Driver, Long> driverJPA;
 
     private void insertDetail(Order order, List<OrderDetail> orderDetails, List<OrderImage> orderImages, Long userId) {
         if (!CommonUtils.isNull(orderDetails) && orderDetails.size() > 0) {
@@ -310,4 +315,41 @@ public class OrderService {
     public Order findOne(Long id) {
         return orderJPA.findOne(Order.class, id);
     }
+
+    @Transactional
+    public void acceptOrderCarDriver(OrderCarDriverDto orderCarDriverDto, Long userId, String token) throws Exception {
+        Order order = findOne(orderCarDriverDto.getOrderId());
+        if (CommonUtils.isNull(order))
+            throw new RuntimeException("Order not found");
+
+        if (!order.getOrderStatusId().equals(Const.ORDER_STATUS_WAIT_FOR_CONFIRM))
+            throw new RuntimeException("Order status not in pending confirmation");
+
+        Car car = carJPA.findOne(Car.class, orderCarDriverDto.getCarId());
+        if (CommonUtils.isNull(car))
+            throw new RuntimeException("Car not found");
+
+        List<Order> orders = findAll(userId, token);
+        if (orders.isEmpty())
+            throw new RuntimeException("شما به هیچ درخواستی دسترسی ندارید");
+        if (orders.stream().filter(a -> a.getId().equals(orderCarDriverDto.getOrderId())).count() <= 0L)
+            throw new RuntimeException("شما به این درخواست دسترسی ندارید");
+
+        UserDto userDto = CommonUtils.getUser(token);
+        if (CommonUtils.isNull(userDto))
+            throw new RuntimeException("can not identify token");
+
+        String hql = "select d from driver d where d.person.id =:personId";
+        Query query = entityManager.createQuery(hql);
+        Map<String, Object> param = new HashMap<>();
+        param.put("personId", userDto.getPersonId());
+        List<Driver> drivers = (List<Driver>) driverJPA.listByQuery(query, param);
+        Driver driver = drivers.get(0);
+        order.setOrderStatusId(Const.ORDER_STATUS_CONFIRMED);
+        order.setCar(car);
+        order.setDriver(driver);
+        update(order, userId);
+        //request accept
+    }
+
 }

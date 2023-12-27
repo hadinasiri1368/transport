@@ -9,6 +9,7 @@ public class Const {
 
     //ORDER_STATUS
     public static final Long ORDER_STATUS_WAIT_FOR_CONFIRM = 2L;
+    public static final Long ORDER_STATUS_CONFIRMED = 3L;
 
     //REQUEST_STATUS
     public static final Long REQUEST_STATUS_CONFIRM = 2L;
