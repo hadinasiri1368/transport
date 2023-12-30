@@ -1,5 +1,6 @@
 package org.transport.api;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +13,7 @@ import org.transport.service.GenericService;
 import java.util.List;
 
 @RestController
+@SecurityRequirement(name = "Bearer Authentication")
 public class DriverAPI {
     @Autowired
     private GenericService<Driver> service;

@@ -1,5 +1,7 @@
 package org.transport.api;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -14,10 +16,11 @@ import org.transport.service.GenericService;
 import java.util.List;
 
 @RestController
+@SecurityRequirement(name = "Bearer Authentication")
 public class CarAPI {
     @Autowired
     private GenericService<Car> service;
-
+//    @Operation(summary = "add car", description = "اضافه کردن ماشین")
     @PostMapping(path = "/api/car/add")
     public Long addCar(@RequestBody CarDto carDto, HttpServletRequest request) {
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));

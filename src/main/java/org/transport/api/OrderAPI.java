@@ -1,5 +1,6 @@
 package org.transport.api;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @Slf4j
+@SecurityRequirement(name = "Bearer Authentication")
 public class OrderAPI {
     @Autowired
     private OrderService service;

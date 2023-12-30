@@ -1,5 +1,6 @@
 package org.transport.api;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
+@SecurityRequirement(name = "Bearer Authentication")
 public class VoucherAPI {
     @Autowired
     private VoucherService service;
