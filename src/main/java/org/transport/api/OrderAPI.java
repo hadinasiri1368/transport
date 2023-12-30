@@ -73,32 +73,20 @@ public class OrderAPI {
     public List<Order> listOrder(HttpServletRequest request) throws Exception {
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
         String token = CommonUtils.getToken(request);
-        try {
-            return service.findAll(userId, token);
-        } catch (Exception e) {
-            throw e;
-        }
+        return service.findAll(userId, token);
     }
 
     @PostMapping(path = "/api/acceptOrderCarDriver")
     public Long acceptOrderCarDriver(@ModelAttribute("orderId") Long orderId, @ModelAttribute("carId") Long carId, HttpServletRequest request) throws Exception {
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
-        try {
-            service.acceptOrderCarDriver(orderId, carId, userId, CommonUtils.getToken(request));
-        } catch (Exception e) {
-            throw e;
-        }
+        service.acceptOrderCarDriver(orderId, carId, userId, CommonUtils.getToken(request));
         return orderId;
     }
 
     @PostMapping(path = "/api/changeOrderStatus")
     public Long changeOrderStatus(@ModelAttribute("orderId") Long orderId, HttpServletRequest request) throws Exception {
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
-        try {
-            service.changeOrderStatus(orderId, userId, CommonUtils.getToken(request));
-        } catch (Exception e) {
-            throw e;
-        }
+        service.changeOrderStatus(orderId, userId, CommonUtils.getToken(request));
         return orderId;
     }
 

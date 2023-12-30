@@ -371,37 +371,37 @@ public class OrderService {
         if (order.getOrderStatusId() == Const.ORDER_STATUS_CANCELLED_DRIVER)
             throw new RuntimeException("Order is canceled by driver");
 
-        if (order.getOrderStatusId() == Const.ORDER_STATUS_CONFIRMED && order.getDriver() == driver) {
+        if (order.getOrderStatusId() == Const.ORDER_STATUS_CONFIRMED && order.getDriver().getId().equals(driver.getId())) {
             order.setOrderStatusId(Const.ORDER_STATUS_WAIT_FOR_LOADING);
             update(order, userId);
             return order.getOrderStatusId();
         }
 
-        if (order.getOrderStatusId() == Const.ORDER_STATUS_WAIT_FOR_LOADING && order.getDriver() == driver) {
+        if (order.getOrderStatusId() == Const.ORDER_STATUS_WAIT_FOR_LOADING && order.getDriver().getId().equals(driver.getId())) {
             order.setOrderStatusId(Const.ORDER_STATUS_CAR_IN_LOADING_ORIGIN);
             update(order, userId);
             return order.getOrderStatusId();
         }
 
-        if (order.getOrderStatusId() == Const.ORDER_STATUS_CAR_IN_LOADING_ORIGIN && order.getDriver() == driver) {
+        if (order.getOrderStatusId() == Const.ORDER_STATUS_CAR_IN_LOADING_ORIGIN && order.getDriver().getId().equals(driver)) {
             order.setOrderStatusId(Const.ORDER_STATUS_LOADED);
             update(order, userId);
             return order.getOrderStatusId();
         }
 
-        if (order.getOrderStatusId() == Const.ORDER_STATUS_LOADED && order.getDriver() == driver) {
+        if (order.getOrderStatusId() == Const.ORDER_STATUS_LOADED && order.getDriver().equals(driver.getId())) {
             order.setOrderStatusId(Const.ORDER_STATUS_CARRYING_CARGO);
             update(order, userId);
             return order.getOrderStatusId();
         }
 
-        if (order.getOrderStatusId() == Const.ORDER_STATUS_CARRYING_CARGO && order.getDriver() == driver) {
+        if (order.getOrderStatusId() == Const.ORDER_STATUS_CARRYING_CARGO && order.getDriver().getId().equals(driver.getId())) {
             order.setOrderStatusId(Const.ORDER_STATUS_CAR_IN_DESTINATION);
             update(order, userId);
             return order.getOrderStatusId();
         }
 
-        if (order.getOrderStatusId() == Const.ORDER_STATUS_CAR_IN_DESTINATION && order.getDriver() == driver) {
+        if (order.getOrderStatusId() == Const.ORDER_STATUS_CAR_IN_DESTINATION && order.getDriver().getId().equals(driver.getId())) {
             order.setOrderStatusId(Const.ORDER_STATUS_DELIVERED);
             update(order, userId);
             return order.getOrderStatusId();
