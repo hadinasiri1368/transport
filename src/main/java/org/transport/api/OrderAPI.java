@@ -89,6 +89,17 @@ public class OrderAPI {
         return orderId;
     }
 
+    @PostMapping(path = "/api/changeOrderStatus")
+    public Long changeOrderStatus(@ModelAttribute("orderId") Long orderId, HttpServletRequest request) throws Exception {
+        Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
+        try {
+            service.changeOrderStatus(orderId, userId, CommonUtils.getToken(request));
+        } catch (Exception e) {
+            throw e;
+        }
+        return orderId;
+    }
+
 
     private void validationData(List<OrderDetailDto> orderDetailDtos, List<OrderImage> orderImages) {
         if (!CommonUtils.isNull(orderDetailDtos) && orderDetailDtos.size() > 0) {
