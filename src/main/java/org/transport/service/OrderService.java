@@ -365,49 +365,49 @@ public class OrderService {
         if (CommonUtils.isNull(order))
             throw new RuntimeException("Order not found");
 
-        if (order.getOrderStatusId() == Const.ORDER_STATUS_CANCELLED_CUSTOMER)
+        if (order.getOrderStatusId().equals(Const.ORDER_STATUS_CANCELLED_CUSTOMER))
             throw new RuntimeException("Order is canceled by customer");
 
-        if (order.getOrderStatusId() == Const.ORDER_STATUS_CANCELLED_DRIVER)
+        if (order.getOrderStatusId().equals(Const.ORDER_STATUS_CANCELLED_DRIVER))
             throw new RuntimeException("Order is canceled by driver");
 
-        if (order.getOrderStatusId() == Const.ORDER_STATUS_CONFIRMED && order.getDriver().getId().equals(driver.getId())) {
+        if (order.getOrderStatusId().equals(Const.ORDER_STATUS_CONFIRMED) && order.getDriver().getId().equals(driver.getId())) {
             order.setOrderStatusId(Const.ORDER_STATUS_WAIT_FOR_LOADING);
             update(order, userId);
             return order.getOrderStatusId();
         }
 
-        if (order.getOrderStatusId() == Const.ORDER_STATUS_WAIT_FOR_LOADING && order.getDriver().getId().equals(driver.getId())) {
+        if (order.getOrderStatusId().equals(Const.ORDER_STATUS_WAIT_FOR_LOADING) && order.getDriver().getId().equals(driver.getId())) {
             order.setOrderStatusId(Const.ORDER_STATUS_CAR_IN_LOADING_ORIGIN);
             update(order, userId);
             return order.getOrderStatusId();
         }
 
-        if (order.getOrderStatusId() == Const.ORDER_STATUS_CAR_IN_LOADING_ORIGIN && order.getDriver().getId().equals(driver)) {
+        if (order.getOrderStatusId().equals(Const.ORDER_STATUS_CAR_IN_LOADING_ORIGIN) && order.getDriver().getId().equals(driver.getId())) {
             order.setOrderStatusId(Const.ORDER_STATUS_LOADED);
             update(order, userId);
             return order.getOrderStatusId();
         }
 
-        if (order.getOrderStatusId() == Const.ORDER_STATUS_LOADED && order.getDriver().equals(driver.getId())) {
+        if (order.getOrderStatusId().equals(Const.ORDER_STATUS_LOADED) && order.getDriver().getId().equals(driver.getId())) {
             order.setOrderStatusId(Const.ORDER_STATUS_CARRYING_CARGO);
             update(order, userId);
             return order.getOrderStatusId();
         }
 
-        if (order.getOrderStatusId() == Const.ORDER_STATUS_CARRYING_CARGO && order.getDriver().getId().equals(driver.getId())) {
+        if (order.getOrderStatusId().equals(Const.ORDER_STATUS_CARRYING_CARGO) && order.getDriver().getId().equals(driver.getId())) {
             order.setOrderStatusId(Const.ORDER_STATUS_CAR_IN_DESTINATION);
             update(order, userId);
             return order.getOrderStatusId();
         }
 
-        if (order.getOrderStatusId() == Const.ORDER_STATUS_CAR_IN_DESTINATION && order.getDriver().getId().equals(driver.getId())) {
+        if (order.getOrderStatusId().equals(Const.ORDER_STATUS_CAR_IN_DESTINATION) && order.getDriver().getId().equals(driver.getId())) {
             order.setOrderStatusId(Const.ORDER_STATUS_DELIVERED);
             update(order, userId);
             return order.getOrderStatusId();
         }
 
-        if (order.getOrderStatusId() == Const.ORDER_STATUS_DELIVERED && order.getUserId().equals(userId)) {
+        if (order.getOrderStatusId().equals(Const.ORDER_STATUS_DELIVERED) && order.getUserId().equals(userId)) {
             order.setOrderStatusId(Const.ORDER_STATUS_TERMINATED);
             update(order, userId);
             return order.getOrderStatusId();
@@ -416,5 +416,47 @@ public class OrderService {
         return orderId;
     }
 
+    @Transactional
+    public Long cancelledOrder(Long orderId, Long userId, String token) {
+
+        UserDto userDto = CommonUtils.getUser(token);
+        if (CommonUtils.isNull(userDto))
+            throw new RuntimeException("can not identify token");
+        Order order = findOne(orderId);
+        String hql = "select d from driver d where d.person.id =:personId";
+        Query query = entityManager.createQuery(hql);
+        Map<String, Object> param = new HashMap<>();
+        param.put("personId", userDto.getPersonId());
+        List<Driver> drivers = (List<Driver>) driverJPA.listByQuery(query, param);
+        Driver driver = drivers.get(0);
+
+        if (CommonUtils.isNull(order))
+            throw new RuntimeException("Order not found");
+
+        if (order.getOrderStatusId().equals(Const.ORDER_STATUS_LOADED) || order.getOrderStatusId().equals(Const.ORDER_STATUS_CARRYING_CARGO)
+                || order.getOrderStatusId().equals(Const.ORDER_STATUS_CAR_IN_DESTINATION) || order.getOrderStatusId().equals(Const.ORDER_STATUS_DELIVERED))
+            throw new RuntimeException("order cannot be canceled");
+
+        if (order.getOrderStatusId().equals(Const.ORDER_STATUS_CANCELLED_DRIVER) || order.getOrderStatusId().equals(Const.ORDER_STATUS_CANCELLED_CUSTOMER))
+            throw new RuntimeException("order is canceled");
+
+        if (order.getOrderStatusId().equals(Const.ORDER_STATUS_WAIT_FOR_CONFIRM) && order.getUserId().equals(userId)) {
+            order.setOrderStatusId(Const.ORDER_STATUS_CANCELLED_CUSTOMER);
+            update(order, userId);
+            return order.getOrderStatusId();
+        }
+
+        if (order.getOrderStatusId().equals(Const.ORDER_STATUS_WAIT_FOR_CONFIRM) || order.getOrderStatusId().equals(Const.ORDER_STATUS_CAR_IN_LOADING_ORIGIN)
+                || order.getOrderStatusId().equals(Const.ORDER_STATUS_WAIT_FOR_LOADING)) {
+            if (order.getUserId().equals(userId)) {
+                order.setOrderStatusId(Const.ORDER_STATUS_CANCELLED_CUSTOMER);
+            } else {
+                order.setOrderStatusId(Const.ORDER_STATUS_CANCELLED_DRIVER);
+            }
+            update(order, userId);
+            return order.getOrderStatusId();
+        }
+        return orderId;
+    }
 }
 
