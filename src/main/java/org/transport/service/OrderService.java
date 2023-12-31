@@ -413,7 +413,7 @@ public class OrderService {
             return order.getOrderStatusId();
         }
 
-        return orderId;
+        throw new RuntimeException("unknown.exception");
     }
 
     @Transactional
@@ -456,7 +456,7 @@ public class OrderService {
             update(order, userId);
             return order.getOrderStatusId();
         }
-        return orderId;
+        throw new RuntimeException("unknown.exception");
     }
 }
 
