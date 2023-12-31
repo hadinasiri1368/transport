@@ -3,9 +3,12 @@ package org.transport.common;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.transport.dto.UserDto;
 
@@ -13,7 +16,15 @@ import java.lang.reflect.Array;
 import java.util.*;
 
 @Slf4j
+@Component
 public class CommonUtils {
+    private static MessageSource messageSource;
+
+    @Autowired
+    public void setMessageSource(MessageSource messageSource) {
+        CommonUtils.messageSource = messageSource;
+    }
+
     public static Long getUserId(String token) {
         try {
             String url = ApplicationProperties.getServiceUrlAuthentication() + "/getUserId";
@@ -107,6 +118,17 @@ public class CommonUtils {
             } catch (NumberFormatException e) {
                 return null;
             }
+    }
+
+    public static String getMessage(Exception e) {
+        if (e.getCause() instanceof RuntimeException) {
+            return ((RuntimeException) e.getCause()).getMessage();
+        }
+        return "unknown.exception";
+    }
+
+    public static String getMessage(String key) {
+        return messageSource.getMessage(key, null, null);
     }
 }
 

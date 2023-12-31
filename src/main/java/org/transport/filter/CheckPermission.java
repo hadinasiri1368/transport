@@ -5,6 +5,8 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.transport.common.CommonUtils;
@@ -18,7 +20,19 @@ public class CheckPermission extends OncePerRequestFilter implements Filter {
         if (!CommonUtils.isNull(token)) {
             String returnValue = CommonUtils.checkValidation(token, request.getRequestURI());
             if (CommonUtils.isNull(returnValue)) {
-                filterChain.doFilter(request, response);
+                try {
+                    filterChain.doFilter(request, response);
+                } catch (Exception e) {
+                    String message = "unknown.exceptio";
+                    if (e.getCause() instanceof RuntimeException) {
+                        message = CommonUtils.getMessage(CommonUtils.getMessage(e));
+                    } else
+                        message = e.getMessage();
+                    response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                    response.setContentType("text/html; charset=UTF-8");
+                    response.setCharacterEncoding("UTF-8");
+                    response.getWriter().write(message);
+                }
             } else {
                 response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
                 response.getWriter().write(returnValue);
