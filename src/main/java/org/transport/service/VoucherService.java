@@ -113,8 +113,8 @@ public class VoucherService {
 
     @Transactional
     public int delete(Long voucherId) {
-        entityManager.createQuery("delete from voucherDetail entity where entity.voucher.id=:voucherId").setParameter("voucherId",voucherId).executeUpdate();
-        return entityManager.createQuery("delete from voucher entity where entity.id=:voucherId").setParameter("voucherId",voucherId).executeUpdate();
+        entityManager.createQuery("delete from voucherDetail entity where entity.voucher.id=:voucherId").setParameter("voucherId", voucherId).executeUpdate();
+        return entityManager.createQuery("delete from voucher entity where entity.id=:voucherId").setParameter("voucherId", voucherId).executeUpdate();
     }
 
     public Voucher findOne(Long id) {
@@ -132,16 +132,16 @@ public class VoucherService {
         long sumCredit = 0, sumDebit = 0;
         for (VoucherDetail voucherDetail : voucherDetails) {
             if (CommonUtils.isNull(voucherDetail.getDetailLedger()))
-                throw new RuntimeException("detail leger is null");
+                throw new RuntimeException("detail.leger.is.null");
             if (CommonUtils.isNull(voucherDetail.getDebitAmount(), 0L) == 0L && CommonUtils.isNull(voucherDetail.getCreditAmount(), 0L) == 0L)
-                throw new RuntimeException("debit and credit is null");
+                throw new RuntimeException("debit.and.credit.is.null");
             if (CommonUtils.isNull(voucherDetail.getDebitAmount(), 0L) != 0L && CommonUtils.isNull(voucherDetail.getCreditAmount(), 0L) != 0L)
-                throw new RuntimeException("debit and credit is not null");
+                throw new RuntimeException("debit.and.credit.is.not.null");
             sumDebit += CommonUtils.isNull(voucherDetail.getDebitAmount(), 0L);
             sumCredit += CommonUtils.isNull(voucherDetail.getCreditAmount(), 0L);
         }
         if (sumDebit != sumCredit)
-            throw new RuntimeException("the sum of the debit and credit values is not equal");
+            throw new RuntimeException("the.sum.of.the.debit.and.credit.values.is.not.equal");
     }
 
 }

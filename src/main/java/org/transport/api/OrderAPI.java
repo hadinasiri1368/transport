@@ -101,12 +101,12 @@ public class OrderAPI {
         if (!CommonUtils.isNull(orderDetailDtos) && orderDetailDtos.size() > 0) {
             int voucherCount = orderDetailDtos.stream().collect(Collectors.groupingBy(a -> a.getOrderId())).size();
             if (voucherCount > 1)
-                throw new RuntimeException("orderId must be the same");
+                throw new RuntimeException("orderId.must.be.the.same");
         }
         if (!CommonUtils.isNull(orderImages) && orderImages.size() > 0) {
             int voucherCount = orderImages.stream().collect(Collectors.groupingBy(a -> a.getOrder().getId())).size();
             if (voucherCount > 1)
-                throw new RuntimeException("orderId must be the same");
+                throw new RuntimeException("orderId.must.be.the.same");
         }
     }
 }

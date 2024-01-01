@@ -55,7 +55,7 @@ public class VoucherAPI {
     public Long editVoucherDetailList(@RequestBody List<VoucherDetailDto> voucherDetailDtos, HttpServletRequest request) {
         int voucherCount = voucherDetailDtos.stream().collect(Collectors.groupingBy(a -> a.getVoucherId())).size();
         if (voucherCount > 1)
-            throw new RuntimeException("voucherId must be the same");
+            throw new RuntimeException("voucherId.must.be.the.same");
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
         List<VoucherDetail> voucherDetails = MapperUtil.mapToVoucherDetail(voucherDetailDtos);
         service.updateVoucherDetail(voucherDetailDtos.get(0).getVoucherId(), voucherDetails, userId);

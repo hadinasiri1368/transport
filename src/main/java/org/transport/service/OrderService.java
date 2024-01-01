@@ -352,7 +352,7 @@ public class OrderService {
 
         UserDto userDto = CommonUtils.getUser(token);
         if (CommonUtils.isNull(userDto))
-            throw new RuntimeException("can not identify token");
+            throw new RuntimeException("can.not.identify.token");
 
         Order order = findOne(orderId);
         String hql = "select d from driver d where d.person.id =:personId";
@@ -363,13 +363,13 @@ public class OrderService {
         Driver driver = drivers.get(0);
 
         if (CommonUtils.isNull(order))
-            throw new RuntimeException("Order not found");
+            throw new RuntimeException("order.not.found");
 
         if (order.getOrderStatusId().equals(Const.ORDER_STATUS_CANCELLED_CUSTOMER))
-            throw new RuntimeException("Order is canceled by customer");
+            throw new RuntimeException("order.is.canceled.by.customer");
 
         if (order.getOrderStatusId().equals(Const.ORDER_STATUS_CANCELLED_DRIVER))
-            throw new RuntimeException("Order is canceled by driver");
+            throw new RuntimeException("order.is.canceled.by.driver");
 
         if (order.getOrderStatusId().equals(Const.ORDER_STATUS_CONFIRMED) && order.getDriver().getId().equals(driver.getId())) {
             order.setOrderStatusId(Const.ORDER_STATUS_WAIT_FOR_LOADING);
@@ -421,7 +421,7 @@ public class OrderService {
 
         UserDto userDto = CommonUtils.getUser(token);
         if (CommonUtils.isNull(userDto))
-            throw new RuntimeException("can not identify token");
+            throw new RuntimeException("can.not.identify.token");
         Order order = findOne(orderId);
         String hql = "select d from driver d where d.person.id =:personId";
         Query query = entityManager.createQuery(hql);
@@ -431,14 +431,14 @@ public class OrderService {
         Driver driver = drivers.get(0);
 
         if (CommonUtils.isNull(order))
-            throw new RuntimeException("Order not found");
+            throw new RuntimeException("order.not.found");
 
         if (order.getOrderStatusId().equals(Const.ORDER_STATUS_LOADED) || order.getOrderStatusId().equals(Const.ORDER_STATUS_CARRYING_CARGO)
                 || order.getOrderStatusId().equals(Const.ORDER_STATUS_CAR_IN_DESTINATION) || order.getOrderStatusId().equals(Const.ORDER_STATUS_DELIVERED))
-            throw new RuntimeException("order cannot be canceled");
+            throw new RuntimeException("order.cannot.be.canceled");
 
         if (order.getOrderStatusId().equals(Const.ORDER_STATUS_CANCELLED_DRIVER) || order.getOrderStatusId().equals(Const.ORDER_STATUS_CANCELLED_CUSTOMER))
-            throw new RuntimeException("order is canceled");
+            throw new RuntimeException("order.is.canceled");
 
         if (order.getOrderStatusId().equals(Const.ORDER_STATUS_WAIT_FOR_CONFIRM) && order.getUserId().equals(userId)) {
             order.setOrderStatusId(Const.ORDER_STATUS_CANCELLED_CUSTOMER);

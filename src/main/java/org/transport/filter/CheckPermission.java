@@ -23,7 +23,7 @@ public class CheckPermission extends OncePerRequestFilter implements Filter {
                 try {
                     filterChain.doFilter(request, response);
                 } catch (Exception e) {
-                    String message = "unknown.exceptio";
+                    String message = "unknown.exception";
                     if (e.getCause() instanceof RuntimeException) {
                         message = CommonUtils.getMessage(CommonUtils.getMessage(e));
                     } else
@@ -39,7 +39,7 @@ public class CheckPermission extends OncePerRequestFilter implements Filter {
             }
         } else {
             response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            response.getWriter().write("token is null");
+            response.getWriter().write("token.is.null");
         }
     }
 }
