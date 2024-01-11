@@ -25,7 +25,7 @@ public class VoucherAPI {
     private VoucherService service;
 
     @PostMapping(path = "/api/voucher/add")
-    public Long addVoucher(@RequestBody VoucherDto voucherDto, HttpServletRequest request) {
+    public Long addVoucher(@RequestBody VoucherDto voucherDto, HttpServletRequest request) throws Exception {
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
         Voucher voucher = new Voucher();
         List<VoucherDetail> voucherDetails = MapperUtil.mapToVoucherDetail(voucherDto.getVoucherDetails());
@@ -37,14 +37,14 @@ public class VoucherAPI {
     }
 
     @PostMapping(path = "/api/voucher/edit")
-    public Long editVoucher(@RequestBody Voucher voucher, HttpServletRequest request) {
+    public Long editVoucher(@RequestBody Voucher voucher, HttpServletRequest request) throws Exception {
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
         service.update(voucher, userId);
         return voucher.getId();
     }
 
     @PostMapping(path = "/api/voucherDetail/edit")
-    public Long editVoucherDetail(@RequestBody VoucherDetailDto voucherDetailDto, HttpServletRequest request) {
+    public Long editVoucherDetail(@RequestBody VoucherDetailDto voucherDetailDto, HttpServletRequest request) throws Exception {
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
         VoucherDetail voucherDetail = MapperUtil.mapToVoucherDetail(voucherDetailDto);
         service.updateVoucherDetail(voucherDetail, userId);
@@ -52,13 +52,20 @@ public class VoucherAPI {
     }
 
     @PostMapping(path = "/api/voucherDetailList/edit")
-    public Long editVoucherDetailList(@RequestBody List<VoucherDetailDto> voucherDetailDtos, HttpServletRequest request) {
+    public Long editVoucherDetailList(@RequestBody List<VoucherDetailDto> voucherDetailDtos, HttpServletRequest request) throws Exception {
         int voucherCount = voucherDetailDtos.stream().collect(Collectors.groupingBy(a -> a.getVoucherId())).size();
         if (voucherCount > 1)
             throw new RuntimeException("voucherId.must.be.the.same");
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
         List<VoucherDetail> voucherDetails = MapperUtil.mapToVoucherDetail(voucherDetailDtos);
         service.updateVoucherDetail(voucherDetailDtos.get(0).getVoucherId(), voucherDetails, userId);
+        return voucherDetailDtos.get(0).getVoucherId();
+    }
+
+    @PostMapping(path = "/api/voucherDetail/remove")
+    public Long removeVoucherDetail(@RequestBody List<VoucherDetailDto> voucherDetailDtos) throws Exception {
+        List<VoucherDetail> voucherDetails = MapperUtil.mapToVoucherDetail(voucherDetailDtos);
+        service.deleteVoucherDetail(voucherDetailDtos.get(0).getVoucherId(), voucherDetails);
         return voucherDetailDtos.get(0).getVoucherId();
     }
 

@@ -24,7 +24,7 @@ public class VoucherService {
     private EntityManager entityManager;
 
     @Transactional
-    public void insert(Voucher voucher, List<VoucherDetail> voucherDetails, Long userId) {
+    public void insert(Voucher voucher, List<VoucherDetail> voucherDetails, Long userId) throws Exception {
         voucher.setId(null);
         voucher.setInsertedUserId(userId);
         voucher.setInsertedDateTime(new Date());
@@ -40,7 +40,7 @@ public class VoucherService {
     }
 
     @Transactional
-    public void insert(Long voucherId, List<VoucherDetail> voucherDetails, Long userId) {
+    public void insert(Long voucherId, List<VoucherDetail> voucherDetails, Long userId) throws Exception {
         Voucher voucher = findOne(voucherId);
         for (VoucherDetail voucherDetail : voucherDetails) {
             voucherDetail.setId(null);
@@ -52,14 +52,14 @@ public class VoucherService {
         checkVoucher(voucher.getId());
     }
 
-    public void update(Voucher voucher, Long userId) {
+    public void update(Voucher voucher, Long userId) throws Exception {
         voucher.setUpdatedUserId(userId);
         voucher.setUpdatedDateTime(new Date());
         genericVoucherJPA.update(voucher);
     }
 
     @Transactional
-    public void updateVoucherDetail(VoucherDetail voucherDetail, Long userId) {
+    public void updateVoucherDetail(VoucherDetail voucherDetail, Long userId) throws Exception {
         voucherDetail.setUpdatedUserId(userId);
         voucherDetail.setUpdatedDateTime(new Date());
         genericVoucherDetailJPA.update(voucherDetail);
@@ -67,7 +67,7 @@ public class VoucherService {
     }
 
     @Transactional
-    public void updateVoucherDetail(Long voucherId, List<VoucherDetail> voucherDetails, Long userId) {
+    public void updateVoucherDetail(Long voucherId, List<VoucherDetail> voucherDetails, Long userId) throws Exception {
         for (VoucherDetail voucherDetail : voucherDetails) {
             voucherDetail.setUpdatedUserId(userId);
             voucherDetail.setUpdatedDateTime(new Date());

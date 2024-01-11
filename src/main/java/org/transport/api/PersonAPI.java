@@ -17,16 +17,16 @@ public class PersonAPI {
     private GenericService<Person> service;
 
     @PostMapping(path = "/api/person/add")
-    public Long addPerson(@RequestBody Person Person, HttpServletRequest request) {
+    public Long addPerson(@RequestBody Person person, HttpServletRequest request) throws Exception {
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
-        service.insert(Person, userId);
-        return Person.getId();
+        service.insert(person, userId);
+        return person.getId();
     }
 
     @PostMapping(path = "/api/person/edit")
-    public Long editPerson(@RequestBody Person person, HttpServletRequest request) {
+    public Long editPerson(@RequestBody Person person, HttpServletRequest request) throws Exception {
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
-        service.update(person, userId);
+        service.update(person, userId, Person.class);
         return person.getId();
     }
 

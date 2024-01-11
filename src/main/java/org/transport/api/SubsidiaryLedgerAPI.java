@@ -19,7 +19,7 @@ public class SubsidiaryLedgerAPI {
     private GenericService<SubsidiaryLedger> service;
 
     @PostMapping(path = "/api/subsidiaryLedger/add")
-    public Long addSubsidiaryLedger(@RequestBody SubsidiaryLedgerDto subsidiaryLedgerDto, HttpServletRequest request) {
+    public Long addSubsidiaryLedger(@RequestBody SubsidiaryLedgerDto subsidiaryLedgerDto, HttpServletRequest request) throws Exception {
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
         SubsidiaryLedger subsidiaryLedger = new SubsidiaryLedger();
         subsidiaryLedger.setId(subsidiaryLedgerDto.getId());
@@ -33,9 +33,16 @@ public class SubsidiaryLedgerAPI {
     }
 
     @PostMapping(path = "/api/subsidiaryLedger/edit")
-    public Long editSubsidiaryLedger(@RequestBody SubsidiaryLedger subsidiaryLedger, HttpServletRequest request) {
+    public Long editSubsidiaryLedger(@RequestBody SubsidiaryLedgerDto subsidiaryLedgerDto, HttpServletRequest request) throws Exception {
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
-        service.update(subsidiaryLedger, userId);
+        SubsidiaryLedger subsidiaryLedger = new SubsidiaryLedger();
+        subsidiaryLedger.setId(subsidiaryLedgerDto.getId());
+        GeneralLedger generalLedger = new GeneralLedger();
+        generalLedger.setId(subsidiaryLedgerDto.getGeneralLedgerId());
+        subsidiaryLedger.setGeneralLedger(generalLedger);
+        subsidiaryLedger.setNumber(subsidiaryLedgerDto.getNumber());
+        subsidiaryLedger.setName(subsidiaryLedgerDto.getName());
+        service.update(subsidiaryLedger, userId, SubsidiaryLedger.class);
         return subsidiaryLedger.getId();
     }
 

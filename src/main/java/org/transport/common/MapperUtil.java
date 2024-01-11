@@ -1,14 +1,33 @@
 package org.transport.common;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.stereotype.Component;
 import org.transport.dto.OrderDetailDto;
 import org.transport.dto.OrderDto;
 import org.transport.dto.VoucherDetailDto;
 import org.transport.model.*;
+import org.transport.service.GenericService;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Component
 public class MapperUtil {
+
+    private static GenericService<Car> carService;
+    private static GenericService<Driver> driverService;
+
+    @Autowired
+    public void setCarService(GenericService<Car> service) {
+        MapperUtil.carService = service;
+    }
+
+    @Autowired
+    public void setDriverService(GenericService<Driver> service) {
+        MapperUtil.driverService = service;
+    }
+
     public static VoucherDetail mapToVoucherDetail(VoucherDetailDto voucherDetailDto) {
         VoucherDetail voucherDetail = ObjectMapperUtils.map(voucherDetailDto, VoucherDetail.class);
         voucherDetail.setDebitAmount(CommonUtils.isNull(voucherDetail.getDebitAmount()) ? 0 : voucherDetail.getDebitAmount());
@@ -39,8 +58,8 @@ public class MapperUtil {
 
     public static Order mapToOrder(OrderDto orderDto) {
         Order order = ObjectMapperUtils.map(orderDto, Order.class);
-        order.setCar(Car.builder().id(orderDto.getCarId()).build());
-        order.setDriver(Driver.builder().id(orderDto.getDriverId()).build());
+        order.setCar(carService.findOne(Car.class, orderDto.getCarId()));
+        order.setDriver(driverService.findOne(Driver.class, orderDto.getDriverId()));
         return order;
     }
 

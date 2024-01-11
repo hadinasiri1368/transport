@@ -36,7 +36,7 @@ public class OrderService {
     @Autowired
     private JPA<Driver, Long> driverJPA;
 
-    private void insertDetail(Order order, List<OrderDetail> orderDetails, List<OrderImage> orderImages, Long userId) {
+    private void insertDetail(Order order, List<OrderDetail> orderDetails, List<OrderImage> orderImages, Long userId) throws Exception {
         if (!CommonUtils.isNull(orderDetails) && orderDetails.size() > 0) {
             for (OrderDetail orderDetail : orderDetails) {
                 orderDetail.setId(null);
@@ -58,7 +58,7 @@ public class OrderService {
         checkOrder(order.getId());
     }
 
-    private void updateDetail(Order order, List<OrderDetail> orderDetails, List<OrderImage> orderImages, Long userId) {
+    private void updateDetail(Order order, List<OrderDetail> orderDetails, List<OrderImage> orderImages, Long userId) throws Exception {
         if (!CommonUtils.isNull(orderDetails) && orderDetails.size() > 0) {
             for (OrderDetail orderDetail : orderDetails) {
                 orderDetail.setOrder(order);
@@ -108,7 +108,7 @@ public class OrderService {
     }
 
     @Transactional
-    public void insert(Order order, Long userId) {
+    public void insert(Order order, Long userId) throws Exception {
         order.setId(null);
         order.setInsertedUserId(userId);
         order.setInsertedDateTime(new Date());
@@ -118,32 +118,32 @@ public class OrderService {
     }
 
     @Transactional
-    public void insert(Long orderId, List<OrderDetail> orderDetails, List<OrderImage> orderImages, Long userId) {
+    public void insert(Long orderId, List<OrderDetail> orderDetails, List<OrderImage> orderImages, Long userId) throws Exception {
         Order order = findOne(orderId);
         insertDetail(order, orderDetails, orderImages, userId);
     }
 
     @Transactional
-    public void insert(Long orderId, List<OrderDetail> orderDetails, Long userId) {
+    public void insert(Long orderId, List<OrderDetail> orderDetails, Long userId) throws Exception {
         Order order = findOne(orderId);
         insertDetail(order, orderDetails, null, userId);
     }
 
     @Transactional
-    public void insert(Long orderId, Long userId, List<OrderImage> orderImages) {
+    public void insert(Long orderId, Long userId, List<OrderImage> orderImages) throws Exception {
         Order order = findOne(orderId);
         insertDetail(order, null, orderImages, userId);
     }
 
     @Transactional
-    public void update(Order order, Long userId) {
+    public void update(Order order, Long userId) throws Exception {
         order.setUpdatedUserId(userId);
         order.setUpdatedDateTime(new Date());
         orderJPA.update(order);
     }
 
     @Transactional
-    public void update(Order order, List<OrderDetail> orderDetails, Long userId) {
+    public void update(Order order, List<OrderDetail> orderDetails, Long userId) throws Exception {
         order.setUpdatedUserId(userId);
         order.setUpdatedDateTime(new Date());
         orderJPA.update(order);
@@ -151,7 +151,7 @@ public class OrderService {
     }
 
     @Transactional
-    public void update(Order order, Long userId, List<OrderImage> orderImages) {
+    public void update(Order order, Long userId, List<OrderImage> orderImages) throws Exception {
         order.setUpdatedUserId(userId);
         order.setUpdatedDateTime(new Date());
         orderJPA.update(order);
@@ -348,7 +348,7 @@ public class OrderService {
     }
 
     @Transactional
-    public Long changeOrderStatus(Long orderId, Long userId, String token) {
+    public Long changeOrderStatus(Long orderId, Long userId, String token) throws Exception {
 
         UserDto userDto = CommonUtils.getUser(token);
         if (CommonUtils.isNull(userDto))
@@ -417,7 +417,7 @@ public class OrderService {
     }
 
     @Transactional
-    public Long cancelledOrder(Long orderId, Long userId, String token) {
+    public Long cancelledOrder(Long orderId, Long userId, String token) throws Exception {
 
         UserDto userDto = CommonUtils.getUser(token);
         if (CommonUtils.isNull(userDto))

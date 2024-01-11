@@ -16,8 +16,9 @@ import java.util.List;
 public class CompanyDriverAPI {
     @Autowired
     private GenericService<CompanyDriver> service;
+
     @PostMapping(path = "/api/companyDriver/add")
-    public Long addCompanyDriver(@RequestBody CompanyDriverDto companyDriverDto, HttpServletRequest request) {
+    public Long addCompanyDriver(@RequestBody CompanyDriverDto companyDriverDto, HttpServletRequest request) throws Exception {
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
         CompanyDriver companyDriver = new CompanyDriver();
         Person person = new Person();
@@ -31,10 +32,20 @@ public class CompanyDriverAPI {
         service.insert(companyDriver, userId);
         return companyDriver.getId();
     }
+
     @PostMapping(path = "/api/companyDriver/edit")
-    public Long editCompanyDriver(@RequestBody CompanyDriver companyDriver, HttpServletRequest request) {
+    public Long editCompanyDriver(@RequestBody CompanyDriverDto companyDriverDto, HttpServletRequest request) throws Exception {
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
-        service.update(companyDriver, userId);
+        CompanyDriver companyDriver = new CompanyDriver();
+        Person person = new Person();
+        Driver driver = new Driver();
+        companyDriver.setId(companyDriverDto.getId());
+        person.setId(companyDriverDto.getCompanyId());
+        companyDriver.setCompany(person);
+        driver.setId(companyDriverDto.getDriverId());
+        companyDriver.setDriver(driver);
+        companyDriver.setRequestStatusId(companyDriverDto.getRequestStatusId());
+        service.update(companyDriver, userId, CompanyDriver.class);
         return companyDriver.getId();
     }
 

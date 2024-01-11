@@ -19,7 +19,7 @@ public class DriverAPI {
     private GenericService<Driver> service;
 
     @PostMapping(path = "/api/driver/add")
-    public Long addDriver(@RequestBody DriverDto driverDto, HttpServletRequest request) {
+    public Long addDriver(@RequestBody DriverDto driverDto, HttpServletRequest request) throws Exception {
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
         Driver driver = new Driver();
         driver.setId(driverDto.getId());
@@ -33,10 +33,20 @@ public class DriverAPI {
         service.insert(driver, userId);
         return driver.getId();
     }
+
     @PostMapping(path = "/api/driver/edit")
-    public Long editDriver(@RequestBody Driver driver, HttpServletRequest request) {
+    public Long editDriver(@RequestBody DriverDto driverDto, HttpServletRequest request) throws Exception {
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
-        service.update(driver, userId);
+        Driver driver = new Driver();
+        driver.setId(driverDto.getId());
+        driver.setTrackingCode(driverDto.getTrackingCode());
+        Person person = new Person();
+        person.setId(driverDto.getPersonId());
+        driver.setPerson(person);
+        driver.setDriverLicenseTypeId(driverDto.getDriverLicenseTypeId());
+        driver.setDriverLicenseIssueDate(driverDto.getDriverLicenseIssueDate());
+        driver.setDriverLicenseValidDuration(driverDto.getDriverLicenseValidDuration());
+        service.update(driver, userId, Driver.class);
         return driver.getId();
     }
 

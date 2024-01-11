@@ -25,16 +25,15 @@ public class OrderAPI {
     private OrderService service;
 
     @PostMapping(path = "/api/order/add")
-    public Long addOrder(@RequestBody OrderDto orderDto, HttpServletRequest request) {
+    public Long addOrder(@RequestBody OrderDto orderDto, HttpServletRequest request) throws Exception {
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
         Order order = MapperUtil.mapToOrder(orderDto);
-        order.setOrderDetails(MapperUtil.mapToOrderDetail(orderDto.getOrderDetails()));
         service.insert(order, userId);
         return order.getId();
     }
 
     @PostMapping(path = "/api/orderDetail/add")
-    public Long addOrderDetail(@RequestBody List<OrderDetailDto> orderDetailDtos, HttpServletRequest request) {
+    public Long addOrderDetail(@RequestBody List<OrderDetailDto> orderDetailDtos, HttpServletRequest request) throws Exception {
         validationData(orderDetailDtos, null);
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
         List<OrderDetail> orderDetails = MapperUtil.mapToOrderDetail(orderDetailDtos);

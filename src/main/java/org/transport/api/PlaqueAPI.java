@@ -17,7 +17,7 @@ public class PlaqueAPI {
     @Autowired
     private GenericService<Plaque> service;
     @PostMapping(path = "/api/plaque/add")
-    public Long addPlaque(@RequestBody PlaqueDto plaqueDto , HttpServletRequest request){
+    public Long addPlaque(@RequestBody PlaqueDto plaqueDto , HttpServletRequest request) throws Exception{
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
         Plaque plaque =new Plaque();
         plaque.setId(plaqueDto.getId());
@@ -31,9 +31,17 @@ public class PlaqueAPI {
         return plaque.getId();
     }
     @PostMapping(path = "/api/plaque/edit")
-    public Long editPlaque(@RequestBody Plaque plaque, HttpServletRequest request) {
+    public Long editPlaque(@RequestBody PlaqueDto plaqueDto, HttpServletRequest request) throws Exception{
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
-        service.update(plaque, userId);
+        Plaque plaque =new Plaque();
+        plaque.setId(plaqueDto.getId());
+        plaque.setLeftPlaqueTag(plaqueDto.getLeftPlaqueTag());
+        plaque.setPlaqueTagPersianPartId(plaqueDto.getPlaqueTagPersianPartId());
+        plaque.setMiddlePlaqueTag(plaqueDto.getMiddlePlaqueTag());
+        plaque.setRightPlaqueTag(plaqueDto.getRightPlaqueTag());
+        plaque.setLeftPlaqueFreeZoneTag(plaqueDto.getLeftPlaqueFreeZoneTag());
+        plaque.setRightPlaqueFreeZoneTag(plaqueDto.getRightPlaqueFreeZoneTag());
+        service.update(plaque, userId, Plaque.class);
         return plaque.getId();
     }
 

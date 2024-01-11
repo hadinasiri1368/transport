@@ -18,9 +18,9 @@ public class DetailLedgerAPI {
     private GenericService<DetailLedger> service;
 
     @PostMapping(path = "/api/detailLedger/add")
-    public Long addDetailLedger(@RequestBody DetailLedgerDto detailLedgerDto, HttpServletRequest request) {
+    public Long addDetailLedger(@RequestBody DetailLedgerDto detailLedgerDto, HttpServletRequest request) throws Exception {
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
-        DetailLedger detailLedger=new DetailLedger();
+        DetailLedger detailLedger = new DetailLedger();
         detailLedger.setId(detailLedgerDto.getId());
         detailLedger.setName(detailLedgerDto.getName());
         detailLedger.setNumber(detailLedgerDto.getNumber());
@@ -30,9 +30,14 @@ public class DetailLedgerAPI {
     }
 
     @PostMapping(path = "/api/detailLedger/edit")
-    public Long editDetailLedger(@RequestBody DetailLedger detailLedger, HttpServletRequest request) {
+    public Long editDetailLedger(@RequestBody DetailLedgerDto detailLedgerDto, HttpServletRequest request) throws Exception {
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
-        service.update(detailLedger, userId);
+        DetailLedger detailLedger = new DetailLedger();
+        detailLedger.setId(detailLedgerDto.getId());
+        detailLedger.setName(detailLedgerDto.getName());
+        detailLedger.setNumber(detailLedgerDto.getNumber());
+        detailLedger.setUserId(detailLedgerDto.getUserId());
+        service.update(detailLedger, userId, DetailLedger.class);
         return detailLedger.getId();
     }
 

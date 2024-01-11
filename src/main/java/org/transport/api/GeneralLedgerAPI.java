@@ -17,16 +17,16 @@ public class GeneralLedgerAPI {
     private GenericService<GeneralLedger> service;
 
     @PostMapping(path = "/api/generalLedger/add")
-    public Long addGeneralLedger(@RequestBody GeneralLedger generalLedger, HttpServletRequest request) {
+    public Long addGeneralLedger(@RequestBody GeneralLedger generalLedger, HttpServletRequest request) throws Exception {
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
         service.insert(generalLedger, userId);
         return generalLedger.getId();
     }
 
     @PostMapping(path = "/api/generalLedger/edit")
-    public Long editGeneralLedger(@RequestBody GeneralLedger generalLedger, HttpServletRequest request) {
+    public Long editGeneralLedger(@RequestBody GeneralLedger generalLedger, HttpServletRequest request) throws Exception {
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
-        service.update(generalLedger, userId);
+        service.update(generalLedger, userId, GeneralLedger.class);
         return generalLedger.getId();
     }
 
