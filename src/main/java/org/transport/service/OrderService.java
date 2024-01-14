@@ -112,6 +112,7 @@ public class OrderService {
         order.setId(null);
         order.setInsertedUserId(userId);
         order.setInsertedDateTime(new Date());
+        order.setOrderStatusId(Const.ORDER_STATUS_DRAFT);
         orderJPA.save(order);
         insertDetail(order, CommonUtils.isNull(order.getOrderDetails()) ? null : order.getOrderDetails()
                 , CommonUtils.isNull(order.getOrderImages()) ? null : order.getOrderImages(), userId);
@@ -316,24 +317,25 @@ public class OrderService {
     public void acceptOrderCarDriver(Long orderId, Long carId, Long userId, String token) throws Exception {
         Order order = findOne(orderId);
         if (CommonUtils.isNull(order))
-            throw new RuntimeException("Order not found");
+            throw new RuntimeException("order.not.found");
 
         if (!order.getOrderStatusId().equals(Const.ORDER_STATUS_WAIT_FOR_CONFIRM))
-            throw new RuntimeException("Order status not in pending confirmation");
+            throw new RuntimeException("order.status.not.in.pending.confirmation");
 
         Car car = carJPA.findOne(Car.class, carId);
         if (CommonUtils.isNull(car))
-            throw new RuntimeException("Car not found");
+            throw new RuntimeException("car.not.found");
 
         List<Order> orders = findAll(userId, token);
         if (orders.isEmpty())
-            throw new RuntimeException("no orders available");
-        if (orders.stream().filter(a -> a.getId().equals(carId)).count() <= 0L)
-            throw new RuntimeException("this order not available");
+            throw new RuntimeException("order.no.orders.available");
+
+        if (orders.stream().filter(a -> a.getId().equals(orderId)).count() <= 0L)
+            throw new RuntimeException("order.this.order.not.available");
 
         UserDto userDto = CommonUtils.getUser(token);
         if (CommonUtils.isNull(userDto))
-            throw new RuntimeException("can not identify token");
+            throw new RuntimeException("can.not.identify.token");
 
         String hql = "select d from driver d where d.person.id =:personId";
         Query query = entityManager.createQuery(hql);
@@ -370,6 +372,12 @@ public class OrderService {
 
         if (order.getOrderStatusId().equals(Const.ORDER_STATUS_CANCELLED_DRIVER))
             throw new RuntimeException("order.is.canceled.by.driver");
+
+        if (order.getOrderStatusId().equals(Const.ORDER_STATUS_DRAFT)) {
+            order.setOrderStatusId(Const.ORDER_STATUS_WAIT_FOR_CONFIRM);
+            update(order, userId);
+            return order.getOrderStatusId();
+        }
 
         if (order.getOrderStatusId().equals(Const.ORDER_STATUS_CONFIRMED) && order.getDriver().getId().equals(driver.getId())) {
             order.setOrderStatusId(Const.ORDER_STATUS_WAIT_FOR_LOADING);

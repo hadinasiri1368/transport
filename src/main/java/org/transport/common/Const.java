@@ -8,6 +8,7 @@ public class Const {
 
 
     //ORDER_STATUS
+    public static final Long ORDER_STATUS_DRAFT= 1L;
     public static final Long ORDER_STATUS_WAIT_FOR_CONFIRM = 2L;
     public static final Long ORDER_STATUS_CONFIRMED = 3L;
     public static final Long ORDER_STATUS_TERMINATED = 5L;

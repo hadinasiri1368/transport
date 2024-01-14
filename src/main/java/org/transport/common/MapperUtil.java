@@ -58,8 +58,10 @@ public class MapperUtil {
 
     public static Order mapToOrder(OrderDto orderDto) {
         Order order = ObjectMapperUtils.map(orderDto, Order.class);
-        order.setCar(carService.findOne(Car.class, orderDto.getCarId()));
-        order.setDriver(driverService.findOne(Driver.class, orderDto.getDriverId()));
+        if (!CommonUtils.isNull(orderDto.getCarId()))
+            order.setCar(carService.findOne(Car.class, orderDto.getCarId()));
+        if (!CommonUtils.isNull(orderDto.getDriverId()))
+            order.setDriver(driverService.findOne(Driver.class, orderDto.getDriverId()));
         return order;
     }
 
