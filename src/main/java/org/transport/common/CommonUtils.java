@@ -10,6 +10,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+import org.transport.dto.RoleDto;
 import org.transport.dto.UserDto;
 
 import java.lang.reflect.Array;
@@ -144,6 +145,28 @@ public class CommonUtils {
                 Method method = entity.getClass().getMethod("set" + name, field.getType());
                 method.invoke(entity, field.getType().cast(null));
             }
+        }
+    }
+
+    public static List<RoleDto> getUserRole(String token) {
+        try {
+            String url = ApplicationProperties.getServiceUrlAuthentication() + "/api/user/role";
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Authorization", token);
+            return CommonUtils.callService(url, HttpMethod.GET, headers, null, null, RoleDto.class);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static List<RoleDto> getUserRole(Long userId, String token) {
+        try {
+            String url = ApplicationProperties.getServiceUrlAuthentication() + "/api/user/role?userId=" + userId;
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Authorization", token);
+            return CommonUtils.callService(url, HttpMethod.GET, headers, null, null, RoleDto.class);
+        } catch (Exception e) {
+            return null;
         }
     }
 }
