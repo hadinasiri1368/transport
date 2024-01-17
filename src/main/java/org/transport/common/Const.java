@@ -4,7 +4,7 @@ public class Const {
     //ROLE
     public static final Long ROLE_CUSTOMER = 1L;
     public static final Long ROLE_DRIVER = 2L;
-    public static final Long ROLE_COMPANY = 3L;
+    public static final Long ROLE_STAFF = 3L;
 
 
     //ORDER_STATUS

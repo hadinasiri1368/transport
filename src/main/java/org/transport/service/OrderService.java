@@ -198,16 +198,7 @@ public class OrderService {
         }
     }
 
-    private List<RoleDto> getUserRole(String token) throws Exception {
-        try {
-            String url = ApplicationProperties.getServiceUrlAuthentication() + "/api/user/role";
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Authorization", token);
-            return CommonUtils.callService(url, HttpMethod.GET, headers, null, null, RoleDto.class);
-        } catch (Exception e) {
-            throw e;
-        }
-    }
+
 
     private List<UserDto> getUserColleague(String token) throws Exception {
         return getUserColleague(token, null);
@@ -245,7 +236,9 @@ public class OrderService {
             if (userDto.isAdmin()) {
                 return orderJPA.findAll(Order.class);
             }
-            roleDtos = getUserRole(token);
+            roleDtos = CommonUtils.getUserRole(token);
+            if (CommonUtils.isNull(roleDtos))
+                throw new RuntimeException("connection.failed");
             if (roleDtos.stream().filter(a -> a.getId() == Const.ROLE_CUSTOMER).count() > 0) {
                 hql = "select o from order o where o.userId=:userId";
                 Query query = entityManager.createQuery(hql);
@@ -254,7 +247,7 @@ public class OrderService {
                 returnValue.addAll(orderJPA.listByQuery(query, param));
                 orderIds = returnValue.stream().map(entity -> entity.getId()).collect(Collectors.toList());
             }
-            if (roleDtos.stream().filter(a -> a.getId() == Const.ROLE_COMPANY).count() > 0) {
+            if (roleDtos.stream().filter(a -> a.getId() == Const.ROLE_STAFF).count() > 0) {
                 List<UserDto> userDtos = getUserColleague(token);
                 List<Long> userIds = userDtos.stream().map(entity -> entity.getId()).collect(Collectors.toList());
                 hql = "select o from order o where o.userId in (:userIds) and o.id not in (:orderids)";
