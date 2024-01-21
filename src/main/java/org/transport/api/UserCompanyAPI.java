@@ -6,12 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.transport.common.CommonUtils;
 import org.transport.dto.UserCompanyDto;
-import org.transport.model.CompanyDriver;
-import org.transport.model.Order;
 import org.transport.model.Person;
 import org.transport.model.UserCompany;
-import org.transport.service.GenericService;
-import org.transport.service.OrderService;
 import org.transport.service.UserCompanyService;
 
 import java.util.List;
@@ -57,6 +53,11 @@ public class UserCompanyAPI {
     @GetMapping(path = "/api/userCompany/{id}")
     public UserCompany getUserCompany(@PathVariable Long id) {
         return service.findOne(id);
+    }
+
+    @GetMapping(path = "/api/getUserCompany/{userId}")
+    public List<UserCompany> getCompany(@PathVariable Long userId) {
+        return service.findById(userId);
     }
 
     @GetMapping(path = "/api/userCompany")

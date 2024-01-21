@@ -16,6 +16,7 @@ import org.transport.dto.UserDto;
 import org.transport.model.*;
 import org.transport.repository.JPA;
 
+import java.lang.reflect.Array;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -35,6 +36,9 @@ public class OrderService {
     private JPA<Car, Long> carJPA;
     @Autowired
     private JPA<Driver, Long> driverJPA;
+    @Autowired
+    private UserCompanyService userCompanyService;
+
 
     private void insertDetail(Order order, List<OrderDetail> orderDetails, List<OrderImage> orderImages, Long userId) throws Exception {
         if (!CommonUtils.isNull(orderDetails) && orderDetails.size() > 0) {
@@ -199,31 +203,6 @@ public class OrderService {
     }
 
 
-
-    private List<UserDto> getUserColleague(String token) throws Exception {
-        return getUserColleague(token, null);
-    }
-
-    private List<UserDto> getUserColleague(String token, List<Long> userIds) throws Exception {
-        try {
-            HttpMethod httpMethod;
-            Object body;
-            if (CommonUtils.isNull(userIds)) {
-                httpMethod = HttpMethod.GET;
-                body = null;
-            } else {
-                httpMethod = HttpMethod.POST;
-                body = userIds;
-            }
-            String url = ApplicationProperties.getServiceUrlAuthentication() + "/api/user/colleague";
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Authorization", token);
-            return CommonUtils.callService(url, httpMethod, headers, body, null, UserDto.class);
-        } catch (Exception e) {
-            throw e;
-        }
-    }
-
     public List<Order> findAll(Long userId, String token) throws Exception {
         List<Order> returnValue = new ArrayList<>();
         List<RoleDto> roleDtos = new ArrayList<>();
@@ -248,12 +227,13 @@ public class OrderService {
                 orderIds = returnValue.stream().map(entity -> entity.getId()).collect(Collectors.toList());
             }
             if (roleDtos.stream().filter(a -> a.getId() == Const.ROLE_STAFF).count() > 0) {
-                List<UserDto> userDtos = getUserColleague(token);
-                List<Long> userIds = userDtos.stream().map(entity -> entity.getId()).collect(Collectors.toList());
-                hql = "select o from order o where o.userId in (:userIds) and o.id not in (:orderids)";
+                List<Long> userIds = userCompanyService.getUserColleague(userDto.getId());
+                hql = "select o from order o where o.userId in (:userIds) and o.id not in (:orderids) ";
                 Query query = entityManager.createQuery(hql);
                 Map<String, Object> param = new HashMap<>();
                 param.put("userIds", userIds);
+                if (CommonUtils.isNull(orderIds) || orderIds.size() == 0)
+                    orderIds = Arrays.asList(-1L);
                 param.put("orderids", orderIds);
                 returnValue.addAll(orderJPA.listByQuery(query, param));
                 orderIds = returnValue.stream().map(entity -> entity.getId()).collect(Collectors.toList());
@@ -264,35 +244,30 @@ public class OrderService {
                         "and o.orderStatusId in (:orderStatusId) \n" +
                         "and o.car is null \n" +
                         "and o.driver is null \n" +
-                        "and o.id not in (:orderIds)";
+                        "and o.id not in (:orderIds) ";
                 Query query = entityManager.createQuery(hql);
                 Map<String, Object> param = new HashMap<>();
                 param.put("orderStatusId", Const.ORDER_STATUS_WAIT_FOR_CONFIRM);
+                if (CommonUtils.isNull(orderIds) || orderIds.size() == 0)
+                    orderIds = Arrays.asList(-1L);
                 param.put("orderIds", orderIds);
                 returnValue.addAll(orderJPA.listByQuery(query, param));
                 orderIds = returnValue.stream().map(entity -> entity.getId()).collect(Collectors.toList());
 
-                hql = "select cd from companyDriver cd where cd.requestStatusId in (:requestStatusId) " +
-                        "and cd.driver.id in (select d.id from driver d where d.person.id = :userId)";
-                query = entityManager.createQuery(hql);
-                param = new HashMap<>();
-                param.put("requestStatusId", Const.REQUEST_STATUS_CONFIRM);
-                param.put("userId", userId);
-                List<CompanyDriver> companyDrivers = orderJPA.listByQuery(query, param);
-                List<Long> companyIds = companyDrivers.stream().map(entity -> entity.getCompany().getId()).collect(Collectors.toList());
-                List<UserDto> userDtos = getUserColleague(token, companyIds);
-                List<Long> userIds = userDtos.stream().map(entity -> entity.getId()).collect(Collectors.toList());
+
                 hql = "select o from order o \n" +
                         "where o.onlyMyCompanyDriver = true \n" +
                         "and o.orderStatusId in (:orderStatusId) \n" +
-                        "and o.userId in (:userIds) \n" +
+                        "and o.userId in (select uc.userId from userCompany uc \n" +
+                        "where uc.company.id in (select u.company.id from userCompany u where u.userId = o.userId)) \n" +
                         "and o.car is null \n" +
                         "and o.driver is null \n" +
-                        "and o.id not in (:orderIds)";
+                        "and o.id not in (:orderIds) ";
                 query = entityManager.createQuery(hql);
                 param = new HashMap<>();
                 param.put("orderStatusId", Const.ORDER_STATUS_WAIT_FOR_CONFIRM);
-                param.put("userIds", userIds);
+                if (CommonUtils.isNull(orderIds) || orderIds.size() == 0)
+                    orderIds = Arrays.asList(-1L);
                 param.put("orderIds", orderIds);
                 returnValue.addAll(orderJPA.listByQuery(query, param));
             }
@@ -308,6 +283,12 @@ public class OrderService {
 
     @Transactional
     public void acceptOrderCarDriver(Long orderId, Long carId, Long userId, String token) throws Exception {
+
+        UserDto userDto = CommonUtils.getUser(token);
+        List<RoleDto> roleDtos = new ArrayList<>();
+        if (CommonUtils.isNull(userDto))
+            throw new RuntimeException("can.not.identify.token");
+
         Order order = findOne(orderId);
         if (CommonUtils.isNull(order))
             throw new RuntimeException("order.not.found");
@@ -323,12 +304,14 @@ public class OrderService {
         if (orders.isEmpty())
             throw new RuntimeException("order.no.orders.available");
 
+        roleDtos = CommonUtils.getUserRole(token);
+        if (roleDtos.stream().noneMatch(a -> a.getId().equals(Const.ROLE_DRIVER))) {
+            throw new RuntimeException("user.is.not.a.driver");
+        }
+
+
         if (orders.stream().filter(a -> a.getId().equals(orderId)).count() <= 0L)
             throw new RuntimeException("order.this.order.not.available");
-
-        UserDto userDto = CommonUtils.getUser(token);
-        if (CommonUtils.isNull(userDto))
-            throw new RuntimeException("can.not.identify.token");
 
         String hql = "select d from driver d where d.person.id =:personId";
         Query query = entityManager.createQuery(hql);

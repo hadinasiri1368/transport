@@ -1,6 +1,7 @@
 package org.transport.service;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -8,12 +9,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.transport.common.CommonUtils;
 import org.transport.common.Const;
 import org.transport.dto.RoleDto;
+import org.transport.dto.UserDto;
 import org.transport.model.*;
 import org.transport.repository.JPA;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -51,6 +52,24 @@ public class UserCompanyService {
 
     public UserCompany findOne(Long id) {
         return UserCompanyJPA.findOne(UserCompany.class, id);
+    }
+
+    public List<UserCompany> findById(Long userId) {
+        String hql = "select u from userCompany u where u.userId = (:userId)";
+        Query query = entityManager.createQuery(hql);
+        Map<String, Object> param = new HashMap<>();
+        param.put("userId", userId);
+        List<UserCompany> userCompanies = (List<UserCompany>) UserCompanyJPA.listByQuery(query, param);
+        return userCompanies;
+    }
+
+    public List<Long> getUserColleague(Long userId) {
+        String hql = "select uc.userId from userCompany uc where uc.company.id in (select u.company.id from userCompany u where u.userId = (:userId))";
+        Query query = entityManager.createQuery(hql);
+        Map<String, Object> param = new HashMap<>();
+        param.put("userId", userId);
+        List<Long> users = (List<Long>) UserCompanyJPA.listByQuery(query, param);
+        return users;
     }
 
     public List<UserCompany> findAll(Class<UserCompany> aClass) {
