@@ -55,9 +55,9 @@ public class UserCompanyAPI {
         return service.findOne(id);
     }
 
-    @GetMapping(path = "/api/getUserCompany/{userId}")
-    public List<UserCompany> getCompany(@PathVariable Long userId) {
-        return service.findById(userId);
+    @GetMapping(path = "/api/userCompanyByUserId/{userId}")
+    public List<UserCompany> getUserCompanyByUserId(@PathVariable Long userId) {
+        return service.findByUserId(userId);
     }
 
     @GetMapping(path = "/api/userCompany")

@@ -54,7 +54,7 @@ public class UserCompanyService {
         return UserCompanyJPA.findOne(UserCompany.class, id);
     }
 
-    public List<UserCompany> findById(Long userId) {
+    public List<UserCompany> findByUserId(Long userId) {
         String hql = "select u from userCompany u where u.userId = (:userId)";
         Query query = entityManager.createQuery(hql);
         Map<String, Object> param = new HashMap<>();

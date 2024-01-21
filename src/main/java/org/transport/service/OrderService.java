@@ -309,7 +309,6 @@ public class OrderService {
             throw new RuntimeException("user.is.not.a.driver");
         }
 
-
         if (orders.stream().filter(a -> a.getId().equals(orderId)).count() <= 0L)
             throw new RuntimeException("order.this.order.not.available");
 
