@@ -49,7 +49,7 @@ public class CarAPI {
         return car.getId();
     }
 
-    @PostMapping(path = "/api/car/edit")
+    @PutMapping(path = "/api/car/edit")
     public Long editCar(@RequestBody CarDto carDto, HttpServletRequest request) throws Exception {
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
         Car car = new Car();
@@ -77,7 +77,7 @@ public class CarAPI {
         return car.getId();
     }
 
-    @PostMapping(path = "/api/car/remove/{id}")
+    @DeleteMapping(path = "/api/car/remove/{id}")
     public Long removeCar(@PathVariable Long id) throws Exception {
         service.delete(id, Car.class);
         return id;

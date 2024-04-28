@@ -57,7 +57,7 @@ public class OrderAPI {
         return 0l;
     }
 
-    @PostMapping(path = "/api/order/remove/{id}")
+    @DeleteMapping(path = "/api/order/remove/{id}")
     public Long removeOrder(@PathVariable Long id) {
         service.delete(id);
         return id;

@@ -32,7 +32,7 @@ public class SubsidiaryLedgerAPI {
         return subsidiaryLedger.getId();
     }
 
-    @PostMapping(path = "/api/subsidiaryLedger/edit")
+    @PutMapping(path = "/api/subsidiaryLedger/edit")
     public Long editSubsidiaryLedger(@RequestBody SubsidiaryLedgerDto subsidiaryLedgerDto, HttpServletRequest request) throws Exception {
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
         SubsidiaryLedger subsidiaryLedger = new SubsidiaryLedger();
@@ -46,7 +46,7 @@ public class SubsidiaryLedgerAPI {
         return subsidiaryLedger.getId();
     }
 
-    @PostMapping(path = "/api/subsidiaryLedger/remove/{id}")
+    @DeleteMapping(path = "/api/subsidiaryLedger/remove/{id}")
     public Long removeSubsidiaryLedger(@PathVariable Long id) {
         service.delete(id, SubsidiaryLedger.class);
         return id;

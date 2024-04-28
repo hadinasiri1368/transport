@@ -23,14 +23,14 @@ public class PersonAPI {
         return person.getId();
     }
 
-    @PostMapping(path = "/api/person/edit")
+    @PutMapping(path = "/api/person/edit")
     public Long editPerson(@RequestBody Person person, HttpServletRequest request) throws Exception {
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
         service.update(person, userId, Person.class);
         return person.getId();
     }
 
-    @PostMapping(path = "/api/person/remove/{id}")
+    @DeleteMapping(path = "/api/person/remove/{id}")
     public Long removePerson(@PathVariable Long id) {
         service.delete(id, Person.class);
         return id;

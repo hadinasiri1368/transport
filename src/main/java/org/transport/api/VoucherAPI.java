@@ -36,14 +36,14 @@ public class VoucherAPI {
         return voucher.getId();
     }
 
-    @PostMapping(path = "/api/voucher/edit")
+    @PutMapping(path = "/api/voucher/edit")
     public Long editVoucher(@RequestBody Voucher voucher, HttpServletRequest request) throws Exception {
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
         service.update(voucher, userId);
         return voucher.getId();
     }
 
-    @PostMapping(path = "/api/voucherDetail/edit")
+    @PutMapping(path = "/api/voucherDetail/edit")
     public Long editVoucherDetail(@RequestBody VoucherDetailDto voucherDetailDto, HttpServletRequest request) throws Exception {
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
         VoucherDetail voucherDetail = MapperUtil.mapToVoucherDetail(voucherDetailDto);
@@ -51,7 +51,7 @@ public class VoucherAPI {
         return voucherDetail.getId();
     }
 
-    @PostMapping(path = "/api/voucherDetailList/edit")
+    @PutMapping(path = "/api/voucherDetailList/edit")
     public Long editVoucherDetailList(@RequestBody List<VoucherDetailDto> voucherDetailDtos, HttpServletRequest request) throws Exception {
         int voucherCount = voucherDetailDtos.stream().collect(Collectors.groupingBy(a -> a.getVoucherId())).size();
         if (voucherCount > 1)
@@ -62,14 +62,14 @@ public class VoucherAPI {
         return voucherDetailDtos.get(0).getVoucherId();
     }
 
-    @PostMapping(path = "/api/voucherDetail/remove")
+    @DeleteMapping(path = "/api/voucherDetail/remove")
     public Long removeVoucherDetail(@RequestBody List<VoucherDetailDto> voucherDetailDtos) throws Exception {
         List<VoucherDetail> voucherDetails = MapperUtil.mapToVoucherDetail(voucherDetailDtos);
         service.deleteVoucherDetail(voucherDetailDtos.get(0).getVoucherId(), voucherDetails);
         return voucherDetailDtos.get(0).getVoucherId();
     }
 
-    @PostMapping(path = "/api/voucher/remove/{id}")
+    @DeleteMapping(path = "/api/voucher/remove/{id}")
     public Long removeVoucher(@PathVariable Long id) {
         service.delete(id);
         return id;

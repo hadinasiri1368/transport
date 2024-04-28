@@ -33,7 +33,7 @@ public class CompanyDriverAPI {
         return companyDriver.getId();
     }
 
-    @PostMapping(path = "/api/companyDriver/edit")
+    @PutMapping(path = "/api/companyDriver/edit")
     public Long editCompanyDriver(@RequestBody CompanyDriverDto companyDriverDto, HttpServletRequest request) throws Exception {
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
         CompanyDriver companyDriver = new CompanyDriver();
@@ -49,7 +49,7 @@ public class CompanyDriverAPI {
         return companyDriver.getId();
     }
 
-    @PostMapping(path = "/api/companyDriver/remove/{id}")
+    @DeleteMapping(path = "/api/companyDriver/remove/{id}")
     public Long removeCompanyDriver(@PathVariable Long id) {
         service.delete(id, CompanyDriver.class);
         return id;

@@ -31,7 +31,7 @@ public class UserCompanyAPI {
         return userCompany.getId();
     }
 
-    @PostMapping(path = "/api/userCompany/edit")
+    @PutMapping(path = "/api/userCompany/edit")
     public Long editUserCompany(@RequestBody UserCompanyDto userCompanyDto, HttpServletRequest request) throws Exception {
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
         UserCompany userCompany = new UserCompany();
@@ -44,7 +44,7 @@ public class UserCompanyAPI {
         return userCompany.getId();
     }
 
-    @PostMapping(path = "/api/userCompany/remove/{id}")
+    @DeleteMapping(path = "/api/userCompany/remove/{id}")
     public Long removeGUserCompany(@PathVariable Long id) {
         service.delete(id);
         return id;

@@ -34,7 +34,7 @@ public class DriverAPI {
         return driver.getId();
     }
 
-    @PostMapping(path = "/api/driver/edit")
+    @PutMapping(path = "/api/driver/edit")
     public Long editDriver(@RequestBody DriverDto driverDto, HttpServletRequest request) throws Exception {
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
         Driver driver = new Driver();
@@ -50,7 +50,7 @@ public class DriverAPI {
         return driver.getId();
     }
 
-    @PostMapping(path = "/api/driver/remove/{id}")
+    @DeleteMapping(path = "/api/driver/remove/{id}")
     public Long removeDriver(@PathVariable Long id) {
         service.delete(id, Driver.class);
         return id;

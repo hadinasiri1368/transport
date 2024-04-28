@@ -20,7 +20,6 @@ public class JPA<ENTITY, ID> {
     public void save(ENTITY entity) throws Exception {
         CommonUtils.setNull(entity);
         entityManager.persist(entity);
-
     }
 
     @Transactional

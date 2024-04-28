@@ -30,7 +30,7 @@ public class PlaqueAPI {
         service.insert(plaque, userId);
         return plaque.getId();
     }
-    @PostMapping(path = "/api/plaque/edit")
+    @PutMapping(path = "/api/plaque/edit")
     public Long editPlaque(@RequestBody PlaqueDto plaqueDto, HttpServletRequest request) throws Exception{
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
         Plaque plaque =new Plaque();
@@ -45,7 +45,7 @@ public class PlaqueAPI {
         return plaque.getId();
     }
 
-    @PostMapping(path = "/api/plaque/remove/{id}")
+    @DeleteMapping(path = "/api/plaque/remove/{id}")
     public Long removePlaque(@PathVariable Long id) {
         service.delete(id, Plaque.class);
         return id;

@@ -23,14 +23,14 @@ public class GeneralLedgerAPI {
         return generalLedger.getId();
     }
 
-    @PostMapping(path = "/api/generalLedger/edit")
+    @PutMapping(path = "/api/generalLedger/edit")
     public Long editGeneralLedger(@RequestBody GeneralLedger generalLedger, HttpServletRequest request) throws Exception {
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
         service.update(generalLedger, userId, GeneralLedger.class);
         return generalLedger.getId();
     }
 
-    @PostMapping(path = "/api/generalLedger/remove/{id}")
+    @DeleteMapping(path = "/api/generalLedger/remove/{id}")
     public Long removeGeneralLedger(@PathVariable Long id) {
         service.delete(id, GeneralLedger.class);
         return id;

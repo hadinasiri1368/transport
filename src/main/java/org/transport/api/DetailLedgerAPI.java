@@ -29,7 +29,7 @@ public class DetailLedgerAPI {
         return detailLedger.getId();
     }
 
-    @PostMapping(path = "/api/detailLedger/edit")
+    @PutMapping(path = "/api/detailLedger/edit")
     public Long editDetailLedger(@RequestBody DetailLedgerDto detailLedgerDto, HttpServletRequest request) throws Exception {
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
         DetailLedger detailLedger = new DetailLedger();
@@ -41,7 +41,7 @@ public class DetailLedgerAPI {
         return detailLedger.getId();
     }
 
-    @PostMapping(path = "/api/detailLedger/remove/{id}")
+    @DeleteMapping(path = "/api/detailLedger/remove/{id}")
     public Long removeDetailLedger(@PathVariable Long id) {
         service.delete(id, DetailLedger.class);
         return id;
