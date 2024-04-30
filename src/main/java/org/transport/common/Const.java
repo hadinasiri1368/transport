@@ -22,5 +22,8 @@ public class Const {
     public static final Long ORDER_STATUS_CANCELLED_CUSTOMER = 16L;
 
     //REQUEST_STATUS
+    public static final Long REQUEST_STATUS_PENDING = 1L;
     public static final Long REQUEST_STATUS_CONFIRM = 2L;
+    public static final Long REQUEST_STATUS_REJECT = 3L;
+
 }
