@@ -5,16 +5,23 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.transport.common.CommonUtils;
+import org.transport.common.ObjectMapperUtils;
+import org.transport.dto.UserDto;
+import org.transport.dto.UserPersonDto;
 import org.transport.model.Person;
+import org.transport.model.VoucherDetail;
 import org.transport.service.GenericService;
+import org.transport.service.PersonService;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @SecurityRequirement(name = "Bearer Authentication")
 public class PersonAPI {
     @Autowired
-    private GenericService<Person> service;
+    private PersonService service;
 
     @PostMapping(path = "/api/person/add")
     public Long addPerson(@RequestBody Person person, HttpServletRequest request) throws Exception {
@@ -26,23 +33,37 @@ public class PersonAPI {
     @PutMapping(path = "/api/person/edit")
     public Long editPerson(@RequestBody Person person, HttpServletRequest request) throws Exception {
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
-        service.update(person, userId, Person.class);
+        service.update(person, userId);
         return person.getId();
     }
 
     @DeleteMapping(path = "/api/person/remove/{id}")
     public Long removePerson(@PathVariable Long id) {
-        service.delete(id, Person.class);
+        service.delete(id);
         return id;
     }
 
     @GetMapping(path = "/api/person/{id}")
     public Person getPerson(@PathVariable Long id) {
-        return service.findOne(Person.class, id);
+        return service.findOne(id);
     }
 
     @GetMapping(path = "/api/person")
     public List<Person> listPerson() {
-        return service.findAll(Person.class);
+        return service.findAll();
+    }
+
+    @PostMapping(path = "/api/personUser")
+    public List<UserPersonDto> listUserPerson(@RequestBody List<UserDto> userDtos) {
+        List<Person> personList = service.findAll(userDtos);
+        UserPersonDto userPersonDto;
+        List<UserPersonDto> userPersonDtos = new ArrayList<>();
+        for (UserDto user : userDtos) {
+            userPersonDto = new UserPersonDto();
+            userPersonDto.setUser(user);
+            userPersonDto.setPerson(personList.stream().filter(a -> a.getId() == user.getPersonId()).findFirst().orElse(null));
+            userPersonDtos.add(userPersonDto);
+        }
+        return userPersonDtos;
     }
 }

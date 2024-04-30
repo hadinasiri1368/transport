@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 public class ObjectMapperUtils {
     private static final ModelMapper modelMapper;
+
     static {
         modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
@@ -18,6 +19,8 @@ public class ObjectMapperUtils {
     }
 
     public static <D, T> D map(final T entity, Class<D> outClass) {
+        if (CommonUtils.isNull(entity))
+            return null;
         return modelMapper.map(entity, outClass);
     }
 

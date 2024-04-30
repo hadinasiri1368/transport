@@ -14,4 +14,5 @@ public class UserDto {
     private String username;
     private Long personId;
     private boolean isAdmin;
+    private boolean isActive;
 }
