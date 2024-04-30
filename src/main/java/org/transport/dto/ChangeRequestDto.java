@@ -4,11 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-@AllArgsConstructor
 @Getter
 @Setter
-public class CompanyDriverDto {
+@AllArgsConstructor
+public class ChangeRequestDto {
     private Long id;
-    private Long companyId;
-    private Long driverId;
+    private Long changStatus;
 }

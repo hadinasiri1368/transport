@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import org.transport.common.CommonUtils;
 import org.transport.dto.*;
 import org.transport.model.*;
-import org.transport.service.GenericService;
+import org.transport.service.CompanyDriverService;
 
 import java.util.List;
 
@@ -15,7 +15,7 @@ import java.util.List;
 @SecurityRequirement(name = "Bearer Authentication")
 public class CompanyDriverAPI {
     @Autowired
-    private GenericService<CompanyDriver> service;
+    private CompanyDriverService companyDriverService;
 
     @PostMapping(path = "/api/companyDriver/add")
     public Long addCompanyDriver(@RequestBody CompanyDriverDto companyDriverDto, HttpServletRequest request) throws Exception {
@@ -28,8 +28,7 @@ public class CompanyDriverAPI {
         companyDriver.setCompany(person);
         driver.setId(companyDriverDto.getDriverId());
         companyDriver.setDriver(driver);
-        companyDriver.setRequestStatusId(companyDriverDto.getRequestStatusId());
-        service.insert(companyDriver, userId);
+        companyDriverService.insert(companyDriver, userId,CommonUtils.getToken(request));
         return companyDriver.getId();
     }
 
@@ -44,25 +43,31 @@ public class CompanyDriverAPI {
         companyDriver.setCompany(person);
         driver.setId(companyDriverDto.getDriverId());
         companyDriver.setDriver(driver);
-        companyDriver.setRequestStatusId(companyDriverDto.getRequestStatusId());
-        service.update(companyDriver, userId, CompanyDriver.class);
+        companyDriverService.update(companyDriver, userId,CommonUtils.getToken(request));
         return companyDriver.getId();
     }
 
     @DeleteMapping(path = "/api/companyDriver/remove/{id}")
     public Long removeCompanyDriver(@PathVariable Long id) {
-        service.delete(id, CompanyDriver.class);
+        companyDriverService.delete(id);
         return id;
     }
 
     @GetMapping(path = "/api/companyDriver/{id}")
     public CompanyDriver getCompanyDriver(@PathVariable Long id) {
-        return service.findOne(CompanyDriver.class, id);
+        return companyDriverService.findOne(id);
     }
 
     @GetMapping(path = "/api/companyDriver")
     public List<CompanyDriver> listCompanyDriver() {
-        return service.findAll(CompanyDriver.class);
+        return companyDriverService.findAll(CompanyDriver.class);
     }
+
+    @PostMapping(path = "/api/companyDriver/changeRequest")
+    public ChangeRequestDto changeRequestCompanyDriver (@RequestBody ChangeRequestDto changeRequestDto, HttpServletRequest request) throws Exception {
+        companyDriverService.changeRequestDriver(CommonUtils.getToken(request),changeRequestDto);
+        return changeRequestDto;
+    }
+
 
 }
