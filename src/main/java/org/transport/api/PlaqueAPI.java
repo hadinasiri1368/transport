@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import org.transport.common.CommonUtils;
 import org.transport.dto.PlaqueDto;
 import org.transport.model.Plaque;
+import org.transport.service.AuthenticationServiceProxy;
 import org.transport.service.GenericService;
 
 import java.util.List;
@@ -16,9 +17,11 @@ import java.util.List;
 public class PlaqueAPI {
     @Autowired
     private GenericService<Plaque> service;
+    @Autowired
+    private AuthenticationServiceProxy authenticationServiceProxy;
     @PostMapping(path = "/api/plaque/add")
     public Long addPlaque(@RequestBody PlaqueDto plaqueDto , HttpServletRequest request) throws Exception{
-        Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
+        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request)));
         Plaque plaque =new Plaque();
         plaque.setId(plaqueDto.getId());
         plaque.setLeftPlaqueTag(plaqueDto.getLeftPlaqueTag());
@@ -32,7 +35,7 @@ public class PlaqueAPI {
     }
     @PutMapping(path = "/api/plaque/edit")
     public Long editPlaque(@RequestBody PlaqueDto plaqueDto, HttpServletRequest request) throws Exception{
-        Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
+        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request)));
         Plaque plaque =new Plaque();
         plaque.setId(plaqueDto.getId());
         plaque.setLeftPlaqueTag(plaqueDto.getLeftPlaqueTag());

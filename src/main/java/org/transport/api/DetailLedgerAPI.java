@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import org.transport.common.CommonUtils;
 import org.transport.dto.DetailLedgerDto;
 import org.transport.model.DetailLedger;
+import org.transport.service.AuthenticationServiceProxy;
 import org.transport.service.GenericService;
 
 import java.util.List;
@@ -16,10 +17,11 @@ import java.util.List;
 public class DetailLedgerAPI {
     @Autowired
     private GenericService<DetailLedger> service;
-
+    @Autowired
+    private AuthenticationServiceProxy authenticationServiceProxy;
     @PostMapping(path = "/api/detailLedger/add")
     public Long addDetailLedger(@RequestBody DetailLedgerDto detailLedgerDto, HttpServletRequest request) throws Exception {
-        Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
+        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request)));
         DetailLedger detailLedger = new DetailLedger();
         detailLedger.setId(detailLedgerDto.getId());
         detailLedger.setName(detailLedgerDto.getName());
@@ -31,7 +33,7 @@ public class DetailLedgerAPI {
 
     @PutMapping(path = "/api/detailLedger/edit")
     public Long editDetailLedger(@RequestBody DetailLedgerDto detailLedgerDto, HttpServletRequest request) throws Exception {
-        Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
+        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request)));
         DetailLedger detailLedger = new DetailLedger();
         detailLedger.setId(detailLedgerDto.getId());
         detailLedger.setName(detailLedgerDto.getName());

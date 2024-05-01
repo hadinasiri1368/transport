@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import org.transport.common.CommonUtils;
 import org.transport.dto.*;
 import org.transport.model.*;
+import org.transport.service.AuthenticationServiceProxy;
 import org.transport.service.CompanyDriverService;
 
 import java.util.List;
@@ -16,10 +17,12 @@ import java.util.List;
 public class CompanyDriverAPI {
     @Autowired
     private CompanyDriverService companyDriverService;
+    @Autowired
+    private AuthenticationServiceProxy authenticationServiceProxy;
 
     @PostMapping(path = "/api/companyDriver/add")
     public Long addCompanyDriver(@RequestBody CompanyDriverDto companyDriverDto, HttpServletRequest request) throws Exception {
-        Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
+        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request)));
         CompanyDriver companyDriver = new CompanyDriver();
         Person person = new Person();
         Driver driver = new Driver();
@@ -34,7 +37,7 @@ public class CompanyDriverAPI {
 
     @PutMapping(path = "/api/companyDriver/edit")
     public Long editCompanyDriver(@RequestBody CompanyDriverDto companyDriverDto, HttpServletRequest request) throws Exception {
-        Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
+        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request)));
         CompanyDriver companyDriver = new CompanyDriver();
         Person person = new Person();
         Driver driver = new Driver();

@@ -8,6 +8,7 @@ import org.transport.common.CommonUtils;
 import org.transport.dto.SubsidiaryLedgerDto;
 import org.transport.model.GeneralLedger;
 import org.transport.model.SubsidiaryLedger;
+import org.transport.service.AuthenticationServiceProxy;
 import org.transport.service.GenericService;
 
 import java.util.List;
@@ -17,10 +18,12 @@ import java.util.List;
 public class SubsidiaryLedgerAPI {
     @Autowired
     private GenericService<SubsidiaryLedger> service;
+    @Autowired
+    private AuthenticationServiceProxy authenticationServiceProxy;
 
     @PostMapping(path = "/api/subsidiaryLedger/add")
     public Long addSubsidiaryLedger(@RequestBody SubsidiaryLedgerDto subsidiaryLedgerDto, HttpServletRequest request) throws Exception {
-        Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
+        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request)));
         SubsidiaryLedger subsidiaryLedger = new SubsidiaryLedger();
         subsidiaryLedger.setId(subsidiaryLedgerDto.getId());
         GeneralLedger generalLedger = new GeneralLedger();
@@ -34,7 +37,7 @@ public class SubsidiaryLedgerAPI {
 
     @PutMapping(path = "/api/subsidiaryLedger/edit")
     public Long editSubsidiaryLedger(@RequestBody SubsidiaryLedgerDto subsidiaryLedgerDto, HttpServletRequest request) throws Exception {
-        Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
+        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request)));
         SubsidiaryLedger subsidiaryLedger = new SubsidiaryLedger();
         subsidiaryLedger.setId(subsidiaryLedgerDto.getId());
         GeneralLedger generalLedger = new GeneralLedger();

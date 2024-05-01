@@ -14,10 +14,6 @@ spring:
     generate-ddl: false
     show-sql: false
 
-
-serviceUrl:
-  authentication: http://localhost:8081
-
 eureka:
   client:
     service-url:

@@ -5,9 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.transport.common.ChangeRequest;
-import org.transport.common.CommonUtils;
-import org.transport.common.Const;
+import org.transport.common.*;
 import org.transport.dto.ChangeRequestDto;
 import org.transport.dto.RoleDto;
 import org.transport.dto.UserDto;
@@ -30,6 +28,9 @@ public class CompanyDriverService {
 
     @Autowired
     private JPA<Person, Long> personJPA;
+
+    @Autowired
+    private AuthenticationServiceProxy authenticationServiceProxy;
 
     @Transactional
     public void insert(CompanyDriver companyDriver, Long userId, String token) throws Exception {
@@ -66,7 +67,7 @@ public class CompanyDriverService {
 
     private void checkData(CompanyDriver companyDriver, String token) throws Exception {
         List<RoleDto> roleDtos = new ArrayList<>();
-        roleDtos = CommonUtils.getUserRole(token);
+        roleDtos = authenticationServiceProxy.listRole(token);
         if (roleDtos.stream().filter(a -> a.getId().equals(Const.ROLE_DRIVER)).count() <= 0)
             throw new RuntimeException("user.role.is.not.driver");
         Person company = personJPA.findOne(Person.class, companyDriver.getCompany().getId());
@@ -78,7 +79,7 @@ public class CompanyDriverService {
 
     @Transactional
     public void changeRequestDriver(String token, ChangeRequestDto changeRequestDto) throws Exception {
-        UserDto userDto = CommonUtils.getUser(token);
+        UserDto userDto = ObjectMapperUtils.map(authenticationServiceProxy.getUser(token), UserDto.class);
         List<RoleDto> roleDtos = new ArrayList<>();
         if (CommonUtils.isNull(userDto))
             throw new RuntimeException("can.not.identify.token");

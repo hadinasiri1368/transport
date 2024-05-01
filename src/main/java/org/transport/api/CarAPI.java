@@ -10,6 +10,7 @@ import org.transport.model.Car;
 import org.transport.model.Driver;
 import org.transport.model.Person;
 import org.transport.model.Plaque;
+import org.transport.service.AuthenticationServiceProxy;
 import org.transport.service.GenericService;
 
 import java.util.List;
@@ -19,11 +20,13 @@ import java.util.List;
 public class CarAPI {
     @Autowired
     private GenericService<Car> service;
+    @Autowired
+    private AuthenticationServiceProxy authenticationServiceProxy;
 
     //    @Operation(summary = "add car", description = "اضافه کردن ماشین")
     @PostMapping(path = "/api/car/add")
     public Long addCar(@RequestBody CarDto carDto, HttpServletRequest request) throws Exception {
-        Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
+        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request)));
         Car car = new Car();
         Plaque plaque = new Plaque();
         Person person = new Person();
@@ -51,7 +54,7 @@ public class CarAPI {
 
     @PutMapping(path = "/api/car/edit")
     public Long editCar(@RequestBody CarDto carDto, HttpServletRequest request) throws Exception {
-        Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
+        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request)));
         Car car = new Car();
         Plaque plaque = new Plaque();
         Person person = new Person();

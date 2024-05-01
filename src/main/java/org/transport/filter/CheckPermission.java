@@ -10,15 +10,22 @@ import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.transport.common.CommonUtils;
+import org.transport.service.AuthenticationServiceProxy;
 
 import java.io.IOException;
 
 public class CheckPermission extends OncePerRequestFilter implements Filter {
+    private AuthenticationServiceProxy authenticationServiceProxy;
+
+    public CheckPermission(AuthenticationServiceProxy authenticationServiceProxy) {
+        this.authenticationServiceProxy = authenticationServiceProxy;
+    }
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = CommonUtils.getToken(request);
         if (!CommonUtils.isNull(token)) {
-            String returnValue = CommonUtils.checkValidation(token, request.getRequestURI());
+            String returnValue = authenticationServiceProxy.checkValidationToken(token, request.getRequestURI());
             if (CommonUtils.isNull(returnValue)) {
                 try {
                     filterChain.doFilter(request, response);

@@ -8,6 +8,7 @@ import org.transport.common.CommonUtils;
 import org.transport.dto.DriverDto;
 import org.transport.model.Driver;
 import org.transport.model.Person;
+import org.transport.service.AuthenticationServiceProxy;
 import org.transport.service.GenericService;
 
 import java.util.List;
@@ -17,10 +18,12 @@ import java.util.List;
 public class DriverAPI {
     @Autowired
     private GenericService<Driver> service;
+    @Autowired
+    private AuthenticationServiceProxy authenticationServiceProxy;
 
     @PostMapping(path = "/api/driver/add")
     public Long addDriver(@RequestBody DriverDto driverDto, HttpServletRequest request) throws Exception {
-        Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
+        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request)));
         Driver driver = new Driver();
         driver.setId(driverDto.getId());
         driver.setTrackingCode(driverDto.getTrackingCode());
@@ -36,7 +39,7 @@ public class DriverAPI {
 
     @PutMapping(path = "/api/driver/edit")
     public Long editDriver(@RequestBody DriverDto driverDto, HttpServletRequest request) throws Exception {
-        Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
+        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request)));
         Driver driver = new Driver();
         driver.setId(driverDto.getId());
         driver.setTrackingCode(driverDto.getTrackingCode());

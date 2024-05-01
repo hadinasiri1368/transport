@@ -26,18 +26,6 @@ public class CommonUtils {
         CommonUtils.messageSource = messageSource;
     }
 
-    public static Long getUserId(String token) {
-        try {
-            String url = ApplicationProperties.getServiceUrlAuthentication() + "/getUserId";
-            url += "?token=" + token;
-            return callService(url, HttpMethod.GET, null, null, Long.class, null);
-        } catch (Exception e) {
-            log.error("checkValidation error: " + e.getMessage());
-            e.printStackTrace();
-            return null;
-        }
-    }
-
     public static String getToken(HttpServletRequest request) {
         if (CommonUtils.isNull(request.getHeader("Authorization")))
             return null;
@@ -60,34 +48,6 @@ public class CommonUtils {
 
     public static <E> E isNull(E expr1, E expr2) {
         return (!isNull(expr1)) ? expr1 : expr2;
-    }
-
-    public static String checkValidation(String token, String targetUrl) {
-        try {
-            String url = ApplicationProperties.getServiceUrlAuthentication() + "/checkValidationToken";
-            url += "?token=" + token + "&url=" + targetUrl;
-            String returnValue = callService(url, HttpMethod.GET, null, null, String.class, null);
-            if (returnValue.equals("token is ok"))
-                return null;
-            return returnValue;
-        } catch (Exception e) {
-            log.error("checkValidation error: " + e.getMessage());
-            e.printStackTrace();
-            return e.getMessage();
-        }
-    }
-
-    public static UserDto getUser(String token) {
-        try {
-            String url = ApplicationProperties.getServiceUrlAuthentication() + "/getUser";
-            url += "?token=" + token;
-            Map returnValue = callService(url, HttpMethod.GET, null, null, Map.class, null);
-            return ObjectMapperUtils.map(returnValue, UserDto.class);
-        } catch (Exception e) {
-            log.error("getUser error: " + e.getMessage());
-            e.printStackTrace();
-            return null;
-        }
     }
 
     public static <T> T callService(String url, HttpMethod httpMethod, HttpHeaders headers, Object body, Class<T> aClass, Map<String, Object> params) throws Exception {
@@ -143,28 +103,6 @@ public class CommonUtils {
                 Method method = entity.getClass().getMethod("set" + name, field.getType());
                 method.invoke(entity, field.getType().cast(null));
             }
-        }
-    }
-
-    public static List<RoleDto> getUserRole(String token) {
-        try {
-            String url = ApplicationProperties.getServiceUrlAuthentication() + "/api/user/role";
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Authorization", token);
-            return CommonUtils.callService(url, HttpMethod.GET, headers, null, null, RoleDto.class);
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    public static List<RoleDto> getUserRole(Long userId, String token) {
-        try {
-            String url = ApplicationProperties.getServiceUrlAuthentication() + "/api/user/role?userId=" + userId;
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Authorization", token);
-            return CommonUtils.callService(url, HttpMethod.GET, headers, null, null, RoleDto.class);
-        } catch (Exception e) {
-            return null;
         }
     }
 }

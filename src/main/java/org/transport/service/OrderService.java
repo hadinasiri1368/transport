@@ -4,19 +4,16 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.transport.common.ApplicationProperties;
 import org.transport.common.CommonUtils;
 import org.transport.common.Const;
+import org.transport.common.ObjectMapperUtils;
 import org.transport.dto.RoleDto;
 import org.transport.dto.UserDto;
 import org.transport.model.*;
 import org.transport.repository.JPA;
 
-import java.lang.reflect.Array;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -38,6 +35,8 @@ public class OrderService {
     private JPA<Driver, Long> driverJPA;
     @Autowired
     private UserCompanyService userCompanyService;
+    @Autowired
+    private  AuthenticationServiceProxy authenticationServiceProxy;
 
 
     private void insertDetail(Order order, List<OrderDetail> orderDetails, List<OrderImage> orderImages, Long userId) throws Exception {
@@ -207,7 +206,7 @@ public class OrderService {
         List<Order> returnValue = new ArrayList<>();
         List<RoleDto> roleDtos = new ArrayList<>();
         try {
-            UserDto userDto = CommonUtils.getUser(token);
+            UserDto userDto = ObjectMapperUtils.map(authenticationServiceProxy.getUser(token), UserDto.class);
             if (CommonUtils.isNull(userDto))
                 throw new RuntimeException("can not identify token");
             String hql;
@@ -215,7 +214,7 @@ public class OrderService {
             if (userDto.isAdmin()) {
                 return orderJPA.findAll(Order.class);
             }
-            roleDtos = CommonUtils.getUserRole(token);
+            roleDtos = authenticationServiceProxy.listRole(token);
             if (CommonUtils.isNull(roleDtos))
                 throw new RuntimeException("connection.failed");
             if (roleDtos.stream().filter(a -> a.getId() == Const.ROLE_CUSTOMER).count() > 0) {
@@ -284,7 +283,7 @@ public class OrderService {
     @Transactional
     public void acceptOrderCarDriver(Long orderId, Long carId, Long userId, String token) throws Exception {
 
-        UserDto userDto = CommonUtils.getUser(token);
+        UserDto userDto = ObjectMapperUtils.map(authenticationServiceProxy.getUser(token), UserDto.class);
         List<RoleDto> roleDtos = new ArrayList<>();
         if (CommonUtils.isNull(userDto))
             throw new RuntimeException("can.not.identify.token");
@@ -304,7 +303,7 @@ public class OrderService {
         if (orders.isEmpty())
             throw new RuntimeException("order.no.orders.available");
 
-        roleDtos = CommonUtils.getUserRole(token);
+        roleDtos = authenticationServiceProxy.listRole(token);
         if (roleDtos.stream().noneMatch(a -> a.getId().equals(Const.ROLE_DRIVER))) {
             throw new RuntimeException("user.is.not.a.driver");
         }
@@ -327,7 +326,7 @@ public class OrderService {
     @Transactional
     public Long changeOrderStatus(Long orderId, Long userId, String token) throws Exception {
 
-        UserDto userDto = CommonUtils.getUser(token);
+        UserDto userDto = ObjectMapperUtils.map(authenticationServiceProxy.getUser(token), UserDto.class);
         if (CommonUtils.isNull(userDto))
             throw new RuntimeException("can.not.identify.token");
 
@@ -402,7 +401,7 @@ public class OrderService {
     @Transactional
     public Long cancelledOrder(Long orderId, Long userId, String token) throws Exception {
 
-        UserDto userDto = CommonUtils.getUser(token);
+        UserDto userDto = ObjectMapperUtils.map(authenticationServiceProxy.getUser(token), UserDto.class);
         if (CommonUtils.isNull(userDto))
             throw new RuntimeException("can.not.identify.token");
         Order order = findOne(orderId);

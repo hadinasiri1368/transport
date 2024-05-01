@@ -27,6 +27,8 @@ public class UserCompanyService {
 
     @Autowired
     private JPA<Person, Long> personJPA;
+    @Autowired
+    private  AuthenticationServiceProxy authenticationServiceProxy;
 
     @Transactional
     public void insert(UserCompany userCompany, Long userId, String token) throws Exception {
@@ -78,7 +80,7 @@ public class UserCompanyService {
 
     private void checkData(UserCompany userCompany, String token) throws Exception {
         List<RoleDto> roleDtos = new ArrayList<>();
-        roleDtos = CommonUtils.getUserRole(userCompany.getUserId(), token);
+        roleDtos = authenticationServiceProxy.listRole(token, userCompany.getUserId());
         if (roleDtos.stream().filter(a -> a.getId().equals(Const.ROLE_STAFF)).count() <= 0)
             throw new RuntimeException("user.role.is.not.found");
         Person company = personJPA.findOne(Person.class, userCompany.getCompany().getId());

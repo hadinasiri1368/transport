@@ -1,5 +1,4 @@
 package org.transport.api;
-
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +9,7 @@ import org.transport.dto.UserDto;
 import org.transport.dto.UserPersonDto;
 import org.transport.model.Person;
 import org.transport.model.VoucherDetail;
+import org.transport.service.AuthenticationServiceProxy;
 import org.transport.service.GenericService;
 import org.transport.service.PersonService;
 
@@ -22,17 +22,19 @@ import java.util.stream.Collectors;
 public class PersonAPI {
     @Autowired
     private PersonService service;
+    @Autowired
+    private AuthenticationServiceProxy authenticationServiceProxy;
 
     @PostMapping(path = "/api/person/add")
     public Long addPerson(@RequestBody Person person, HttpServletRequest request) throws Exception {
-        Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
+        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request)));
         service.insert(person, userId);
         return person.getId();
     }
 
     @PutMapping(path = "/api/person/edit")
     public Long editPerson(@RequestBody Person person, HttpServletRequest request) throws Exception {
-        Long userId = CommonUtils.getUserId(CommonUtils.getToken(request));
+        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request)));
         service.update(person, userId);
         return person.getId();
     }
