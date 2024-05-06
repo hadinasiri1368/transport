@@ -15,18 +15,18 @@ import java.util.Map;
 @FeignClient("AUTHENTICATION")
 public interface AuthenticationServiceProxy {
     @GetMapping(path = "/api/user/role")
-    List<RoleDto> listRole(@RequestHeader("Authorization") String token, @RequestParam(value = "userId") Long userId);
+    List<RoleDto> listRole(@RequestHeader("Authorization") String token, @RequestHeader("X-UUID") String uuid, @RequestParam(value = "userId") Long userId);
 
     @GetMapping(path = "/api/user/role")
-    List<RoleDto> listRole(@RequestHeader("Authorization") String token);
+    List<RoleDto> listRole(@RequestHeader("Authorization") String token, @RequestHeader("X-UUID") String uuid);
 
     @GetMapping(path = "/getUserId")
-    String getUserId(@ModelAttribute("token") String token);
+    String getUserId(@ModelAttribute("token") String token, @RequestHeader("X-UUID") String uuid);
 
     @GetMapping(path = "/checkValidationToken")
-    String checkValidationToken(@RequestParam("token") String token, @RequestParam("url") String url);
+    String checkValidationToken(@RequestParam("token") String token, @RequestHeader("X-UUID") String uuid, @RequestParam("url") String url);
 
     @GetMapping(path = "/getUser")
-    Map getUser(@ModelAttribute("token") String token);
+    Map getUser(@ModelAttribute("token") String token, @RequestHeader("X-UUID") String uuid);
 
 }

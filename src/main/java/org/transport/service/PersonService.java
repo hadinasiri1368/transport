@@ -35,9 +35,9 @@ public class PersonService {
     @Transactional
     public void update(Person person, Long userId) throws Exception {
         if (CommonUtils.isNull(person.getId()))
-            throw new RuntimeException("id.not.found");
+            throw new RuntimeException("2004");
         if (CommonUtils.isNull(findOne(person.getId())))
-            throw new RuntimeException("id.not.found");
+            throw new RuntimeException("2004");
         person.setUpdatedUserId(userId);
         person.setUpdatedDateTime(new Date());
         personJPA.update(person);
@@ -52,7 +52,7 @@ public class PersonService {
     public int delete(Long id) {
         int returnValue = entityManager.createQuery("delete  person o where o.id=:id").setParameter("id", id).executeUpdate();
         if (returnValue == 0) {
-            throw new RuntimeException("id.not.found");
+            throw new RuntimeException("2004");
         }
         return returnValue;
     }

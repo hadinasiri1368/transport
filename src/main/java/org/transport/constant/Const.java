@@ -1,4 +1,4 @@
-package org.transport.common;
+package org.transport.constant;
 
 public class Const {
     //ROLE

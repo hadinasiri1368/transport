@@ -27,14 +27,16 @@ public class PersonAPI {
 
     @PostMapping(path = "/api/person/add")
     public Long addPerson(@RequestBody Person person, HttpServletRequest request) throws Exception {
-        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request)));
+        String uuid = request.getHeader("X-UUID");
+        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request),uuid));
         service.insert(person, userId);
         return person.getId();
     }
 
     @PutMapping(path = "/api/person/edit")
     public Long editPerson(@RequestBody Person person, HttpServletRequest request) throws Exception {
-        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request)));
+        String uuid = request.getHeader("X-UUID");
+        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request),uuid));
         service.update(person, userId);
         return person.getId();
     }

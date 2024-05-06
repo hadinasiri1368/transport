@@ -29,7 +29,8 @@ public class OrderAPI {
 
     @PostMapping(path = "/api/order/add")
     public Long addOrder(@RequestBody OrderDto orderDto, HttpServletRequest request) throws Exception {
-        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request)));
+        String uuid = request.getHeader("X-UUID");
+        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request), uuid));
         Order order = MapperUtil.mapToOrder(orderDto);
         service.insert(order, userId);
         return order.getId();
@@ -37,8 +38,9 @@ public class OrderAPI {
 
     @PostMapping(path = "/api/orderDetail/add")
     public Long addOrderDetail(@RequestBody List<OrderDetailDto> orderDetailDtos, HttpServletRequest request) throws Exception {
+        String uuid = request.getHeader("X-UUID");
         validationData(orderDetailDtos, null);
-        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request)));
+        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request), uuid));
         List<OrderDetail> orderDetails = MapperUtil.mapToOrderDetail(orderDetailDtos);
         service.insert(orderDetailDtos.get(0).getOrderId(), orderDetails, userId);
         return orderDetailDtos.get(0).getOrderId();
@@ -47,7 +49,8 @@ public class OrderAPI {
     @PostMapping(path = "/api/orderImage/add", consumes = {"multipart/form-data"})
     public Long addOrderImage(@RequestParam("orderId") Long orderId, @RequestParam("image") MultipartFile[] multipartFiles, HttpServletRequest request) {
         try {
-            Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request)));
+            String uuid = request.getHeader("X-UUID");
+            Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request), uuid));
             List<OrderImage> orderImages = new ArrayList<>();
             for (MultipartFile multipartFile : multipartFiles) {
                 orderImages.add(OrderImage.builder().pic(multipartFile.getBytes()).build());
@@ -73,29 +76,33 @@ public class OrderAPI {
 
     @GetMapping(path = "/api/order")
     public List<Order> listOrder(HttpServletRequest request) throws Exception {
-        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request)));
+        String uuid = request.getHeader("X-UUID");
+        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request), uuid));
         String token = CommonUtils.getToken(request);
-        return service.findAll(userId, token);
+        return service.findAll(userId, token, uuid);
     }
 
     @PostMapping(path = "/api/acceptOrderCarDriver")
     public Long acceptOrderCarDriver(@ModelAttribute("orderId") Long orderId, @ModelAttribute("carId") Long carId, HttpServletRequest request) throws Exception {
-        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request)));
-        service.acceptOrderCarDriver(orderId, carId, userId, CommonUtils.getToken(request));
+        String uuid = request.getHeader("X-UUID");
+        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request), uuid));
+        service.acceptOrderCarDriver(orderId, carId, userId, CommonUtils.getToken(request), uuid);
         return orderId;
     }
 
     @PostMapping(path = "/api/changeOrderStatus")
     public Long changeOrderStatus(@ModelAttribute("orderId") Long orderId, HttpServletRequest request) throws Exception {
-        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request)));
-        service.changeOrderStatus(orderId, userId, CommonUtils.getToken(request));
+        String uuid = request.getHeader("X-UUID");
+        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request), uuid));
+        service.changeOrderStatus(orderId, userId, CommonUtils.getToken(request), uuid);
         return orderId;
     }
 
     @PostMapping(path = "/api/cancelledOrder")
     public Long cancelledOrder(@ModelAttribute("orderId") Long orderId, HttpServletRequest request) throws Exception {
-        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request)));
-        service.cancelledOrder(orderId, userId, CommonUtils.getToken(request));
+        String uuid = request.getHeader("X-UUID");
+        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request), uuid));
+        service.cancelledOrder(orderId, userId, CommonUtils.getToken(request), uuid);
         return orderId;
     }
 
@@ -103,12 +110,12 @@ public class OrderAPI {
         if (!CommonUtils.isNull(orderDetailDtos) && orderDetailDtos.size() > 0) {
             int voucherCount = orderDetailDtos.stream().collect(Collectors.groupingBy(a -> a.getOrderId())).size();
             if (voucherCount > 1)
-                throw new RuntimeException("orderId.must.be.the.same");
+                throw new RuntimeException("2005");
         }
         if (!CommonUtils.isNull(orderImages) && orderImages.size() > 0) {
             int voucherCount = orderImages.stream().collect(Collectors.groupingBy(a -> a.getOrder().getId())).size();
             if (voucherCount > 1)
-                throw new RuntimeException("orderId.must.be.the.same");
+                throw new RuntimeException("2005");
         }
     }
 }

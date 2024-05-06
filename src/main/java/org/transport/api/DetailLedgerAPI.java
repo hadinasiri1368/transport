@@ -21,7 +21,8 @@ public class DetailLedgerAPI {
     private AuthenticationServiceProxy authenticationServiceProxy;
     @PostMapping(path = "/api/detailLedger/add")
     public Long addDetailLedger(@RequestBody DetailLedgerDto detailLedgerDto, HttpServletRequest request) throws Exception {
-        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request)));
+        String uuid = request.getHeader("X-UUID");
+        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request),uuid));
         DetailLedger detailLedger = new DetailLedger();
         detailLedger.setId(detailLedgerDto.getId());
         detailLedger.setName(detailLedgerDto.getName());
@@ -33,7 +34,8 @@ public class DetailLedgerAPI {
 
     @PutMapping(path = "/api/detailLedger/edit")
     public Long editDetailLedger(@RequestBody DetailLedgerDto detailLedgerDto, HttpServletRequest request) throws Exception {
-        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request)));
+        String uuid = request.getHeader("X-UUID");
+        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request),uuid));
         DetailLedger detailLedger = new DetailLedger();
         detailLedger.setId(detailLedgerDto.getId());
         detailLedger.setName(detailLedgerDto.getName());

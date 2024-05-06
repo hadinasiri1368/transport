@@ -21,14 +21,16 @@ public class GeneralLedgerAPI {
 
     @PostMapping(path = "/api/generalLedger/add")
     public Long addGeneralLedger(@RequestBody GeneralLedger generalLedger, HttpServletRequest request) throws Exception {
-        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request)));
+        String uuid = request.getHeader("X-UUID");
+        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request), uuid));
         service.insert(generalLedger, userId);
         return generalLedger.getId();
     }
 
     @PutMapping(path = "/api/generalLedger/edit")
     public Long editGeneralLedger(@RequestBody GeneralLedger generalLedger, HttpServletRequest request) throws Exception {
-        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request)));
+        String uuid = request.getHeader("X-UUID");
+        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request), uuid));
         service.update(generalLedger, userId, GeneralLedger.class);
         return generalLedger.getId();
     }

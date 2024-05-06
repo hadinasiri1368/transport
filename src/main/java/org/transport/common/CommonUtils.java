@@ -1,5 +1,6 @@
 package org.transport.common;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+import org.transport.dto.ExceptionDto;
 import org.transport.dto.RoleDto;
 import org.transport.dto.UserDto;
 
@@ -85,7 +87,7 @@ public class CommonUtils {
         if (e.getCause() instanceof RuntimeException) {
             return ((RuntimeException) e.getCause()).getMessage();
         }
-        return "unknown.exception";
+        return "2001";
     }
 
     public static String getMessage(String key) {
@@ -103,6 +105,19 @@ public class CommonUtils {
                 Method method = entity.getClass().getMethod("set" + name, field.getType());
                 method.invoke(entity, field.getType().cast(null));
             }
+        }
+    }
+    public static ExceptionDto getException(Exception exception) {
+        try {
+            String[] messageArray = exception.getMessage().split("]:");
+            ObjectMapper objectMapper = new ObjectMapper();
+            if (messageArray.length > 1) {
+                return objectMapper.readValue(messageArray[1].replaceAll("\\[", ""), ExceptionDto.class);
+            } else {
+                return objectMapper.readValue(messageArray[0].replaceAll("\\[", ""), ExceptionDto.class);
+            }
+        } catch (Exception e) {
+            return null;
         }
     }
 }

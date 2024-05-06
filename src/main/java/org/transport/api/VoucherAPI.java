@@ -29,7 +29,8 @@ public class VoucherAPI {
 
     @PostMapping(path = "/api/voucher/add")
     public Long addVoucher(@RequestBody VoucherDto voucherDto, HttpServletRequest request) throws Exception {
-        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request)));
+        String uuid = request.getHeader("X-UUID");
+        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request), uuid));
         Voucher voucher = new Voucher();
         List<VoucherDetail> voucherDetails = MapperUtil.mapToVoucherDetail(voucherDto.getVoucherDetails());
         voucher.setId(voucherDto.getId());
@@ -41,14 +42,16 @@ public class VoucherAPI {
 
     @PutMapping(path = "/api/voucher/edit")
     public Long editVoucher(@RequestBody Voucher voucher, HttpServletRequest request) throws Exception {
-        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request)));
+        String uuid = request.getHeader("X-UUID");
+        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request), uuid));
         service.update(voucher, userId);
         return voucher.getId();
     }
 
     @PutMapping(path = "/api/voucherDetail/edit")
     public Long editVoucherDetail(@RequestBody VoucherDetailDto voucherDetailDto, HttpServletRequest request) throws Exception {
-        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request)));
+        String uuid = request.getHeader("X-UUID");
+        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request), uuid));
         VoucherDetail voucherDetail = MapperUtil.mapToVoucherDetail(voucherDetailDto);
         service.updateVoucherDetail(voucherDetail, userId);
         return voucherDetail.getId();
@@ -56,10 +59,11 @@ public class VoucherAPI {
 
     @PutMapping(path = "/api/voucherDetailList/edit")
     public Long editVoucherDetailList(@RequestBody List<VoucherDetailDto> voucherDetailDtos, HttpServletRequest request) throws Exception {
+        String uuid = request.getHeader("X-UUID");
         int voucherCount = voucherDetailDtos.stream().collect(Collectors.groupingBy(a -> a.getVoucherId())).size();
         if (voucherCount > 1)
-            throw new RuntimeException("voucherId.must.be.the.same");
-        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request)));
+            throw new RuntimeException("2027");
+        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request), uuid));
         List<VoucherDetail> voucherDetails = MapperUtil.mapToVoucherDetail(voucherDetailDtos);
         service.updateVoucherDetail(voucherDetailDtos.get(0).getVoucherId(), voucherDetails, userId);
         return voucherDetailDtos.get(0).getVoucherId();

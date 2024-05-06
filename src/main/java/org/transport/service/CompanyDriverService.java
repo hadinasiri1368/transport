@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.transport.common.*;
+import org.transport.constant.ChangeRequest;
+import org.transport.constant.Const;
 import org.transport.dto.ChangeRequestDto;
 import org.transport.dto.RoleDto;
 import org.transport.dto.UserDto;
@@ -33,8 +35,8 @@ public class CompanyDriverService {
     private AuthenticationServiceProxy authenticationServiceProxy;
 
     @Transactional
-    public void insert(CompanyDriver companyDriver, Long userId, String token) throws Exception {
-        checkData(companyDriver, token);
+    public void insert(CompanyDriver companyDriver, Long userId, String token,String uuid) throws Exception {
+        checkData(companyDriver, token,uuid);
         companyDriver.setId(null);
         companyDriver.setInsertedUserId(userId);
         companyDriver.setInsertedDateTime(new Date());
@@ -43,10 +45,10 @@ public class CompanyDriverService {
     }
 
     @Transactional
-    public void update(CompanyDriver companyDriver, Long userId, String token) throws Exception {
+    public void update(CompanyDriver companyDriver, Long userId, String token,String uuid) throws Exception {
         if (!companyDriver.getRequestStatusId().equals(Const.REQUEST_STATUS_PENDING))
-            throw new RuntimeException("request.status.not.draft");
-        checkData(companyDriver, token);
+            throw new RuntimeException("2017");
+        checkData(companyDriver, token,uuid);
         companyDriver.setId(null);
         companyDriver.setInsertedUserId(userId);
         companyDriver.setInsertedDateTime(new Date());
@@ -65,31 +67,31 @@ public class CompanyDriverService {
         return CompanyDriverJPA.findAll(aClass);
     }
 
-    private void checkData(CompanyDriver companyDriver, String token) throws Exception {
+    private void checkData(CompanyDriver companyDriver, String token, String uuid) throws Exception {
         List<RoleDto> roleDtos = new ArrayList<>();
-        roleDtos = authenticationServiceProxy.listRole(token);
+        roleDtos = authenticationServiceProxy.listRole(token, uuid);
         if (roleDtos.stream().filter(a -> a.getId().equals(Const.ROLE_DRIVER)).count() <= 0)
-            throw new RuntimeException("user.role.is.not.driver");
+            throw new RuntimeException("2016");
         Person company = personJPA.findOne(Person.class, companyDriver.getCompany().getId());
         if (CommonUtils.isNull(company))
-            throw new RuntimeException("company.is.null");
+            throw new RuntimeException("2018");
         if (!company.getIsCompany())
-            throw new RuntimeException("company.not.found");
+            throw new RuntimeException("2019");
     }
 
     @Transactional
-    public void changeRequestDriver(String token, ChangeRequestDto changeRequestDto) throws Exception {
-        UserDto userDto = ObjectMapperUtils.map(authenticationServiceProxy.getUser(token), UserDto.class);
+    public void changeRequestDriver(String token, ChangeRequestDto changeRequestDto, String uuid) throws Exception {
+        UserDto userDto = ObjectMapperUtils.map(authenticationServiceProxy.getUser(token, uuid), UserDto.class);
         List<RoleDto> roleDtos = new ArrayList<>();
         if (CommonUtils.isNull(userDto))
-            throw new RuntimeException("can.not.identify.token");
+            throw new RuntimeException("2002");
 
         CompanyDriver companyDriver = findOne(changeRequestDto.getId());
         if (CommonUtils.isNull(companyDriver))
-            throw new RuntimeException("request.not.found");
+            throw new RuntimeException("2021");
 
         if (!companyDriver.getRequestStatusId().equals(Const.REQUEST_STATUS_PENDING))
-            throw new RuntimeException("request.status.not.in.pending.confirmation");
+            throw new RuntimeException("2022");
 
         if (changeRequestDto.getChangStatus().equals(ChangeRequest.ACCEPT.getValue()))
             companyDriver.setRequestStatusId(Const.REQUEST_STATUS_CONFIRM);

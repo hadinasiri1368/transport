@@ -23,7 +23,8 @@ public class DriverAPI {
 
     @PostMapping(path = "/api/driver/add")
     public Long addDriver(@RequestBody DriverDto driverDto, HttpServletRequest request) throws Exception {
-        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request)));
+        String uuid = request.getHeader("X-UUID");
+        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request),uuid));
         Driver driver = new Driver();
         driver.setId(driverDto.getId());
         driver.setTrackingCode(driverDto.getTrackingCode());
@@ -39,7 +40,8 @@ public class DriverAPI {
 
     @PutMapping(path = "/api/driver/edit")
     public Long editDriver(@RequestBody DriverDto driverDto, HttpServletRequest request) throws Exception {
-        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request)));
+        String uuid = request.getHeader("X-UUID");
+        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request),uuid));
         Driver driver = new Driver();
         driver.setId(driverDto.getId());
         driver.setTrackingCode(driverDto.getTrackingCode());

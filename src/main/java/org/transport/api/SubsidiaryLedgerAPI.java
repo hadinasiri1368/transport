@@ -23,7 +23,8 @@ public class SubsidiaryLedgerAPI {
 
     @PostMapping(path = "/api/subsidiaryLedger/add")
     public Long addSubsidiaryLedger(@RequestBody SubsidiaryLedgerDto subsidiaryLedgerDto, HttpServletRequest request) throws Exception {
-        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request)));
+        String uuid = request.getHeader("X-UUID");
+        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request), uuid));
         SubsidiaryLedger subsidiaryLedger = new SubsidiaryLedger();
         subsidiaryLedger.setId(subsidiaryLedgerDto.getId());
         GeneralLedger generalLedger = new GeneralLedger();
@@ -37,7 +38,8 @@ public class SubsidiaryLedgerAPI {
 
     @PutMapping(path = "/api/subsidiaryLedger/edit")
     public Long editSubsidiaryLedger(@RequestBody SubsidiaryLedgerDto subsidiaryLedgerDto, HttpServletRequest request) throws Exception {
-        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request)));
+        String uuid = request.getHeader("X-UUID");
+        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request), uuid));
         SubsidiaryLedger subsidiaryLedger = new SubsidiaryLedger();
         subsidiaryLedger.setId(subsidiaryLedgerDto.getId());
         GeneralLedger generalLedger = new GeneralLedger();

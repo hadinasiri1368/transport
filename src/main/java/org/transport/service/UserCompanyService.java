@@ -7,14 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.transport.common.CommonUtils;
-import org.transport.common.Const;
+import org.transport.constant.Const;
 import org.transport.dto.RoleDto;
-import org.transport.dto.UserDto;
 import org.transport.model.*;
 import org.transport.repository.JPA;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -28,11 +26,11 @@ public class UserCompanyService {
     @Autowired
     private JPA<Person, Long> personJPA;
     @Autowired
-    private  AuthenticationServiceProxy authenticationServiceProxy;
+    private AuthenticationServiceProxy authenticationServiceProxy;
 
     @Transactional
-    public void insert(UserCompany userCompany, Long userId, String token) throws Exception {
-        checkData(userCompany, token);
+    public void insert(UserCompany userCompany, Long userId, String token, String uuid) throws Exception {
+        checkData(userCompany, token, uuid);
         userCompany.setId(null);
         userCompany.setInsertedUserId(userId);
         userCompany.setInsertedDateTime(new Date());
@@ -40,8 +38,8 @@ public class UserCompanyService {
     }
 
     @Transactional
-    public void update(UserCompany userCompany, Long userId, String token) throws Exception {
-        checkData(userCompany, token);
+    public void update(UserCompany userCompany, Long userId, String token, String uuid) throws Exception {
+        checkData(userCompany, token, uuid);
         userCompany.setId(null);
         userCompany.setInsertedUserId(userId);
         userCompany.setInsertedDateTime(new Date());
@@ -78,16 +76,16 @@ public class UserCompanyService {
         return UserCompanyJPA.findAll(aClass);
     }
 
-    private void checkData(UserCompany userCompany, String token) throws Exception {
+    private void checkData(UserCompany userCompany, String token, String uuid) throws Exception {
         List<RoleDto> roleDtos = new ArrayList<>();
-        roleDtos = authenticationServiceProxy.listRole(token, userCompany.getUserId());
+        roleDtos = authenticationServiceProxy.listRole(token, uuid, userCompany.getUserId());
         if (roleDtos.stream().filter(a -> a.getId().equals(Const.ROLE_STAFF)).count() <= 0)
-            throw new RuntimeException("user.role.is.not.found");
+            throw new RuntimeException("2015");
         Person company = personJPA.findOne(Person.class, userCompany.getCompany().getId());
         if (CommonUtils.isNull(company))
-            throw new RuntimeException("company.is.null");
+            throw new RuntimeException("2018");
         if (!company.getIsCompany())
-            throw new RuntimeException("company.not.found");
+            throw new RuntimeException("2019");
     }
 
 }

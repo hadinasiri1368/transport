@@ -39,9 +39,9 @@ public class GenericService<Entity> {
         Method m = entity.getClass().getMethod("getId");
         Long id = (Long) m.invoke(entity);
         if (CommonUtils.isNull(id))
-            throw new RuntimeException("id.not.found");
+            throw new RuntimeException("2004");
         if (CommonUtils.isNull(findOne(aClass, id)))
-            throw new RuntimeException("id.not.found");
+            throw new RuntimeException("2004");
         ((BaseEntity) entity).setUpdatedUserId(userId);
         ((BaseEntity) entity).setUpdatedDateTime(new Date());
         genericJPA.update(entity);
@@ -57,7 +57,7 @@ public class GenericService<Entity> {
         jakarta.persistence.Entity entity = aClass.getAnnotation(jakarta.persistence.Entity.class);
         int returnValue = entityManager.createQuery("delete  " + entity.name() + " o where o.id=:id").setParameter("id", id).executeUpdate();
         if (returnValue == 0) {
-            throw new RuntimeException("id.not.found");
+            throw new RuntimeException("2004");
         }
         return returnValue;
     }

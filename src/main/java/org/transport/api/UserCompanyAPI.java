@@ -20,29 +20,32 @@ public class UserCompanyAPI {
     private UserCompanyService service;
     @Autowired
     private AuthenticationServiceProxy authenticationServiceProxy;
+
     @PostMapping(path = "/api/userCompany/add")
     public Long addUserCompany(@RequestBody UserCompanyDto userCompanyDto, HttpServletRequest request) throws Exception {
-        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request)));
+        String uuid = request.getHeader("X-UUID");
+        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request), uuid));
         UserCompany userCompany = new UserCompany();
         Person person = new Person();
         userCompany.setId(userCompanyDto.getId());
         person.setId(userCompanyDto.getCompanyId());
         userCompany.setCompany(person);
         userCompany.setUserId(userCompanyDto.getUserId());
-        service.insert(userCompany, userId, CommonUtils.getToken(request));
+        service.insert(userCompany, userId, CommonUtils.getToken(request), uuid);
         return userCompany.getId();
     }
 
     @PutMapping(path = "/api/userCompany/edit")
     public Long editUserCompany(@RequestBody UserCompanyDto userCompanyDto, HttpServletRequest request) throws Exception {
-        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request)));
+        String uuid = request.getHeader("X-UUID");
+        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request), uuid));
         UserCompany userCompany = new UserCompany();
         Person person = new Person();
         userCompany.setId(userCompanyDto.getId());
         person.setId(userCompanyDto.getCompanyId());
         userCompany.setCompany(person);
         userCompany.setUserId(userCompanyDto.getUserId());
-        service.update(userCompany, userId, CommonUtils.getToken(request));
+        service.update(userCompany, userId, CommonUtils.getToken(request), uuid);
         return userCompany.getId();
     }
 

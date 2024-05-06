@@ -21,7 +21,8 @@ public class PlaqueAPI {
     private AuthenticationServiceProxy authenticationServiceProxy;
     @PostMapping(path = "/api/plaque/add")
     public Long addPlaque(@RequestBody PlaqueDto plaqueDto , HttpServletRequest request) throws Exception{
-        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request)));
+        String uuid = request.getHeader("X-UUID");
+        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request),uuid));
         Plaque plaque =new Plaque();
         plaque.setId(plaqueDto.getId());
         plaque.setLeftPlaqueTag(plaqueDto.getLeftPlaqueTag());
@@ -35,7 +36,8 @@ public class PlaqueAPI {
     }
     @PutMapping(path = "/api/plaque/edit")
     public Long editPlaque(@RequestBody PlaqueDto plaqueDto, HttpServletRequest request) throws Exception{
-        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request)));
+        String uuid = request.getHeader("X-UUID");
+        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request),uuid));
         Plaque plaque =new Plaque();
         plaque.setId(plaqueDto.getId());
         plaque.setLeftPlaqueTag(plaqueDto.getLeftPlaqueTag());

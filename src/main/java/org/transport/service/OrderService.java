@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.transport.common.CommonUtils;
-import org.transport.common.Const;
+import org.transport.constant.Const;
 import org.transport.common.ObjectMapperUtils;
 import org.transport.dto.RoleDto;
 import org.transport.dto.UserDto;
@@ -36,7 +36,7 @@ public class OrderService {
     @Autowired
     private UserCompanyService userCompanyService;
     @Autowired
-    private  AuthenticationServiceProxy authenticationServiceProxy;
+    private AuthenticationServiceProxy authenticationServiceProxy;
 
 
     private void insertDetail(Order order, List<OrderDetail> orderDetails, List<OrderImage> orderImages, Long userId) throws Exception {
@@ -202,11 +202,11 @@ public class OrderService {
     }
 
 
-    public List<Order> findAll(Long userId, String token) throws Exception {
+    public List<Order> findAll(Long userId, String token, String uuid) throws Exception {
         List<Order> returnValue = new ArrayList<>();
         List<RoleDto> roleDtos = new ArrayList<>();
         try {
-            UserDto userDto = ObjectMapperUtils.map(authenticationServiceProxy.getUser(token), UserDto.class);
+            UserDto userDto = ObjectMapperUtils.map(authenticationServiceProxy.getUser(token, uuid), UserDto.class);
             if (CommonUtils.isNull(userDto))
                 throw new RuntimeException("can not identify token");
             String hql;
@@ -214,7 +214,7 @@ public class OrderService {
             if (userDto.isAdmin()) {
                 return orderJPA.findAll(Order.class);
             }
-            roleDtos = authenticationServiceProxy.listRole(token);
+            roleDtos = authenticationServiceProxy.listRole(token, uuid);
             if (CommonUtils.isNull(roleDtos))
                 throw new RuntimeException("connection.failed");
             if (roleDtos.stream().filter(a -> a.getId() == Const.ROLE_CUSTOMER).count() > 0) {
@@ -281,35 +281,35 @@ public class OrderService {
     }
 
     @Transactional
-    public void acceptOrderCarDriver(Long orderId, Long carId, Long userId, String token) throws Exception {
+    public void acceptOrderCarDriver(Long orderId, Long carId, Long userId, String token, String uuid) throws Exception {
 
-        UserDto userDto = ObjectMapperUtils.map(authenticationServiceProxy.getUser(token), UserDto.class);
+        UserDto userDto = ObjectMapperUtils.map(authenticationServiceProxy.getUser(token, uuid), UserDto.class);
         List<RoleDto> roleDtos = new ArrayList<>();
         if (CommonUtils.isNull(userDto))
-            throw new RuntimeException("can.not.identify.token");
+            throw new RuntimeException("2002");
 
         Order order = findOne(orderId);
         if (CommonUtils.isNull(order))
-            throw new RuntimeException("order.not.found");
+            throw new RuntimeException("2006");
 
         if (!order.getOrderStatusId().equals(Const.ORDER_STATUS_WAIT_FOR_CONFIRM))
-            throw new RuntimeException("order.status.not.in.pending.confirmation");
+            throw new RuntimeException("2014");
 
         Car car = carJPA.findOne(Car.class, carId);
         if (CommonUtils.isNull(car))
-            throw new RuntimeException("car.not.found");
+            throw new RuntimeException("2013");
 
-        List<Order> orders = findAll(userId, token);
+        List<Order> orders = findAll(userId, token, uuid);
         if (orders.isEmpty())
-            throw new RuntimeException("order.no.orders.available");
+            throw new RuntimeException("2012");
 
-        roleDtos = authenticationServiceProxy.listRole(token);
+        roleDtos = authenticationServiceProxy.listRole(token, uuid);
         if (roleDtos.stream().noneMatch(a -> a.getId().equals(Const.ROLE_DRIVER))) {
-            throw new RuntimeException("user.is.not.a.driver");
+            throw new RuntimeException("2020");
         }
 
         if (orders.stream().filter(a -> a.getId().equals(orderId)).count() <= 0L)
-            throw new RuntimeException("order.this.order.not.available");
+            throw new RuntimeException("2011");
 
         String hql = "select d from driver d where d.person.id =:personId";
         Query query = entityManager.createQuery(hql);
@@ -324,11 +324,11 @@ public class OrderService {
     }
 
     @Transactional
-    public Long changeOrderStatus(Long orderId, Long userId, String token) throws Exception {
+    public Long changeOrderStatus(Long orderId, Long userId, String token, String uuid) throws Exception {
 
-        UserDto userDto = ObjectMapperUtils.map(authenticationServiceProxy.getUser(token), UserDto.class);
+        UserDto userDto = ObjectMapperUtils.map(authenticationServiceProxy.getUser(token, uuid), UserDto.class);
         if (CommonUtils.isNull(userDto))
-            throw new RuntimeException("can.not.identify.token");
+            throw new RuntimeException("2002");
 
         Order order = findOne(orderId);
         String hql = "select d from driver d where d.person.id =:personId";
@@ -339,13 +339,13 @@ public class OrderService {
         Driver driver = drivers.get(0);
 
         if (CommonUtils.isNull(order))
-            throw new RuntimeException("order.not.found");
+            throw new RuntimeException("2006");
 
         if (order.getOrderStatusId().equals(Const.ORDER_STATUS_CANCELLED_CUSTOMER))
-            throw new RuntimeException("order.is.canceled.by.customer");
+            throw new RuntimeException("2009");
 
         if (order.getOrderStatusId().equals(Const.ORDER_STATUS_CANCELLED_DRIVER))
-            throw new RuntimeException("order.is.canceled.by.driver");
+            throw new RuntimeException("2010");
 
         if (order.getOrderStatusId().equals(Const.ORDER_STATUS_DRAFT)) {
             order.setOrderStatusId(Const.ORDER_STATUS_WAIT_FOR_CONFIRM);
@@ -395,15 +395,15 @@ public class OrderService {
             return order.getOrderStatusId();
         }
 
-        throw new RuntimeException("unknown.exception");
+        throw new RuntimeException("2001");
     }
 
     @Transactional
-    public Long cancelledOrder(Long orderId, Long userId, String token) throws Exception {
+    public Long cancelledOrder(Long orderId, Long userId, String token, String uuid) throws Exception {
 
-        UserDto userDto = ObjectMapperUtils.map(authenticationServiceProxy.getUser(token), UserDto.class);
+        UserDto userDto = ObjectMapperUtils.map(authenticationServiceProxy.getUser(token, uuid), UserDto.class);
         if (CommonUtils.isNull(userDto))
-            throw new RuntimeException("can.not.identify.token");
+            throw new RuntimeException("2002");
         Order order = findOne(orderId);
         String hql = "select d from driver d where d.person.id =:personId";
         Query query = entityManager.createQuery(hql);
@@ -413,14 +413,14 @@ public class OrderService {
         Driver driver = drivers.get(0);
 
         if (CommonUtils.isNull(order))
-            throw new RuntimeException("order.not.found");
+            throw new RuntimeException("2006");
 
         if (order.getOrderStatusId().equals(Const.ORDER_STATUS_LOADED) || order.getOrderStatusId().equals(Const.ORDER_STATUS_CARRYING_CARGO)
                 || order.getOrderStatusId().equals(Const.ORDER_STATUS_CAR_IN_DESTINATION) || order.getOrderStatusId().equals(Const.ORDER_STATUS_DELIVERED))
-            throw new RuntimeException("order.cannot.be.canceled");
+            throw new RuntimeException("2007");
 
         if (order.getOrderStatusId().equals(Const.ORDER_STATUS_CANCELLED_DRIVER) || order.getOrderStatusId().equals(Const.ORDER_STATUS_CANCELLED_CUSTOMER))
-            throw new RuntimeException("order.is.canceled");
+            throw new RuntimeException("2008");
 
         if (order.getOrderStatusId().equals(Const.ORDER_STATUS_WAIT_FOR_CONFIRM) && order.getUserId().equals(userId)) {
             order.setOrderStatusId(Const.ORDER_STATUS_CANCELLED_CUSTOMER);
@@ -438,7 +438,7 @@ public class OrderService {
             update(order, userId);
             return order.getOrderStatusId();
         }
-        throw new RuntimeException("unknown.exception");
+        throw new RuntimeException("2001");
     }
 }
 
