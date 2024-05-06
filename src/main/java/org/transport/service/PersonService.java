@@ -4,12 +4,16 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.transport.common.CommonUtils;
 import org.transport.dto.UserDto;
 import org.transport.model.*;
 import org.transport.repository.JPA;
+import org.transport.repository.PersonRepository;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -23,6 +27,8 @@ public class PersonService {
     @Autowired
     private JPA<Person, Long> personJPA;
 
+    @Autowired
+    private PersonRepository personRepository;
 
     @Transactional
     public void insert(Person person, Long userId) throws Exception {
@@ -59,9 +65,13 @@ public class PersonService {
     public Person findOne(Long id) {
         return personJPA.findOne(Person.class, id);
     }
-    public List<Person> findAll() {
-        return personJPA.findAll(Person.class);
+
+
+    public Page<Person> findAll(Pageable pageable) {
+        return personRepository.findAll(pageable);
     }
+
+
     public List<Person> findAll(List<UserDto> userDtos) {
         List<Long> personIds = userDtos.stream().map(entity -> entity.getPersonId()).collect(Collectors.toList());
         String hql = "select p from person p where p.id in (:personIds) ";

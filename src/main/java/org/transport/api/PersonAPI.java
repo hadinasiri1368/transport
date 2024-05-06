@@ -2,6 +2,9 @@ package org.transport.api;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import org.transport.common.CommonUtils;
 import org.transport.common.ObjectMapperUtils;
@@ -51,11 +54,12 @@ public class PersonAPI {
     }
 
     @GetMapping(path = "/api/person")
-    public List<Person> listPerson() {
-        return service.findAll();
+    public Page<Person> listPerson(Pageable p) {
+        return service.findAll(p);
     }
 
-    @PostMapping(path = "/api/personUser")
+
+    @GetMapping (path = "/api/personUser")
     public List<UserPersonDto> listUserPerson(@RequestBody List<UserDto> userDtos) {
         List<Person> personList = service.findAll(userDtos);
         UserPersonDto userPersonDto;

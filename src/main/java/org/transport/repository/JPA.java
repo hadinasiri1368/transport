@@ -12,9 +12,11 @@ import java.util.List;
 import java.util.Map;
 
 @Repository
-public class JPA<ENTITY, ID> {
+public class JPA<ENTITY, ID>  {
     @PersistenceContext()
     private EntityManager entityManager;
+
+
 
     @Transactional
     public void save(ENTITY entity) throws Exception {
