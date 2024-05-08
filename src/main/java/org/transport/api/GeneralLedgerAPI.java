@@ -3,6 +3,7 @@ package org.transport.api;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import org.transport.common.CommonUtils;
 import org.transport.model.GeneralLedger;
@@ -47,7 +48,7 @@ public class GeneralLedgerAPI {
     }
 
     @GetMapping(path = "/api/generalLedger")
-    public List<GeneralLedger> listGeneralLedger() {
-        return service.findAll(GeneralLedger.class);
+    public Page<GeneralLedger> listGeneralLedger(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size) {
+        return service.findAll(GeneralLedger.class,page,size);
     }
 }

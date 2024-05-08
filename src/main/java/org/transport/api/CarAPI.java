@@ -3,6 +3,7 @@ package org.transport.api;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import org.transport.common.CommonUtils;
 import org.transport.dto.*;
@@ -94,8 +95,8 @@ public class CarAPI {
     }
 
     @GetMapping(path = "/api/car")
-    public List<Car> listCar() throws Exception {
-        return service.findAll(Car.class);
+    public Page<Car> listCar(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size) throws Exception {
+        return service.findAll(Car.class,page,size);
     }
 
 }

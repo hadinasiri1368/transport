@@ -3,7 +3,10 @@ package org.transport.service;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.annotation.Transient;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.transport.common.CommonUtils;
@@ -22,6 +25,11 @@ public class VoucherService {
     private JPA<VoucherDetail, Long> genericVoucherDetailJPA;
     @Autowired
     private EntityManager entityManager;
+
+    @Value("${PageRequest.page}")
+    private Integer page;
+    @Value("${PageRequest.size}")
+    private Integer size;
 
     @Transactional
     public void insert(Voucher voucher, List<VoucherDetail> voucherDetails, Long userId) throws Exception {
@@ -142,6 +150,14 @@ public class VoucherService {
         }
         if (sumDebit != sumCredit)
             throw new RuntimeException("2026");
+    }
+
+    public Page<Voucher> findAll(Class<Voucher> aClass, Integer page, Integer size) {
+        if (CommonUtils.isNull(page) && CommonUtils.isNull(size)) {
+            return genericVoucherJPA.findAllWithPaging(aClass);
+        }
+        PageRequest pageRequest = PageRequest.of(CommonUtils.isNull(page, this.page), CommonUtils.isNull(size, this.size));
+        return genericVoucherJPA.findAllWithPaging(aClass, pageRequest);
     }
 
 }

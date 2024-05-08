@@ -3,6 +3,7 @@ package org.transport.api;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import org.transport.common.CommonUtils;
 import org.transport.dto.SubsidiaryLedgerDto;
@@ -11,7 +12,6 @@ import org.transport.model.SubsidiaryLedger;
 import org.transport.service.AuthenticationServiceProxy;
 import org.transport.service.GenericService;
 
-import java.util.List;
 
 @RestController
 @SecurityRequirement(name = "Bearer Authentication")
@@ -63,8 +63,8 @@ public class SubsidiaryLedgerAPI {
     }
 
     @GetMapping(path = "/api/subsidiaryLedger")
-    public List<SubsidiaryLedger> listSubsidiaryLedger() {
-        return service.findAll(SubsidiaryLedger.class);
+    public Page<SubsidiaryLedger> listSubsidiaryLedger(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size) {
+        return service.findAll(SubsidiaryLedger.class, page, size);
     }
 
 }

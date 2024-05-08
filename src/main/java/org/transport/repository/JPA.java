@@ -5,6 +5,9 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 import org.transport.common.CommonUtils;
 
@@ -52,5 +55,40 @@ public class JPA<ENTITY, ID> {
     }
     public void persist(Object o) {
         entityManager.persist(o);
+    }
+
+    public Page<ENTITY> findAllWithPaging(Class<ENTITY> aClass) {
+        Entity entity = aClass.getAnnotation(Entity.class);
+        Query query = entityManager.createQuery("select entity from " + entity.name() + " entity");
+        List<ENTITY> fooList = query.getResultList();
+        PageRequest pageRequest = PageRequest.of(0, fooList.size());
+        return new PageImpl<ENTITY>(fooList, pageRequest, fooList.size());
+    }
+
+    public Page<ENTITY> findAllWithPaging(Class<ENTITY> aClass, PageRequest pageRequest) {
+        Entity entity = aClass.getAnnotation(Entity.class);
+        Query query = entityManager.createQuery("select entity from " + entity.name() + " entity");
+        int pageNumber = pageRequest.getPageNumber();
+        int pageSize = pageRequest.getPageSize();
+        query.setFirstResult((pageNumber) * pageSize);
+        query.setMaxResults(pageSize);
+        List<ENTITY> fooList = query.getResultList();
+        Query queryTotal = entityManager.createQuery("select count(entity.id) from " + entity.name() + " entity");
+        Long countResult = (Long) queryTotal.getSingleResult();
+        return new PageImpl<ENTITY>(fooList, pageRequest, countResult);
+    }
+
+    public Page listByQueryWithPaging(Query query, Map<String, Object> param,PageRequest pageRequest) {
+        if (!CommonUtils.isNull(param) && !param.isEmpty())
+            for (String key : param.keySet()) {
+                query.setParameter(key, param.get(key));
+            }
+        int pageNumber = pageRequest.getPageNumber();
+        int pageSize = pageRequest.getPageSize();
+        query.setFirstResult((pageNumber) * pageSize);
+        query.setMaxResults(pageSize);
+        List fooList = query.getResultList();
+        long countResult = (long) fooList.size();
+        return new PageImpl (fooList, pageRequest, countResult);
     }
 }

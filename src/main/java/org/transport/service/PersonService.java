@@ -4,6 +4,9 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.transport.common.CommonUtils;
@@ -23,6 +26,10 @@ public class PersonService {
     @Autowired
     private JPA<Person, Long> personJPA;
 
+    @Value("${PageRequest.page}")
+    private Integer page;
+    @Value("${PageRequest.size}")
+    private Integer size;
 
     @Transactional
     public void insert(Person person, Long userId) throws Exception {
@@ -70,6 +77,14 @@ public class PersonService {
         param.put("personIds", personIds);
         personJPA.listByQuery(query, param);
         return personJPA.findAll(Person.class);
+    }
+
+    public Page<Person> findAll(Class<Person> aClass, Integer page, Integer size) {
+        if (CommonUtils.isNull(page) && CommonUtils.isNull(size)) {
+            return personJPA.findAllWithPaging(aClass);
+        }
+        PageRequest pageRequest = PageRequest.of(CommonUtils.isNull(page, this.page), CommonUtils.isNull(size, this.size));
+        return personJPA.findAllWithPaging(aClass, pageRequest);
     }
 
 }
