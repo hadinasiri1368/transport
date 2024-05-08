@@ -4,6 +4,9 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.transport.common.CommonUtils;
@@ -25,8 +28,14 @@ public class UserCompanyService {
 
     @Autowired
     private JPA<Person, Long> personJPA;
+
     @Autowired
     private AuthenticationServiceProxy authenticationServiceProxy;
+
+    @Value("${PageRequest.page}")
+    private Integer page;
+    @Value("${PageRequest.size}")
+    private Integer size;
 
     @Transactional
     public void insert(UserCompany userCompany, Long userId, String token, String uuid) throws Exception {
@@ -86,6 +95,14 @@ public class UserCompanyService {
             throw new RuntimeException("2018");
         if (!company.getIsCompany())
             throw new RuntimeException("2019");
+    }
+
+    public Page<UserCompany> findAll(Class<UserCompany> aClass, Integer page, Integer size) {
+        if (CommonUtils.isNull(page) && CommonUtils.isNull(size)) {
+            return UserCompanyJPA.findAllWithPaging(aClass);
+        }
+        PageRequest pageRequest = PageRequest.of(CommonUtils.isNull(page, this.page), CommonUtils.isNull(size, this.size));
+        return UserCompanyJPA.findAllWithPaging(aClass, pageRequest);
     }
 
 }

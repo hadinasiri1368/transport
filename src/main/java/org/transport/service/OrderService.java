@@ -4,6 +4,10 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.transport.common.CommonUtils;
@@ -16,7 +20,6 @@ import org.transport.repository.JPA;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
 
 @Service
 @Slf4j
@@ -38,6 +41,10 @@ public class OrderService {
     @Autowired
     private AuthenticationServiceProxy authenticationServiceProxy;
 
+    @Value("${PageRequest.page}")
+    private Integer page;
+    @Value("${PageRequest.size}")
+    private Integer size;
 
     private void insertDetail(Order order, List<OrderDetail> orderDetails, List<OrderImage> orderImages, Long userId) throws Exception {
         if (!CommonUtils.isNull(orderDetails) && orderDetails.size() > 0) {
@@ -202,7 +209,7 @@ public class OrderService {
     }
 
 
-    public List<Order> findAll(Long userId, String token, String uuid) throws Exception {
+    public Page<Order> findAll(Long userId, String token, String uuid, Integer page, Integer size) throws Exception {
         List<Order> returnValue = new ArrayList<>();
         List<RoleDto> roleDtos = new ArrayList<>();
         try {
@@ -212,7 +219,11 @@ public class OrderService {
             String hql;
             List<Long> orderIds = new ArrayList<>();
             if (userDto.isAdmin()) {
-                return orderJPA.findAll(Order.class);
+                if (CommonUtils.isNull(page) && CommonUtils.isNull(size)) {
+                    return orderJPA.findAllWithPaging(Order.class);
+                }
+                PageRequest pageRequest = PageRequest.of(CommonUtils.isNull(page, this.page), CommonUtils.isNull(size, this.size));
+                return orderJPA.findAllWithPaging(Order.class, pageRequest);
             }
             roleDtos = authenticationServiceProxy.listRole(token, uuid);
             if (CommonUtils.isNull(roleDtos))
@@ -222,6 +233,7 @@ public class OrderService {
                 Query query = entityManager.createQuery(hql);
                 Map<String, Object> param = new HashMap<>();
                 param.put("userId", userId);
+//                PageRequest pageRequest = PageRequest.of(CommonUtils.isNull(page, this.page), CommonUtils.isNull(size, this.size));
                 returnValue.addAll(orderJPA.listByQuery(query, param));
                 orderIds = returnValue.stream().map(entity -> entity.getId()).collect(Collectors.toList());
             }
@@ -253,7 +265,6 @@ public class OrderService {
                 returnValue.addAll(orderJPA.listByQuery(query, param));
                 orderIds = returnValue.stream().map(entity -> entity.getId()).collect(Collectors.toList());
 
-
                 hql = "select o from order o \n" +
                         "where o.onlyMyCompanyDriver = true \n" +
                         "and o.orderStatusId in (:orderStatusId) \n" +
@@ -273,7 +284,7 @@ public class OrderService {
         } catch (Exception e) {
             throw e;
         }
-        return returnValue;
+        return new PageImpl(returnValue) ;
     }
 
     public Order findOne(Long id) {
@@ -298,8 +309,7 @@ public class OrderService {
         Car car = carJPA.findOne(Car.class, carId);
         if (CommonUtils.isNull(car))
             throw new RuntimeException("2013");
-
-        List<Order> orders = findAll(userId, token, uuid);
+        Page<Order> orders = findAll(userId, token, uuid,0,100);
         if (orders.isEmpty())
             throw new RuntimeException("2012");
 
@@ -400,7 +410,6 @@ public class OrderService {
 
     @Transactional
     public Long cancelledOrder(Long orderId, Long userId, String token, String uuid) throws Exception {
-
         UserDto userDto = ObjectMapperUtils.map(authenticationServiceProxy.getUser(token, uuid), UserDto.class);
         if (CommonUtils.isNull(userDto))
             throw new RuntimeException("2002");

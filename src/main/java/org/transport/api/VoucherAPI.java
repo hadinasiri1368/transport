@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import org.transport.common.CommonUtils;
 import org.transport.common.MapperUtil;
@@ -88,7 +89,7 @@ public class VoucherAPI {
     }
 
     @GetMapping(path = "/api/voucher")
-    public List<Voucher> listVoucher() {
-        return service.findAll(Voucher.class);
+    public Page<Voucher> listVoucher(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size) {
+        return service.findAll(Voucher.class,page,size);
     }
 }
