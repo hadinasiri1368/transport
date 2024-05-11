@@ -21,7 +21,7 @@ public interface AuthenticationServiceProxy {
     List<RoleDto> listRole(@RequestHeader("Authorization") String token, @RequestHeader("X-UUID") String uuid);
 
     @GetMapping(path = "/getUserId")
-    String getUserId(@ModelAttribute("token") String token, @RequestHeader("X-UUID") String uuid);
+    String getUserId(@RequestParam("token") String token, @RequestHeader("X-UUID") String uuid);
 
     @GetMapping(path = "/checkValidationToken")
     String checkValidationToken(@RequestParam("token") String token, @RequestHeader("X-UUID") String uuid, @RequestParam("url") String url);
