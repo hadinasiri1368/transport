@@ -13,6 +13,6 @@ public class UserDto {
     private Long id;
     private String username;
     private Long personId;
-    private boolean isAdmin;
-    private boolean isActive;
+    private Boolean isAdmin;
+    private Boolean isActive;
 }

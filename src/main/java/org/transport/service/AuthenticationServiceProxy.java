@@ -27,6 +27,6 @@ public interface AuthenticationServiceProxy {
     String checkValidationToken(@RequestParam("token") String token, @RequestHeader("X-UUID") String uuid, @RequestParam("url") String url);
 
     @GetMapping(path = "/getUser")
-    Map getUser(@ModelAttribute("token") String token, @RequestHeader("X-UUID") String uuid);
+    Map getUser(@RequestParam("token") String token, @RequestHeader("X-UUID") String uuid);
 
 }

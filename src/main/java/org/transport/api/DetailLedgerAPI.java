@@ -3,6 +3,7 @@ package org.transport.api;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import org.transport.common.CommonUtils;
 import org.transport.dto.DetailLedgerDto;
@@ -57,8 +58,8 @@ public class DetailLedgerAPI {
     }
 
     @GetMapping(path = "/api/detailLedger")
-    public List<DetailLedger> listDetailLedger() {
-        return service.findAll(DetailLedger.class);
+    public Page<DetailLedger> listDetailLedger(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size) {
+        return service.findAll(DetailLedger.class,page,size);
     }
 
 }

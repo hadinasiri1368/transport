@@ -3,6 +3,7 @@ package org.transport.api;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import org.transport.common.CommonUtils;
 import org.transport.dto.UserCompanyDto;
@@ -66,7 +67,7 @@ public class UserCompanyAPI {
     }
 
     @GetMapping(path = "/api/userCompany")
-    public List<UserCompany> listUserCompany() {
-        return service.findAll(UserCompany.class);
+    public Page<UserCompany> listUserCompany(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size) {
+        return service.findAll(UserCompany.class,page,size);
     }
 }

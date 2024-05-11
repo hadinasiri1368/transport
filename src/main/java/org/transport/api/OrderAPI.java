@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.transport.common.CommonUtils;
@@ -75,11 +76,11 @@ public class OrderAPI {
     }
 
     @GetMapping(path = "/api/order")
-    public List<Order> listOrder(HttpServletRequest request) throws Exception {
+    public Page<Order> listOrder(HttpServletRequest request,@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size) throws Exception {
         String uuid = request.getHeader("X-UUID");
         Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request), uuid));
         String token = CommonUtils.getToken(request);
-        return service.findAll(userId, token, uuid);
+        return service.findAll(userId, token, uuid,page,size);
     }
 
     @PostMapping(path = "/api/acceptOrderCarDriver")

@@ -3,6 +3,7 @@ package org.transport.api;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import org.transport.common.CommonUtils;
 import org.transport.dto.DriverDto;
@@ -67,7 +68,7 @@ public class DriverAPI {
     }
 
     @GetMapping(path = "/api/driver")
-    public List<Driver> listDriver() {
-        return service.findAll(Driver.class);
+    public Page<Driver> listDriver(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size) {
+        return service.findAll(Driver.class,page,size);
     }
 }
