@@ -233,7 +233,6 @@ public class OrderService {
                 Query query = entityManager.createQuery(hql);
                 Map<String, Object> param = new HashMap<>();
                 param.put("userId", userId);
-//                PageRequest pageRequest = PageRequest.of(CommonUtils.isNull(page, this.page), CommonUtils.isNull(size, this.size));
                 returnValue.addAll(orderJPA.listByQuery(query, param));
                 orderIds = returnValue.stream().map(entity -> entity.getId()).collect(Collectors.toList());
             }
@@ -265,6 +264,7 @@ public class OrderService {
                 returnValue.addAll(orderJPA.listByQuery(query, param));
                 orderIds = returnValue.stream().map(entity -> entity.getId()).collect(Collectors.toList());
 
+
                 hql = "select o from order o \n" +
                         "where o.onlyMyCompanyDriver = true \n" +
                         "and o.orderStatusId in (:orderStatusId) \n" +
@@ -284,7 +284,7 @@ public class OrderService {
         } catch (Exception e) {
             throw e;
         }
-        return new PageImpl(returnValue) ;
+        return new PageImpl(returnValue);
     }
 
     public Order findOne(Long id) {
