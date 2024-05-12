@@ -218,7 +218,7 @@ public class OrderService {
                 throw new RuntimeException("can not identify token");
             String hql;
             List<Long> orderIds = new ArrayList<>();
-            if (userDto.getIsActive()) {
+            if (userDto.getIsAdmin()) {
                 if (CommonUtils.isNull(page) && CommonUtils.isNull(size)) {
                     return orderJPA.findAllWithPaging(Order.class);
                 }
