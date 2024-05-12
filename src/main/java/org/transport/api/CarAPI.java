@@ -11,24 +11,20 @@ import org.transport.model.Car;
 import org.transport.model.Driver;
 import org.transport.model.Person;
 import org.transport.model.Plaque;
-import org.transport.service.AuthenticationServiceProxy;
 import org.transport.service.GenericService;
 
-import java.util.List;
 
 @RestController
 @SecurityRequirement(name = "Bearer Authentication")
 public class CarAPI {
     @Autowired
     private GenericService<Car> service;
-    @Autowired
-    private AuthenticationServiceProxy authenticationServiceProxy;
 
     //    @Operation(summary = "add car", description = "اضافه کردن ماشین")
     @PostMapping(path = "/api/car/add")
     public Long addCar(@RequestBody CarDto carDto, HttpServletRequest request) throws Exception {
         String uuid = request.getHeader("X-UUID");
-        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request),uuid));
+        Long userId = CommonUtils.getUserId(CommonUtils.getToken(request), uuid);
         Car car = new Car();
         Plaque plaque = new Plaque();
         Person person = new Person();
@@ -57,7 +53,7 @@ public class CarAPI {
     @PutMapping(path = "/api/car/edit")
     public Long editCar(@RequestBody CarDto carDto, HttpServletRequest request) throws Exception {
         String uuid = request.getHeader("X-UUID");
-        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request),uuid));
+        Long userId = CommonUtils.getUserId(CommonUtils.getToken(request), uuid);
         Car car = new Car();
         Plaque plaque = new Plaque();
         Person person = new Person();
@@ -96,7 +92,7 @@ public class CarAPI {
 
     @GetMapping(path = "/api/car")
     public Page<Car> listCar(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size) throws Exception {
-        return service.findAll(Car.class,page,size);
+        return service.findAll(Car.class, page, size);
     }
 
 }

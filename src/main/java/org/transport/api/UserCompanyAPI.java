@@ -9,7 +9,6 @@ import org.transport.common.CommonUtils;
 import org.transport.dto.UserCompanyDto;
 import org.transport.model.Person;
 import org.transport.model.UserCompany;
-import org.transport.service.AuthenticationServiceProxy;
 import org.transport.service.UserCompanyService;
 
 import java.util.List;
@@ -19,13 +18,11 @@ import java.util.List;
 public class UserCompanyAPI {
     @Autowired
     private UserCompanyService service;
-    @Autowired
-    private AuthenticationServiceProxy authenticationServiceProxy;
 
     @PostMapping(path = "/api/userCompany/add")
     public Long addUserCompany(@RequestBody UserCompanyDto userCompanyDto, HttpServletRequest request) throws Exception {
         String uuid = request.getHeader("X-UUID");
-        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request), uuid));
+        Long userId = CommonUtils.getUserId(CommonUtils.getToken(request), uuid);
         UserCompany userCompany = new UserCompany();
         Person person = new Person();
         userCompany.setId(userCompanyDto.getId());
@@ -39,7 +36,7 @@ public class UserCompanyAPI {
     @PutMapping(path = "/api/userCompany/edit")
     public Long editUserCompany(@RequestBody UserCompanyDto userCompanyDto, HttpServletRequest request) throws Exception {
         String uuid = request.getHeader("X-UUID");
-        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request), uuid));
+        Long userId = CommonUtils.getUserId(CommonUtils.getToken(request), uuid);
         UserCompany userCompany = new UserCompany();
         Person person = new Person();
         userCompany.setId(userCompanyDto.getId());

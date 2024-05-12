@@ -5,31 +5,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import org.transport.common.CommonUtils;
-import org.transport.common.ObjectMapperUtils;
 import org.transport.dto.UserDto;
 import org.transport.dto.UserPersonDto;
 import org.transport.model.Person;
-import org.transport.model.VoucherDetail;
-import org.transport.service.AuthenticationServiceProxy;
-import org.transport.service.GenericService;
 import org.transport.service.PersonService;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @SecurityRequirement(name = "Bearer Authentication")
 public class PersonAPI {
     @Autowired
     private PersonService service;
-    @Autowired
-    private AuthenticationServiceProxy authenticationServiceProxy;
 
     @PostMapping(path = "/api/person/add")
     public Long addPerson(@RequestBody Person person, HttpServletRequest request) throws Exception {
         String uuid = request.getHeader("X-UUID");
-        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request),uuid));
+        Long userId = CommonUtils.getUserId(CommonUtils.getToken(request), uuid);
         service.insert(person, userId);
         return person.getId();
     }
@@ -37,7 +30,7 @@ public class PersonAPI {
     @PutMapping(path = "/api/person/edit")
     public Long editPerson(@RequestBody Person person, HttpServletRequest request) throws Exception {
         String uuid = request.getHeader("X-UUID");
-        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request),uuid));
+        Long userId = CommonUtils.getUserId(CommonUtils.getToken(request), uuid);
         service.update(person, userId);
         return person.getId();
     }

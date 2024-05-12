@@ -8,22 +8,18 @@ import org.springframework.web.bind.annotation.*;
 import org.transport.common.CommonUtils;
 import org.transport.dto.DetailLedgerDto;
 import org.transport.model.DetailLedger;
-import org.transport.service.AuthenticationServiceProxy;
 import org.transport.service.GenericService;
-
-import java.util.List;
 
 @RestController
 @SecurityRequirement(name = "Bearer Authentication")
 public class DetailLedgerAPI {
     @Autowired
     private GenericService<DetailLedger> service;
-    @Autowired
-    private AuthenticationServiceProxy authenticationServiceProxy;
+
     @PostMapping(path = "/api/detailLedger/add")
     public Long addDetailLedger(@RequestBody DetailLedgerDto detailLedgerDto, HttpServletRequest request) throws Exception {
         String uuid = request.getHeader("X-UUID");
-        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request),uuid));
+        Long userId = CommonUtils.getUserId(CommonUtils.getToken(request), uuid);
         DetailLedger detailLedger = new DetailLedger();
         detailLedger.setId(detailLedgerDto.getId());
         detailLedger.setName(detailLedgerDto.getName());
@@ -36,7 +32,7 @@ public class DetailLedgerAPI {
     @PutMapping(path = "/api/detailLedger/edit")
     public Long editDetailLedger(@RequestBody DetailLedgerDto detailLedgerDto, HttpServletRequest request) throws Exception {
         String uuid = request.getHeader("X-UUID");
-        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request),uuid));
+        Long userId = CommonUtils.getUserId(CommonUtils.getToken(request), uuid);
         DetailLedger detailLedger = new DetailLedger();
         detailLedger.setId(detailLedgerDto.getId());
         detailLedger.setName(detailLedgerDto.getName());
@@ -59,7 +55,7 @@ public class DetailLedgerAPI {
 
     @GetMapping(path = "/api/detailLedger")
     public Page<DetailLedger> listDetailLedger(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size) {
-        return service.findAll(DetailLedger.class,page,size);
+        return service.findAll(DetailLedger.class, page, size);
     }
 
 }
