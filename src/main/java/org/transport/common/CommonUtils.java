@@ -67,7 +67,14 @@ public class CommonUtils {
         HttpEntity<T> response = restTemplate.exchange(url, httpMethod, httpEntity, aClass, params);
         return response.getBody();
     }
-
+    public static <T> List<T> callService(String url, HttpMethod httpMethod, HttpHeaders headers, Object body, Map<String, Object> params, Class<T> aClass) throws Exception {
+        RestTemplate restTemplate = new RestTemplate();
+        HttpEntity httpEntity = new HttpEntity(body, headers);
+        if (CommonUtils.isNull(params))
+            params = new HashMap<>();
+        HttpEntity<List> response = restTemplate.exchange(url, httpMethod, httpEntity, List.class, params);
+        return ObjectMapperUtils.mapAll(response.getBody(), aClass);
+    }
     public static Long longValue(Object number) {
         if (isNull(number))
             return null;

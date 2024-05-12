@@ -6,9 +6,9 @@ spring:
     name: "TRANSPORT"
   datasource:
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
-    url: jdbc:sqlserver://;serverName=185.10.75.106;databaseName=way;encrypt=true;trustServerCertificate=true;
+    url: jdbc:sqlserver://;serverName=localhost;databaseName=way;encrypt=true;trustServerCertificate=true;
     username: sa
-    password: ahmadi@102030
+    password: asd123!@#
   jpa:
     hibernate.ddl-auto: none
     generate-ddl: false
