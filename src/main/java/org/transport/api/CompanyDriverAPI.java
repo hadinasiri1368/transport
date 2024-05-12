@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.*;
 import org.transport.common.CommonUtils;
 import org.transport.dto.*;
 import org.transport.model.*;
-import org.transport.service.AuthenticationServiceProxy;
 import org.transport.service.CompanyDriverService;
 
 import java.util.List;
@@ -17,13 +16,11 @@ import java.util.List;
 public class CompanyDriverAPI {
     @Autowired
     private CompanyDriverService companyDriverService;
-    @Autowired
-    private AuthenticationServiceProxy authenticationServiceProxy;
 
     @PostMapping(path = "/api/companyDriver/add")
     public Long addCompanyDriver(@RequestBody CompanyDriverDto companyDriverDto, HttpServletRequest request) throws Exception {
         String uuid = request.getHeader("X-UUID");
-        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request), uuid));
+        Long userId = CommonUtils.getUserId(CommonUtils.getToken(request), uuid);
         CompanyDriver companyDriver = new CompanyDriver();
         Person person = new Person();
         Driver driver = new Driver();
@@ -32,14 +29,14 @@ public class CompanyDriverAPI {
         companyDriver.setCompany(person);
         driver.setId(companyDriverDto.getDriverId());
         companyDriver.setDriver(driver);
-        companyDriverService.insert(companyDriver, userId, CommonUtils.getToken(request),uuid);
+        companyDriverService.insert(companyDriver, userId, CommonUtils.getToken(request), uuid);
         return companyDriver.getId();
     }
 
     @PutMapping(path = "/api/companyDriver/edit")
     public Long editCompanyDriver(@RequestBody CompanyDriverDto companyDriverDto, HttpServletRequest request) throws Exception {
         String uuid = request.getHeader("X-UUID");
-        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request), uuid));
+        Long userId = CommonUtils.getUserId(CommonUtils.getToken(request), uuid);
         CompanyDriver companyDriver = new CompanyDriver();
         Person person = new Person();
         Driver driver = new Driver();
@@ -48,7 +45,7 @@ public class CompanyDriverAPI {
         companyDriver.setCompany(person);
         driver.setId(companyDriverDto.getDriverId());
         companyDriver.setDriver(driver);
-        companyDriverService.update(companyDriver, userId, CommonUtils.getToken(request),uuid);
+        companyDriverService.update(companyDriver, userId, CommonUtils.getToken(request), uuid);
         return companyDriver.getId();
     }
 
@@ -71,7 +68,7 @@ public class CompanyDriverAPI {
     @PostMapping(path = "/api/companyDriver/changeRequest")
     public ChangeRequestDto changeRequestCompanyDriver(@RequestBody ChangeRequestDto changeRequestDto, HttpServletRequest request) throws Exception {
         String uuid = request.getHeader("X-UUID");
-        companyDriverService.changeRequestDriver(CommonUtils.getToken(request), changeRequestDto,uuid);
+        companyDriverService.changeRequestDriver(CommonUtils.getToken(request), changeRequestDto, uuid);
         return changeRequestDto;
     }
 

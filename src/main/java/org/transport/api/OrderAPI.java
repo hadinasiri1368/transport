@@ -76,17 +76,17 @@ public class OrderAPI {
     }
 
     @GetMapping(path = "/api/order")
-    public Page<Order> listOrder(HttpServletRequest request,@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size) throws Exception {
+    public Page<Order> listOrder(HttpServletRequest request, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size) throws Exception {
         String uuid = request.getHeader("X-UUID");
         Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request), uuid));
         String token = CommonUtils.getToken(request);
-        return service.findAll(userId, token, uuid,page,size);
+        return service.findAll(userId, token, uuid, page, size);
     }
 
     @PostMapping(path = "/api/acceptOrderCarDriver")
     public Long acceptOrderCarDriver(@ModelAttribute("orderId") Long orderId, @ModelAttribute("carId") Long carId, HttpServletRequest request) throws Exception {
         String uuid = request.getHeader("X-UUID");
-        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request), uuid));
+        Long userId = CommonUtils.getUserId(CommonUtils.getToken(request), uuid);
         service.acceptOrderCarDriver(orderId, carId, userId, CommonUtils.getToken(request), uuid);
         return orderId;
     }
@@ -94,7 +94,7 @@ public class OrderAPI {
     @PostMapping(path = "/api/changeOrderStatus")
     public Long changeOrderStatus(@ModelAttribute("orderId") Long orderId, HttpServletRequest request) throws Exception {
         String uuid = request.getHeader("X-UUID");
-        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request), uuid));
+        Long userId = CommonUtils.getUserId(CommonUtils.getToken(request), uuid);
         service.changeOrderStatus(orderId, userId, CommonUtils.getToken(request), uuid);
         return orderId;
     }
@@ -102,7 +102,7 @@ public class OrderAPI {
     @PostMapping(path = "/api/cancelledOrder")
     public Long cancelledOrder(@ModelAttribute("orderId") Long orderId, HttpServletRequest request) throws Exception {
         String uuid = request.getHeader("X-UUID");
-        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request), uuid));
+        Long userId = CommonUtils.getUserId(CommonUtils.getToken(request), uuid);
         service.cancelledOrder(orderId, userId, CommonUtils.getToken(request), uuid);
         return orderId;
     }

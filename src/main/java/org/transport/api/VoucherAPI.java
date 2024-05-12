@@ -2,19 +2,15 @@ package org.transport.api;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import org.transport.common.CommonUtils;
 import org.transport.common.MapperUtil;
-import org.transport.common.ObjectMapperUtils;
 import org.transport.dto.VoucherDetailDto;
 import org.transport.dto.VoucherDto;
 import org.transport.model.Voucher;
 import org.transport.model.VoucherDetail;
-import org.transport.service.AuthenticationServiceProxy;
-import org.transport.service.GenericService;
 import org.transport.service.VoucherService;
 
 import java.util.List;
@@ -25,13 +21,11 @@ import java.util.stream.Collectors;
 public class VoucherAPI {
     @Autowired
     private VoucherService service;
-    @Autowired
-    private AuthenticationServiceProxy authenticationServiceProxy;
 
     @PostMapping(path = "/api/voucher/add")
     public Long addVoucher(@RequestBody VoucherDto voucherDto, HttpServletRequest request) throws Exception {
         String uuid = request.getHeader("X-UUID");
-        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request), uuid));
+        Long userId = CommonUtils.getUserId(CommonUtils.getToken(request), uuid);
         Voucher voucher = new Voucher();
         List<VoucherDetail> voucherDetails = MapperUtil.mapToVoucherDetail(voucherDto.getVoucherDetails());
         voucher.setId(voucherDto.getId());
@@ -44,7 +38,7 @@ public class VoucherAPI {
     @PutMapping(path = "/api/voucher/edit")
     public Long editVoucher(@RequestBody Voucher voucher, HttpServletRequest request) throws Exception {
         String uuid = request.getHeader("X-UUID");
-        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request), uuid));
+        Long userId = CommonUtils.getUserId(CommonUtils.getToken(request), uuid);
         service.update(voucher, userId);
         return voucher.getId();
     }
@@ -52,7 +46,7 @@ public class VoucherAPI {
     @PutMapping(path = "/api/voucherDetail/edit")
     public Long editVoucherDetail(@RequestBody VoucherDetailDto voucherDetailDto, HttpServletRequest request) throws Exception {
         String uuid = request.getHeader("X-UUID");
-        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request), uuid));
+        Long userId = CommonUtils.getUserId(CommonUtils.getToken(request), uuid);
         VoucherDetail voucherDetail = MapperUtil.mapToVoucherDetail(voucherDetailDto);
         service.updateVoucherDetail(voucherDetail, userId);
         return voucherDetail.getId();
@@ -64,7 +58,7 @@ public class VoucherAPI {
         int voucherCount = voucherDetailDtos.stream().collect(Collectors.groupingBy(a -> a.getVoucherId())).size();
         if (voucherCount > 1)
             throw new RuntimeException("2027");
-        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request), uuid));
+        Long userId = CommonUtils.getUserId(CommonUtils.getToken(request), uuid);
         List<VoucherDetail> voucherDetails = MapperUtil.mapToVoucherDetail(voucherDetailDtos);
         service.updateVoucherDetail(voucherDetailDtos.get(0).getVoucherId(), voucherDetails, userId);
         return voucherDetailDtos.get(0).getVoucherId();
@@ -90,6 +84,6 @@ public class VoucherAPI {
 
     @GetMapping(path = "/api/voucher")
     public Page<Voucher> listVoucher(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size) {
-        return service.findAll(Voucher.class,page,size);
+        return service.findAll(Voucher.class, page, size);
     }
 }

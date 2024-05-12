@@ -28,7 +28,7 @@ public class CarAPI {
     @PostMapping(path = "/api/car/add")
     public Long addCar(@RequestBody CarDto carDto, HttpServletRequest request) throws Exception {
         String uuid = request.getHeader("X-UUID");
-        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request),uuid));
+        Long userId = CommonUtils.getUserId(CommonUtils.getToken(request), uuid);
         Car car = new Car();
         Plaque plaque = new Plaque();
         Person person = new Person();
@@ -57,7 +57,7 @@ public class CarAPI {
     @PutMapping(path = "/api/car/edit")
     public Long editCar(@RequestBody CarDto carDto, HttpServletRequest request) throws Exception {
         String uuid = request.getHeader("X-UUID");
-        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request),uuid));
+        Long userId = CommonUtils.getUserId(CommonUtils.getToken(request), uuid);
         Car car = new Car();
         Plaque plaque = new Plaque();
         Person person = new Person();

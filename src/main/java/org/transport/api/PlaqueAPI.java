@@ -8,23 +8,20 @@ import org.springframework.web.bind.annotation.*;
 import org.transport.common.CommonUtils;
 import org.transport.dto.PlaqueDto;
 import org.transport.model.Plaque;
-import org.transport.service.AuthenticationServiceProxy;
 import org.transport.service.GenericService;
 
-import java.util.List;
 
 @RestController
 @SecurityRequirement(name = "Bearer Authentication")
 public class PlaqueAPI {
     @Autowired
     private GenericService<Plaque> service;
-    @Autowired
-    private AuthenticationServiceProxy authenticationServiceProxy;
+
     @PostMapping(path = "/api/plaque/add")
-    public Long addPlaque(@RequestBody PlaqueDto plaqueDto , HttpServletRequest request) throws Exception{
+    public Long addPlaque(@RequestBody PlaqueDto plaqueDto, HttpServletRequest request) throws Exception {
         String uuid = request.getHeader("X-UUID");
-        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request),uuid));
-        Plaque plaque =new Plaque();
+        Long userId = CommonUtils.getUserId(CommonUtils.getToken(request), uuid);
+        Plaque plaque = new Plaque();
         plaque.setId(plaqueDto.getId());
         plaque.setLeftPlaqueTag(plaqueDto.getLeftPlaqueTag());
         plaque.setPlaqueTagPersianPartId(plaqueDto.getPlaqueTagPersianPartId());
@@ -35,11 +32,12 @@ public class PlaqueAPI {
         service.insert(plaque, userId);
         return plaque.getId();
     }
+
     @PutMapping(path = "/api/plaque/edit")
-    public Long editPlaque(@RequestBody PlaqueDto plaqueDto, HttpServletRequest request) throws Exception{
+    public Long editPlaque(@RequestBody PlaqueDto plaqueDto, HttpServletRequest request) throws Exception {
         String uuid = request.getHeader("X-UUID");
-        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request),uuid));
-        Plaque plaque =new Plaque();
+        Long userId = CommonUtils.getUserId(CommonUtils.getToken(request), uuid);
+        Plaque plaque = new Plaque();
         plaque.setId(plaqueDto.getId());
         plaque.setLeftPlaqueTag(plaqueDto.getLeftPlaqueTag());
         plaque.setPlaqueTagPersianPartId(plaqueDto.getPlaqueTagPersianPartId());
@@ -64,6 +62,6 @@ public class PlaqueAPI {
 
     @GetMapping(path = "/api/plaque")
     public Page<Plaque> listPlaque(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size) {
-        return service.findAll(Plaque.class,size,page);
+        return service.findAll(Plaque.class, size, page);
     }
 }

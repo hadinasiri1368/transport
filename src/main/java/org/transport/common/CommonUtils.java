@@ -13,6 +13,7 @@ import org.springframework.web.client.RestTemplate;
 import org.transport.dto.ExceptionDto;
 import org.transport.dto.RoleDto;
 import org.transport.dto.UserDto;
+import org.transport.service.AuthenticationServiceProxy;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -21,11 +22,17 @@ import java.util.*;
 @Slf4j
 @Component
 public class CommonUtils {
+    private static AuthenticationServiceProxy authenticationServiceProxy;
     private static MessageSource messageSource;
 
     @Autowired
     public void setMessageSource(MessageSource messageSource) {
         CommonUtils.messageSource = messageSource;
+    }
+
+    @Autowired
+    public void setAuthenticationServiceProxy(AuthenticationServiceProxy authenticationServiceProxy) {
+        CommonUtils.authenticationServiceProxy = authenticationServiceProxy;
     }
 
     public static String getToken(HttpServletRequest request) {
@@ -59,15 +66,6 @@ public class CommonUtils {
             params = new HashMap<>();
         HttpEntity<T> response = restTemplate.exchange(url, httpMethod, httpEntity, aClass, params);
         return response.getBody();
-    }
-
-    public static <T> List<T> callService(String url, HttpMethod httpMethod, HttpHeaders headers, Object body, Map<String, Object> params, Class<T> aClass) throws Exception {
-        RestTemplate restTemplate = new RestTemplate();
-        HttpEntity httpEntity = new HttpEntity(body, headers);
-        if (CommonUtils.isNull(params))
-            params = new HashMap<>();
-        HttpEntity<List> response = restTemplate.exchange(url, httpMethod, httpEntity, List.class, params);
-        return ObjectMapperUtils.mapAll(response.getBody(), aClass);
     }
 
     public static Long longValue(Object number) {
@@ -119,6 +117,10 @@ public class CommonUtils {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    public static Long getUserId(String token, String uuid) {
+        return longValue(authenticationServiceProxy.getUserId(token, uuid));
     }
 }
 
