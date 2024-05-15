@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -214,8 +213,9 @@ public class OrderService {
         List<RoleDto> roleDtos = new ArrayList<>();
         try {
             UserDto userDto = ObjectMapperUtils.map(authenticationServiceProxy.getUser(token, uuid), UserDto.class);
-            if (CommonUtils.isNull(userDto))
+            if (CommonUtils.isNull(userDto)) {
                 throw new RuntimeException("can not identify token");
+            }
             String hql;
             List<Long> orderIds = new ArrayList<>();
             if (userDto.getIsAdmin()) {
@@ -264,7 +264,6 @@ public class OrderService {
                 returnValue.addAll(orderJPA.listByQuery(query, param));
                 orderIds = returnValue.stream().map(entity -> entity.getId()).collect(Collectors.toList());
 
-
                 hql = "select o from order o \n" +
                         "where o.onlyMyCompanyDriver = true \n" +
                         "and o.orderStatusId in (:orderStatusId) \n" +
@@ -284,7 +283,11 @@ public class OrderService {
         } catch (Exception e) {
             throw e;
         }
-        return new PageImpl(returnValue);
+        if (CommonUtils.isNull(page) && CommonUtils.isNull(size)) {
+            return CommonUtils.listPaging(returnValue);
+        }
+        PageRequest pageRequest = PageRequest.of(CommonUtils.isNull(page, this.page), CommonUtils.isNull(size, this.size));
+        return CommonUtils.listPaging(returnValue,pageRequest);
     }
 
     public Order findOne(Long id) {

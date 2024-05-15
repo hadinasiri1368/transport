@@ -5,6 +5,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -67,6 +70,7 @@ public class CommonUtils {
         HttpEntity<T> response = restTemplate.exchange(url, httpMethod, httpEntity, aClass, params);
         return response.getBody();
     }
+
     public static <T> List<T> callService(String url, HttpMethod httpMethod, HttpHeaders headers, Object body, Map<String, Object> params, Class<T> aClass) throws Exception {
         RestTemplate restTemplate = new RestTemplate();
         HttpEntity httpEntity = new HttpEntity(body, headers);
@@ -75,6 +79,7 @@ public class CommonUtils {
         HttpEntity<List> response = restTemplate.exchange(url, httpMethod, httpEntity, List.class, params);
         return ObjectMapperUtils.mapAll(response.getBody(), aClass);
     }
+
     public static Long longValue(Object number) {
         if (isNull(number))
             return null;
@@ -112,6 +117,7 @@ public class CommonUtils {
             }
         }
     }
+
     public static ExceptionDto getException(Exception exception) {
         try {
             String[] messageArray = exception.getMessage().split("]:");
@@ -128,6 +134,19 @@ public class CommonUtils {
 
     public static Long getUserId(String token, String uuid) {
         return longValue(authenticationServiceProxy.getUserId(token, uuid));
+    }
+
+    public static <T> Page<T> listPaging(List<T> aClass) {
+        PageRequest pageRequest = PageRequest.ofSize(aClass.size());
+        return listPaging(aClass, pageRequest);
+    }
+
+    public static <T> Page<T> listPaging(List<T> aClass, PageRequest pageRequest) {
+        long countResult = (long) aClass.size();
+        int pageNumber = pageRequest.getPageNumber();
+        int pageSize = pageRequest.getPageSize();
+        aClass = aClass.subList((pageNumber * pageSize), pageSize);
+        return new PageImpl<>(aClass, pageRequest, countResult);
     }
 }
 
