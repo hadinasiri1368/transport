@@ -36,6 +36,8 @@ public class Person extends BaseEntity {
     private String establishDate;
     @Column(columnDefinition = "NVARCHAR(50)", name = "manager_name")
     private String managerName;
+    @Column(columnDefinition = "NVARCHAR(50)", name = "manager_last_name")
+    private String managerLastName;
     @Column(columnDefinition = "NVARCHAR(10)", name = "manager_national_code")
     private String managerNationalCode;
     @Column(columnDefinition = "NVARCHAR(10)", name = "manager_birth_date")

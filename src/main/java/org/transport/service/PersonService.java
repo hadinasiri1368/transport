@@ -66,9 +66,11 @@ public class PersonService {
     public Person findOne(Long id) {
         return personJPA.findOne(Person.class, id);
     }
+
     public List<Person> findAll() {
         return personJPA.findAll(Person.class);
     }
+
     public List<Person> findAll(List<UserDto> userDtos) {
         List<Long> personIds = userDtos.stream().map(entity -> entity.getPersonId()).collect(Collectors.toList());
         String hql = "select p from person p where p.id in (:personIds) ";

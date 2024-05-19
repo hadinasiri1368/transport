@@ -1,14 +1,17 @@
 package org.transport.constant;
 
+import jdk.dynalink.beans.StaticClass;
+
 public class Const {
     //ROLE
     public static final Long ROLE_CUSTOMER = 1L;
     public static final Long ROLE_DRIVER = 2L;
     public static final Long ROLE_STAFF = 3L;
+    public static final Long ROLE_COMPANY = 4L;
 
 
     //ORDER_STATUS
-    public static final Long ORDER_STATUS_DRAFT= 1L;
+    public static final Long ORDER_STATUS_DRAFT = 1L;
     public static final Long ORDER_STATUS_WAIT_FOR_CONFIRM = 2L;
     public static final Long ORDER_STATUS_CONFIRMED = 3L;
     public static final Long ORDER_STATUS_TERMINATED = 5L;

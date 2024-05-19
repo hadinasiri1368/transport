@@ -77,6 +77,11 @@ public class CompanyDriverService {
             throw new RuntimeException("2018");
         if (!company.getIsCompany())
             throw new RuntimeException("2019");
+        UserDto userDto = authenticationServiceProxy.findPersonUser(token,uuid,company.getId());
+        roleDtos = authenticationServiceProxy.listRole(token,uuid, userDto.getId());
+        if (roleDtos.stream().noneMatch(a -> a.getId().equals(Const.ROLE_COMPANY))){
+            throw new RuntimeException("2028");
+        }
     }
 
     @Transactional

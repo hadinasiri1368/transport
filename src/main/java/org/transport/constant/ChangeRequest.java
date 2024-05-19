@@ -1,9 +1,12 @@
 package org.transport.constant;
 
+import lombok.Getter;
+
+@Getter
 public enum ChangeRequest {
 
-    ACCEPT (1l, "تایید"),
-    REJECT(2l, "رد"),
+    ACCEPT(1L, "تایید"),
+    REJECT(2L, "رد"),
     ;
 
     ChangeRequest(Long value, String name) {
@@ -13,14 +16,5 @@ public enum ChangeRequest {
 
     private final Long value;
     private final String name;
-
-    public Long getValue() {
-        return value;
-    }
-
-    public String getName() {
-        return name;
-    }
-
 
 }
