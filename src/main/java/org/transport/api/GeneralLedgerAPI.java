@@ -16,7 +16,7 @@ public class GeneralLedgerAPI {
     @Autowired
     private GenericService<GeneralLedger> service;
 
-    @PostMapping(path = "/api/generalLedger/add")
+    @PostMapping(path = "/transport/generalLedger/add")
     public Long addGeneralLedger(@RequestBody GeneralLedger generalLedger, HttpServletRequest request) throws Exception {
         String uuid = request.getHeader("X-UUID");
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request), uuid);
@@ -24,7 +24,7 @@ public class GeneralLedgerAPI {
         return generalLedger.getId();
     }
 
-    @PutMapping(path = "/api/generalLedger/edit")
+    @PutMapping(path = "/transport/generalLedger/edit")
     public Long editGeneralLedger(@RequestBody GeneralLedger generalLedger, HttpServletRequest request) throws Exception {
         String uuid = request.getHeader("X-UUID");
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request), uuid);
@@ -32,18 +32,18 @@ public class GeneralLedgerAPI {
         return generalLedger.getId();
     }
 
-    @DeleteMapping(path = "/api/generalLedger/remove/{id}")
+    @DeleteMapping(path = "/transport/generalLedger/remove/{id}")
     public Long removeGeneralLedger(@PathVariable Long id) {
         service.delete(id, GeneralLedger.class);
         return id;
     }
 
-    @GetMapping(path = "/api/generalLedger/{id}")
+    @GetMapping(path = "/transport/generalLedger/{id}")
     public GeneralLedger getGeneralLedger(@PathVariable Long id) {
         return service.findOne(GeneralLedger.class, id);
     }
 
-    @GetMapping(path = "/api/generalLedger")
+    @GetMapping(path = "/transport/generalLedger")
     public Page<GeneralLedger> listGeneralLedger(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size) {
         return service.findAll(GeneralLedger.class, page, size);
     }

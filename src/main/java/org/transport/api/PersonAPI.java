@@ -19,7 +19,7 @@ public class PersonAPI {
     @Autowired
     private PersonService service;
 
-    @PostMapping(path = "/api/person/add")
+    @PostMapping(path = "/transport/person/add")
     public Long addPerson(@RequestBody Person person, HttpServletRequest request) throws Exception {
         String uuid = request.getHeader("X-UUID");
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request), uuid);
@@ -27,7 +27,7 @@ public class PersonAPI {
         return person.getId();
     }
 
-    @PutMapping(path = "/api/person/edit")
+    @PutMapping(path = "/transport/person/edit")
     public Long editPerson(@RequestBody Person person, HttpServletRequest request) throws Exception {
         String uuid = request.getHeader("X-UUID");
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request), uuid);
@@ -35,23 +35,23 @@ public class PersonAPI {
         return person.getId();
     }
 
-    @DeleteMapping(path = "/api/person/remove/{id}")
+    @DeleteMapping(path = "/transport/person/remove/{id}")
     public Long removePerson(@PathVariable Long id) {
         service.delete(id);
         return id;
     }
 
-    @GetMapping(path = "/api/person/{id}")
+    @GetMapping(path = "/transport/person/{id}")
     public Person getPerson(@PathVariable Long id) {
         return service.findOne(id);
     }
 
-    @GetMapping(path = "/api/person")
+    @GetMapping(path = "/transport/person")
     public Page<Person> listPerson(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size) {
         return service.findAll(Person.class,page,size);
     }
 
-    @PostMapping(path = "/api/personUser")
+    @PostMapping(path = "/transport/personUser")
     public List<UserPersonDto> listUserPerson(@RequestBody List<UserDto> userDtos) {
         List<Person> personList = service.findAll(userDtos);
         UserPersonDto userPersonDto;

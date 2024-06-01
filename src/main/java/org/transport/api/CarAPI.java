@@ -21,7 +21,7 @@ public class CarAPI {
     private GenericService<Car> service;
 
     //    @Operation(summary = "add car", description = "اضافه کردن ماشین")
-    @PostMapping(path = "/api/car/add")
+    @PostMapping(path = "/transport/car/add")
     public Long addCar(@RequestBody CarDto carDto, HttpServletRequest request) throws Exception {
         String uuid = request.getHeader("X-UUID");
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request), uuid);
@@ -50,7 +50,7 @@ public class CarAPI {
         return car.getId();
     }
 
-    @PutMapping(path = "/api/car/edit")
+    @PutMapping(path = "/transport/car/edit")
     public Long editCar(@RequestBody CarDto carDto, HttpServletRequest request) throws Exception {
         String uuid = request.getHeader("X-UUID");
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request), uuid);
@@ -79,18 +79,18 @@ public class CarAPI {
         return car.getId();
     }
 
-    @DeleteMapping(path = "/api/car/remove/{id}")
+    @DeleteMapping(path = "/transport/car/remove/{id}")
     public Long removeCar(@PathVariable Long id) throws Exception {
         service.delete(id, Car.class);
         return id;
     }
 
-    @GetMapping(path = "/api/car/{id}")
+    @GetMapping(path = "/transport/car/{id}")
     public Car getCar(@PathVariable Long id) throws Exception {
         return service.findOne(Car.class, id);
     }
 
-    @GetMapping(path = "/api/car")
+    @GetMapping(path = "/transport/car")
     public Page<Car> listCar(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size) throws Exception {
         return service.findAll(Car.class, page, size);
     }

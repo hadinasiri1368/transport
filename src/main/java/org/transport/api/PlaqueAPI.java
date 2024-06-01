@@ -17,7 +17,7 @@ public class PlaqueAPI {
     @Autowired
     private GenericService<Plaque> service;
 
-    @PostMapping(path = "/api/plaque/add")
+    @PostMapping(path = "/transport/plaque/add")
     public Long addPlaque(@RequestBody PlaqueDto plaqueDto, HttpServletRequest request) throws Exception {
         String uuid = request.getHeader("X-UUID");
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request), uuid);
@@ -33,7 +33,7 @@ public class PlaqueAPI {
         return plaque.getId();
     }
 
-    @PutMapping(path = "/api/plaque/edit")
+    @PutMapping(path = "/transport/plaque/edit")
     public Long editPlaque(@RequestBody PlaqueDto plaqueDto, HttpServletRequest request) throws Exception {
         String uuid = request.getHeader("X-UUID");
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request), uuid);
@@ -49,18 +49,18 @@ public class PlaqueAPI {
         return plaque.getId();
     }
 
-    @DeleteMapping(path = "/api/plaque/remove/{id}")
+    @DeleteMapping(path = "/transport/plaque/remove/{id}")
     public Long removePlaque(@PathVariable Long id) {
         service.delete(id, Plaque.class);
         return id;
     }
 
-    @GetMapping(path = "/api/plaque/{id}")
+    @GetMapping(path = "/transport/plaque/{id}")
     public Plaque getPlaque(@PathVariable Long id) {
         return service.findOne(Plaque.class, id);
     }
 
-    @GetMapping(path = "/api/plaque")
+    @GetMapping(path = "/transport/plaque")
     public Page<Plaque> listPlaque(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size) {
         return service.findAll(Plaque.class, size, page);
     }

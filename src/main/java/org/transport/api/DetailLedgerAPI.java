@@ -16,7 +16,7 @@ public class DetailLedgerAPI {
     @Autowired
     private GenericService<DetailLedger> service;
 
-    @PostMapping(path = "/api/detailLedger/add")
+    @PostMapping(path = "/transport/detailLedger/add")
     public Long addDetailLedger(@RequestBody DetailLedgerDto detailLedgerDto, HttpServletRequest request) throws Exception {
         String uuid = request.getHeader("X-UUID");
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request), uuid);
@@ -29,7 +29,7 @@ public class DetailLedgerAPI {
         return detailLedger.getId();
     }
 
-    @PutMapping(path = "/api/detailLedger/edit")
+    @PutMapping(path = "/transport/detailLedger/edit")
     public Long editDetailLedger(@RequestBody DetailLedgerDto detailLedgerDto, HttpServletRequest request) throws Exception {
         String uuid = request.getHeader("X-UUID");
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request), uuid);
@@ -42,18 +42,18 @@ public class DetailLedgerAPI {
         return detailLedger.getId();
     }
 
-    @DeleteMapping(path = "/api/detailLedger/remove/{id}")
+    @DeleteMapping(path = "/transport/detailLedger/remove/{id}")
     public Long removeDetailLedger(@PathVariable Long id) {
         service.delete(id, DetailLedger.class);
         return id;
     }
 
-    @GetMapping(path = "/api/detailLedger/{id}")
+    @GetMapping(path = "/transport/detailLedger/{id}")
     public DetailLedger getDetailLedger(@PathVariable Long id) {
         return service.findOne(DetailLedger.class, id);
     }
 
-    @GetMapping(path = "/api/detailLedger")
+    @GetMapping(path = "/transport/detailLedger")
     public Page<DetailLedger> listDetailLedger(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size) {
         return service.findAll(DetailLedger.class, page, size);
     }

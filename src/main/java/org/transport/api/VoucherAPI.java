@@ -22,7 +22,7 @@ public class VoucherAPI {
     @Autowired
     private VoucherService service;
 
-    @PostMapping(path = "/api/voucher/add")
+    @PostMapping(path = "/transport/voucher/add")
     public Long addVoucher(@RequestBody VoucherDto voucherDto, HttpServletRequest request) throws Exception {
         String uuid = request.getHeader("X-UUID");
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request), uuid);
@@ -35,7 +35,7 @@ public class VoucherAPI {
         return voucher.getId();
     }
 
-    @PutMapping(path = "/api/voucher/edit")
+    @PutMapping(path = "/transport/voucher/edit")
     public Long editVoucher(@RequestBody Voucher voucher, HttpServletRequest request) throws Exception {
         String uuid = request.getHeader("X-UUID");
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request), uuid);
@@ -43,7 +43,7 @@ public class VoucherAPI {
         return voucher.getId();
     }
 
-    @PutMapping(path = "/api/voucherDetail/edit")
+    @PutMapping(path = "/transport/voucherDetail/edit")
     public Long editVoucherDetail(@RequestBody VoucherDetailDto voucherDetailDto, HttpServletRequest request) throws Exception {
         String uuid = request.getHeader("X-UUID");
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request), uuid);
@@ -52,7 +52,7 @@ public class VoucherAPI {
         return voucherDetail.getId();
     }
 
-    @PutMapping(path = "/api/voucherDetailList/edit")
+    @PutMapping(path = "/transport/voucherDetailList/edit")
     public Long editVoucherDetailList(@RequestBody List<VoucherDetailDto> voucherDetailDtos, HttpServletRequest request) throws Exception {
         String uuid = request.getHeader("X-UUID");
         int voucherCount = voucherDetailDtos.stream().collect(Collectors.groupingBy(a -> a.getVoucherId())).size();
@@ -64,26 +64,26 @@ public class VoucherAPI {
         return voucherDetailDtos.get(0).getVoucherId();
     }
 
-    @DeleteMapping(path = "/api/voucherDetail/remove")
+    @DeleteMapping(path = "/transport/voucherDetail/remove")
     public Long removeVoucherDetail(@RequestBody List<VoucherDetailDto> voucherDetailDtos) throws Exception {
         List<VoucherDetail> voucherDetails = MapperUtil.mapToVoucherDetail(voucherDetailDtos);
         service.deleteVoucherDetail(voucherDetailDtos.get(0).getVoucherId(), voucherDetails);
         return voucherDetailDtos.get(0).getVoucherId();
     }
 
-    @DeleteMapping(path = "/api/voucher/remove/{id}")
+    @DeleteMapping(path = "/transport/voucher/remove/{id}")
     public Long removeVoucher(@PathVariable Long id) {
         service.delete(id);
         return id;
     }
 
-    @GetMapping(path = "/api/voucher/{id}")
+    @GetMapping(path = "/transport/voucher/{id}")
     public Voucher getVoucher(@PathVariable Long id) {
         return service.findOne(id);
     }
 
-    @GetMapping(path = "/api/voucher")
-    public Page<Voucher> listVoucher(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size) {
+    @GetMapping(path = "/transport/voucher")
+    public Page<Voucher> listVoucher(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, HttpServletRequest request) {
         return service.findAll(Voucher.class, page, size);
     }
 }

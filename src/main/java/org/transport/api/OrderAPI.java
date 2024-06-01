@@ -28,7 +28,7 @@ public class OrderAPI {
     @Autowired
     private AuthenticationServiceProxy authenticationServiceProxy;
 
-    @PostMapping(path = "/api/order/add")
+    @PostMapping(path = "/transport/order/add")
     public Long addOrder(@RequestBody OrderDto orderDto, HttpServletRequest request) throws Exception {
         String uuid = request.getHeader("X-UUID");
         Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request), uuid));
@@ -37,7 +37,7 @@ public class OrderAPI {
         return order.getId();
     }
 
-    @PostMapping(path = "/api/orderDetail/add")
+    @PostMapping(path = "/transport/orderDetail/add")
     public Long addOrderDetail(@RequestBody List<OrderDetailDto> orderDetailDtos, HttpServletRequest request) throws Exception {
         String uuid = request.getHeader("X-UUID");
         validationData(orderDetailDtos, null);
@@ -47,7 +47,7 @@ public class OrderAPI {
         return orderDetailDtos.get(0).getOrderId();
     }
 
-    @PostMapping(path = "/api/orderImage/add", consumes = {"multipart/form-data"})
+    @PostMapping(path = "/transport/orderImage/add", consumes = {"multipart/form-data"})
     public Long addOrderImage(@RequestParam("orderId") Long orderId, @RequestParam("image") MultipartFile[] multipartFiles, HttpServletRequest request) {
         try {
             String uuid = request.getHeader("X-UUID");
@@ -64,18 +64,18 @@ public class OrderAPI {
         return 0l;
     }
 
-    @DeleteMapping(path = "/api/order/remove/{id}")
+    @DeleteMapping(path = "/transport/order/remove/{id}")
     public Long removeOrder(@PathVariable Long id) {
         service.delete(id);
         return id;
     }
 
-    @GetMapping(path = "/api/order/{id}")
+    @GetMapping(path = "/transport/order/{id}")
     public Order getOrder(@PathVariable Long id) {
         return service.findOne(id);
     }
 
-    @GetMapping(path = "/api/order")
+    @GetMapping(path = "/transport/order")
     public Page<Order> listOrder(HttpServletRequest request, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size) throws Exception {
         String uuid = request.getHeader("X-UUID");
         Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request), uuid));
@@ -83,7 +83,7 @@ public class OrderAPI {
         return service.findAll(userId, token, uuid, page, size);
     }
 
-    @PostMapping(path = "/api/acceptOrderCarDriver")
+    @PostMapping(path = "/transport/acceptOrderCarDriver")
     public Long acceptOrderCarDriver(@ModelAttribute("orderId") Long orderId, @ModelAttribute("carId") Long carId, HttpServletRequest request) throws Exception {
         String uuid = request.getHeader("X-UUID");
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request), uuid);
@@ -91,7 +91,7 @@ public class OrderAPI {
         return orderId;
     }
 
-    @PostMapping(path = "/api/changeOrderStatus")
+    @PostMapping(path = "/transport/changeOrderStatus")
     public Long changeOrderStatus(@ModelAttribute("orderId") Long orderId, HttpServletRequest request) throws Exception {
         String uuid = request.getHeader("X-UUID");
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request), uuid);
@@ -99,7 +99,7 @@ public class OrderAPI {
         return orderId;
     }
 
-    @PostMapping(path = "/api/cancelledOrder")
+    @PostMapping(path = "/transport/cancelledOrder")
     public Long cancelledOrder(@ModelAttribute("orderId") Long orderId, HttpServletRequest request) throws Exception {
         String uuid = request.getHeader("X-UUID");
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request), uuid);

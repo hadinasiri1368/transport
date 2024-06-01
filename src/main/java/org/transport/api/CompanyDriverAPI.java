@@ -17,7 +17,7 @@ public class CompanyDriverAPI {
     @Autowired
     private CompanyDriverService companyDriverService;
 
-    @PostMapping(path = "/api/companyDriver/add")
+    @PostMapping(path = "/transport/companyDriver/add")
     public Long addCompanyDriver(@RequestBody CompanyDriverDto companyDriverDto, HttpServletRequest request) throws Exception {
         String uuid = request.getHeader("X-UUID");
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request), uuid);
@@ -33,7 +33,7 @@ public class CompanyDriverAPI {
         return companyDriver.getId();
     }
 
-    @PutMapping(path = "/api/companyDriver/edit")
+    @PutMapping(path = "/transport/companyDriver/edit")
     public Long editCompanyDriver(@RequestBody CompanyDriverDto companyDriverDto, HttpServletRequest request) throws Exception {
         String uuid = request.getHeader("X-UUID");
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request), uuid);
@@ -49,23 +49,23 @@ public class CompanyDriverAPI {
         return companyDriver.getId();
     }
 
-    @DeleteMapping(path = "/api/companyDriver/remove/{id}")
+    @DeleteMapping(path = "/transport/companyDriver/remove/{id}")
     public Long removeCompanyDriver(@PathVariable Long id) {
         companyDriverService.delete(id);
         return id;
     }
 
-    @GetMapping(path = "/api/companyDriver/{id}")
+    @GetMapping(path = "/transport/companyDriver/{id}")
     public CompanyDriver getCompanyDriver(@PathVariable Long id) {
         return companyDriverService.findOne(id);
     }
 
-    @GetMapping(path = "/api/companyDriver")
+    @GetMapping(path = "/transport/companyDriver")
     public List<CompanyDriver> listCompanyDriver() {
         return companyDriverService.findAll(CompanyDriver.class);
     }
 
-    @PostMapping(path = "/api/companyDriver/changeRequest")
+    @PostMapping(path = "/transport/companyDriver/changeRequest")
     public ChangeRequestDto changeRequestCompanyDriver(@RequestBody ChangeRequestDto changeRequestDto, HttpServletRequest request) throws Exception {
         String uuid = request.getHeader("X-UUID");
         companyDriverService.changeRequestDriver(CommonUtils.getToken(request), changeRequestDto, uuid);

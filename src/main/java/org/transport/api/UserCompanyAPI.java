@@ -19,7 +19,7 @@ public class UserCompanyAPI {
     @Autowired
     private UserCompanyService service;
 
-    @PostMapping(path = "/api/userCompany/add")
+    @PostMapping(path = "/transport/userCompany/add")
     public Long addUserCompany(@RequestBody UserCompanyDto userCompanyDto, HttpServletRequest request) throws Exception {
         String uuid = request.getHeader("X-UUID");
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request), uuid);
@@ -33,7 +33,7 @@ public class UserCompanyAPI {
         return userCompany.getId();
     }
 
-    @PutMapping(path = "/api/userCompany/edit")
+    @PutMapping(path = "/transport/userCompany/edit")
     public Long editUserCompany(@RequestBody UserCompanyDto userCompanyDto, HttpServletRequest request) throws Exception {
         String uuid = request.getHeader("X-UUID");
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request), uuid);
@@ -47,23 +47,23 @@ public class UserCompanyAPI {
         return userCompany.getId();
     }
 
-    @DeleteMapping(path = "/api/userCompany/remove/{id}")
+    @DeleteMapping(path = "/transport/userCompany/remove/{id}")
     public Long removeGUserCompany(@PathVariable Long id) {
         service.delete(id);
         return id;
     }
 
-    @GetMapping(path = "/api/userCompany/{id}")
+    @GetMapping(path = "/transport/userCompany/{id}")
     public UserCompany getUserCompany(@PathVariable Long id) {
         return service.findOne(id);
     }
 
-    @GetMapping(path = "/api/userCompanyByUserId/{userId}")
+    @GetMapping(path = "/transport/userCompanyByUserId/{userId}")
     public List<UserCompany> getUserCompanyByUserId(@PathVariable Long userId) {
         return service.findByUserId(userId);
     }
 
-    @GetMapping(path = "/api/userCompany")
+    @GetMapping(path = "/transport/userCompany")
     public Page<UserCompany> listUserCompany(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size) {
         return service.findAll(UserCompany.class,page,size);
     }

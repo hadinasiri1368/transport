@@ -12,22 +12,22 @@ import java.util.Map;
 
 @FeignClient("AUTHENTICATION")
 public interface AuthenticationServiceProxy {
-    @GetMapping(path = "/api/user/role")
+    @GetMapping(path = "/authentication/user/role")
     List<RoleDto> listRole(@RequestHeader("Authorization") String token, @RequestHeader("X-UUID") String uuid, @RequestParam(value = "userId") Long userId);
 
-    @GetMapping(path = "/api/user/role")
+    @GetMapping(path = "/authentication/user/role")
     List<RoleDto> listRole(@RequestHeader("Authorization") String token, @RequestHeader("X-UUID") String uuid);
 
-    @GetMapping(path = "/getUserId")
+    @GetMapping(path = "/authentication/getUserId")
     String getUserId(@RequestParam("token") String token, @RequestHeader("X-UUID") String uuid);
 
-    @GetMapping(path = "/checkValidationToken")
+    @GetMapping(path = "/authentication/checkValidationToken")
     String checkValidationToken(@RequestParam("token") String token, @RequestHeader("X-UUID") String uuid, @RequestParam("url") String url);
 
-    @GetMapping(path = "/getUser")
+    @GetMapping(path = "/authentication/getUser")
     Map getUser(@RequestParam("token") String token, @RequestHeader("X-UUID") String uuid);
 
-    @GetMapping(path = "/api/findUser/{personId}")
+    @GetMapping(path = "/authentication/findUser/{personId}")
     UserDto findPersonUser(@RequestHeader("Authorization") String token, @RequestHeader("X-UUID") String uuid, @PathVariable Long personId);
 
 }

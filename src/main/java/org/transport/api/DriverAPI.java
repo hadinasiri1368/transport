@@ -18,7 +18,7 @@ public class DriverAPI {
     @Autowired
     private GenericService<Driver> service;
 
-    @PostMapping(path = "/api/driver/add")
+    @PostMapping(path = "/transport/driver/add")
     public Long addDriver(@RequestBody DriverDto driverDto, HttpServletRequest request) throws Exception {
         String uuid = request.getHeader("X-UUID");
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request), uuid);
@@ -35,7 +35,7 @@ public class DriverAPI {
         return driver.getId();
     }
 
-    @PutMapping(path = "/api/driver/edit")
+    @PutMapping(path = "/transport/driver/edit")
     public Long editDriver(@RequestBody DriverDto driverDto, HttpServletRequest request) throws Exception {
         String uuid = request.getHeader("X-UUID");
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request), uuid);
@@ -52,18 +52,18 @@ public class DriverAPI {
         return driver.getId();
     }
 
-    @DeleteMapping(path = "/api/driver/remove/{id}")
+    @DeleteMapping(path = "/transport/driver/remove/{id}")
     public Long removeDriver(@PathVariable Long id) {
         service.delete(id, Driver.class);
         return id;
     }
 
-    @GetMapping(path = "/api/driver/{id}")
+    @GetMapping(path = "/transport/driver/{id}")
     public Driver getDriver(@PathVariable Long id) {
         return service.findOne(Driver.class, id);
     }
 
-    @GetMapping(path = "/api/driver")
+    @GetMapping(path = "/transport/driver")
     public Page<Driver> listDriver(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size) {
         return service.findAll(Driver.class, page, size);
     }

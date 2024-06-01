@@ -18,7 +18,7 @@ public class SubsidiaryLedgerAPI {
     @Autowired
     private GenericService<SubsidiaryLedger> service;
 
-    @PostMapping(path = "/api/subsidiaryLedger/add")
+    @PostMapping(path = "/transport/subsidiaryLedger/add")
     public Long addSubsidiaryLedger(@RequestBody SubsidiaryLedgerDto subsidiaryLedgerDto, HttpServletRequest request) throws Exception {
         String uuid = request.getHeader("X-UUID");
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request), uuid);
@@ -33,7 +33,7 @@ public class SubsidiaryLedgerAPI {
         return subsidiaryLedger.getId();
     }
 
-    @PutMapping(path = "/api/subsidiaryLedger/edit")
+    @PutMapping(path = "/transport/subsidiaryLedger/edit")
     public Long editSubsidiaryLedger(@RequestBody SubsidiaryLedgerDto subsidiaryLedgerDto, HttpServletRequest request) throws Exception {
         String uuid = request.getHeader("X-UUID");
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request), uuid);
@@ -48,18 +48,18 @@ public class SubsidiaryLedgerAPI {
         return subsidiaryLedger.getId();
     }
 
-    @DeleteMapping(path = "/api/subsidiaryLedger/remove/{id}")
+    @DeleteMapping(path = "/transport/subsidiaryLedger/remove/{id}")
     public Long removeSubsidiaryLedger(@PathVariable Long id) {
         service.delete(id, SubsidiaryLedger.class);
         return id;
     }
 
-    @GetMapping(path = "/api/subsidiaryLedger/{id}")
+    @GetMapping(path = "/transport/subsidiaryLedger/{id}")
     public SubsidiaryLedger getSubsidiaryLedger(@PathVariable Long id) {
         return service.findOne(SubsidiaryLedger.class, id);
     }
 
-    @GetMapping(path = "/api/subsidiaryLedger")
+    @GetMapping(path = "/transport/subsidiaryLedger")
     public Page<SubsidiaryLedger> listSubsidiaryLedger(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size) {
         return service.findAll(SubsidiaryLedger.class, page, size);
     }
