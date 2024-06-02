@@ -13,6 +13,7 @@ import org.transport.common.CommonUtils;
 import org.transport.dto.UserDto;
 import org.transport.model.*;
 import org.transport.repository.JPA;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -25,6 +26,9 @@ public class PersonService {
 
     @Autowired
     private JPA<Person, Long> personJPA;
+
+    @Autowired
+    private AuthenticationServiceProxy authenticationServiceProxy;
 
     @Value("${PageRequest.page}")
     private Integer page;
@@ -63,6 +67,7 @@ public class PersonService {
         }
         return returnValue;
     }
+
     public Person findOne(Long id) {
         return personJPA.findOne(Person.class, id);
     }
@@ -77,8 +82,7 @@ public class PersonService {
         Query query = entityManager.createQuery(hql);
         Map<String, Object> param = new HashMap<>();
         param.put("personIds", personIds);
-        personJPA.listByQuery(query, param);
-        return personJPA.findAll(Person.class);
+        return personJPA.listByQuery(query, param);
     }
 
     public Page<Person> findAll(Class<Person> aClass, Integer page, Integer size) {
@@ -87,6 +91,12 @@ public class PersonService {
         }
         PageRequest pageRequest = PageRequest.of(CommonUtils.isNull(page, this.page), CommonUtils.isNull(size, this.size));
         return personJPA.findAllWithPaging(aClass, pageRequest);
+    }
+
+    public List<Person> findPersonsRole(Long roleId, String token, String uuid) {
+        List<UserDto> userDtos = authenticationServiceProxy.findAllUserRole(token, uuid, roleId);
+        List<Person> personList = findAll(userDtos);
+        return personList;
     }
 
 }
