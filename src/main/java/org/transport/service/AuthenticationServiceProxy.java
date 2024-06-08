@@ -1,8 +1,6 @@
 package org.transport.service;
 
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.transport.dto.RoleDto;
 import org.transport.dto.UserDto;
@@ -29,5 +27,8 @@ public interface AuthenticationServiceProxy {
 
     @GetMapping(path = "/authentication/findUser/{personId}")
     UserDto findPersonUser(@RequestHeader("Authorization") String token, @RequestHeader("X-UUID") String uuid, @PathVariable Long personId);
+
+    @GetMapping(path = "/authentication/UsersPerRole/{roleId}")
+    List<UserDto> findAllUserRole(@RequestHeader("Authorization") String token, @RequestHeader("X-UUID") String uuid, @PathVariable Long roleId);
 
 }

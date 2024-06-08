@@ -64,4 +64,13 @@ public class PersonAPI {
         }
         return userPersonDtos;
     }
+
+    @GetMapping(path = "/transport/personsRole/{roleId}")
+    public List<Person> listPersonsRole(@PathVariable Long roleId, HttpServletRequest request){
+        String uuid = request.getHeader("X-UUID");
+        String token = CommonUtils.getToken(request);
+        return service.findPersonsRole(roleId,token,uuid);
+    }
+
+
 }
