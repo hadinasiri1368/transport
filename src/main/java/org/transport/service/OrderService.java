@@ -58,7 +58,7 @@ public class OrderService {
         if (!CommonUtils.isNull(orderImages) && orderImages.size() > 0) {
             for (OrderImage orderImage : orderImages) {
                 orderImage.setId(null);
-                orderImage.setOrder(order);
+                orderImage.setOrderId(order.getId());
                 orderImage.setInsertedUserId(userId);
                 orderImage.setInsertedDateTime(new Date());
                 orderImageJPA.save(orderImage);
@@ -78,7 +78,7 @@ public class OrderService {
         }
         if (!CommonUtils.isNull(orderImages) && orderImages.size() > 0) {
             for (OrderImage orderImage : orderImages) {
-                orderImage.setOrder(order);
+                orderImage.setOrderId(order.getId());
                 orderImage.setUpdatedUserId(userId);
                 orderImage.setUpdatedDateTime(new Date());
                 orderImageJPA.update(orderImage);

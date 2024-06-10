@@ -15,10 +15,8 @@ public class OrderImage extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "f_order_id")
-    @JsonBackReference
-    private Order order;
+    @Column(columnDefinition = "f_order_id")
+    private Long orderId;
     @Column(columnDefinition = "IMAGE")
     private byte[] pic;
 }

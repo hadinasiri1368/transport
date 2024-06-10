@@ -114,7 +114,7 @@ public class OrderAPI {
                 throw new RuntimeException("2005");
         }
         if (!CommonUtils.isNull(orderImages) && orderImages.size() > 0) {
-            int voucherCount = orderImages.stream().collect(Collectors.groupingBy(a -> a.getOrder().getId())).size();
+            int voucherCount = orderImages.stream().collect(Collectors.groupingBy(a -> a.getOrderId())).size();
             if (voucherCount > 1)
                 throw new RuntimeException("2005");
         }
