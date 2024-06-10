@@ -31,18 +31,16 @@ public class Order extends BaseEntity {
     private Long destinationId;
     @Column(name = "f_order_status_id")
     private Long orderStatusId;
-    @Column(name = "f_car_property_id")
-    private Long carPropertyId;
+    @Column(name = "f_car_group_id")
+    private Long carGroupId;
+    @Column(name = "f_car_capacity_id")
+    private Long carCapacityId;
     @Column(columnDefinition = "NVARCHAR(10)", name = "order_date")
     private String orderDate;
     @Column(columnDefinition = "NVARCHAR(10)", name = "loading_date")
     private String loadingDate;
     @Column(columnDefinition = "NVARCHAR(5)", name = "loading_time")
     private String loadingTime;
-    @Column(columnDefinition = "NVARCHAR(50)", name = "source_postal_code")
-    private String sourcePostalCode;
-    @Column(columnDefinition = "NVARCHAR(50)", name = "destination_postal_code")
-    private String destinationPostalCode;
     @Column(columnDefinition = "NVARCHAR(500)")
     private String description;
     @Column(columnDefinition = "BIGINT")
@@ -59,4 +57,34 @@ public class Order extends BaseEntity {
     @JoinColumn(name = "f_order_id")
     @JsonManagedReference
     private List<OrderImage> orderImages;
+    @Column(columnDefinition = "NVARCHAR(100)", name = "sender_first_name_family")
+    private String senderFirstNameAndFamily;
+    @Column(columnDefinition = "NVARCHAR(50)", name = "sender_mobile_number")
+    private String senderMobileNumber;
+    @Column(columnDefinition = "NVARCHAR(100)", name = "sender_address")
+    private String senderAddress;
+    @Column(columnDefinition = "INT", name = "sender_unit")
+    private Integer senderUnit;
+    @Column(columnDefinition = "NVARCHAR(50)", name = "sender_postal_code")
+    private String senderPostalCode;
+    @Column(columnDefinition = "FLOAT", name = "sender_latitude")
+    private Float senderLatitude;
+    @Column(columnDefinition = "FLOAT", name = "sender_longitude")
+    private Float senderLongitude;
+    @Column(columnDefinition = "NVARCHAR(100)", name = "receiver_first_name_family")
+    private String receiverFirstNameAndfamily;
+    @Column(columnDefinition = "NVARCHAR(50)", name = "receiver_mobile_number")
+    private String receiverMobileNumber;
+    @Column(columnDefinition = "NVARCHAR(100)", name = "receiver_address")
+    private String receiverAddress;
+    @Column(columnDefinition = "INT", name = "receiver_unit")
+    private Integer receiverUnit;
+    @Column(columnDefinition = "NVARCHAR(50)", name = "receiver_postal_code")
+    private String receiverPostalCode;
+    @Column(columnDefinition = "FLOAT", name = "receiver_latitude")
+    private Float receiverLatitude;
+    @Column(columnDefinition = "FLOAT", name = "receiver_longitude")
+    private Float receiverLongitude;
+    @Column(columnDefinition = "FLOAT", name = "distance")
+    private Float distance;
 }
