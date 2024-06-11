@@ -15,8 +15,8 @@ public class OrderImage extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(columnDefinition = "f_order_id")
+    @Column(name ="f_order_id")
     private Long orderId;
-    @Column(columnDefinition = "IMAGE")
+    @Column(columnDefinition = "IMAGE",name ="pic")
     private byte[] pic;
 }

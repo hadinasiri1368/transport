@@ -27,10 +27,6 @@ public class OrderDetail extends BaseEntity{
     private Long packingTypeId;
     @Column(name = "f_loading_type_id")
     private Long loadingTypeId;
-    @Column(name = "f_car_group_id")
-    private Long carGroupId;
-    @Column(name = "f_car_capacity_id")
-    private Long carCapacityId;
     @Column(columnDefinition = "FLOAT")
     private Float weight;
     @Column(columnDefinition = "INT",name = "package_count")

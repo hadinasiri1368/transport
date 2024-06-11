@@ -1,5 +1,9 @@
 package org.transport.api;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +32,10 @@ public class OrderAPI {
     @Autowired
     private AuthenticationServiceProxy authenticationServiceProxy;
 
+
+    @Operation(summary = "ثبت سفارش حمل")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "سفارش ثبت شد")})
     @PostMapping(path = "/transport/order/add")
     public Long addOrder(@RequestBody OrderDto orderDto, HttpServletRequest request) throws Exception {
         String uuid = request.getHeader("X-UUID");

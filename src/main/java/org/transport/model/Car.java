@@ -24,8 +24,6 @@ public class Car extends BaseEntity {
     private Long fuelTypeId;
     @Column(columnDefinition = "NVARCHAR(50)", name = "f_car_group_id")
     private Long carGroupId;
-    @Column(columnDefinition = "DECIMAL(18,0)", name = "f_car_capacity_id")
-    private Long carCapacityId;
     @ManyToOne
     @JoinColumn(name = "f_plaque_id")
     private Plaque plaque;
