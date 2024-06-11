@@ -6,7 +6,7 @@ spring:
     name: "TRANSPORT"
   datasource:
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
-    url: jdbc:sqlserver://;serverName=172.30.23.136;databaseName=way;encrypt=true;trustServerCertificate=true;
+    url: jdbc:sqlserver://;serverName=localhost;databaseName=way;encrypt=true;trustServerCertificate=true;
     username: sa
     password: asd123!@#
   jpa:
@@ -28,6 +28,11 @@ eureka:
 PageRequest :
   page : 0
   size : 10
+
+map:
+  neshan:
+    api-key: service.e476c7ad491c4c56a8faae2e104fba21
+    base-url: https://api.neshan.org
 
 springdoc:
   swagger-ui:
