@@ -25,16 +25,10 @@ public class Order extends BaseEntity {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "f_car_id")
     private Car car;
-    @Column(name = "f_source_id")
-    private Long sourceId;
-    @Column(name = "f_destination_id")
-    private Long destinationId;
     @Column(name = "f_order_status_id")
     private Long orderStatusId;
-    @Column(name = "f_car_group_id")
-    private Long carGroupId;
-    @Column(name = "f_car_capacity_id")
-    private Long carCapacityId;
+    @Column(name = "f_car_type_id")
+    private Long carTypeId;
     @Column(columnDefinition = "NVARCHAR(10)", name = "order_date")
     private String orderDate;
     @Column(columnDefinition = "NVARCHAR(10)", name = "loading_date")

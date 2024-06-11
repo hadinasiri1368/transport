@@ -14,8 +14,6 @@ public class OrderDetailDto {
     private Long baseInfoGoodId;
     private Long packingTypeId;
     private Long loadingTypeId;
-    private Long carGroupId;
-    private Long carCapacityId;
     private Float weight;
     private Integer packageCount;
     private Long valuePrice;

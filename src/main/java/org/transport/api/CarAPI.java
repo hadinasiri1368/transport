@@ -36,7 +36,6 @@ public class CarAPI {
         car.setDriver(driver);
         car.setFuelTypeId(carDto.getFuelTypeId());
         car.setCarGroupId(carDto.getCarGroupId());
-        car.setCarCapacityId(carDto.getCarCapacityId());
         plaque.setId(carDto.getPlaqueId());
         car.setPlaque(plaque);
         car.setFleetTypeId(carDto.getFleetTypeId());
@@ -65,7 +64,6 @@ public class CarAPI {
         car.setDriver(driver);
         car.setFuelTypeId(carDto.getFuelTypeId());
         car.setCarGroupId(carDto.getCarGroupId());
-        car.setCarCapacityId(carDto.getCarCapacityId());
         plaque.setId(carDto.getPlaqueId());
         car.setPlaque(plaque);
         car.setFleetTypeId(carDto.getFleetTypeId());
