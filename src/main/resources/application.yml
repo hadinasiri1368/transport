@@ -37,6 +37,8 @@ map:
 springdoc:
   swagger-ui:
     path: index.html
+    server-url: http://localhost:8083
+    #    server-url: http://ctiran.ir
     enabled: true
     config-url: /transportSwagger/v3/api-docs/swagger-config
     disable-swagger-default-url: true
