@@ -455,18 +455,5 @@ public class OrderService {
         }
         throw new RuntimeException("2001");
     }
-
-    @Transactional
-    public Long price (Long orderId, String token, String uuid,double fromLatitude, double fromLongitude, double toLatitude, double toLongitude, Boolean withTraffic) throws Exception {
-        UserDto userDto = ObjectMapperUtils.map(authenticationServiceProxy.getUser(token, uuid), UserDto.class);
-        if (CommonUtils.isNull(userDto))
-            throw new RuntimeException("2002");
-        NeshanElementDto neshanElementDto = new NeshanElementDto();
-        neshanElementDto=neshanMapService.getDistanceWithTraffic(fromLatitude,fromLongitude,toLatitude,toLongitude);
-        neshanElementDto.getDistance();
-        neshanElementDto.getDuration();
-
-        return orderId;
-    }
 }
 
