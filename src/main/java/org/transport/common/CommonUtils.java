@@ -150,7 +150,7 @@ public class CommonUtils {
         int toIndex = Math.min(fromIndex + pageSize, aClass.size());
 
         if (fromIndex > toIndex) {
-            fromIndex = toIndex; // Ensure fromIndex is not greater than toIndex
+            fromIndex = toIndex;
         }
 
         List<T> subList = aClass.subList(fromIndex, toIndex);
