@@ -142,11 +142,19 @@ public class CommonUtils {
     }
 
     public static <T> Page<T> listPaging(List<T> aClass, PageRequest pageRequest) {
-        long countResult = (long) aClass.size();
+        long countResult = aClass.size();
         int pageNumber = pageRequest.getPageNumber();
         int pageSize = pageRequest.getPageSize();
-        aClass = aClass.subList((pageNumber * pageSize), pageSize);
-        return new PageImpl<>(aClass, pageRequest, countResult);
+
+        int fromIndex = pageNumber * pageSize;
+        int toIndex = Math.min(fromIndex + pageSize, aClass.size());
+
+        if (fromIndex > toIndex) {
+            fromIndex = toIndex; // Ensure fromIndex is not greater than toIndex
+        }
+
+        List<T> subList = aClass.subList(fromIndex, toIndex);
+        return new PageImpl<>(subList, pageRequest, countResult);
     }
 }
 
