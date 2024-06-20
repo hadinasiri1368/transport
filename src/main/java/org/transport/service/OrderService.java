@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.transport.common.CommonUtils;
 import org.transport.constant.Const;
 import org.transport.common.ObjectMapperUtils;
+import org.transport.dto.Response.NeshanElementDto;
 import org.transport.dto.RoleDto;
 import org.transport.dto.UserDto;
 import org.transport.model.*;
@@ -39,6 +40,8 @@ public class OrderService {
     private UserCompanyService userCompanyService;
     @Autowired
     private AuthenticationServiceProxy authenticationServiceProxy;
+    @Autowired
+    private NeshanMapServiceImpl neshanMapService;
 
     @Value("${PageRequest.page}")
     private Integer page;
@@ -451,6 +454,19 @@ public class OrderService {
             return order.getOrderStatusId();
         }
         throw new RuntimeException("2001");
+    }
+
+    @Transactional
+    public Long price (Long orderId, String token, String uuid,double fromLatitude, double fromLongitude, double toLatitude, double toLongitude, Boolean withTraffic) throws Exception {
+        UserDto userDto = ObjectMapperUtils.map(authenticationServiceProxy.getUser(token, uuid), UserDto.class);
+        if (CommonUtils.isNull(userDto))
+            throw new RuntimeException("2002");
+        NeshanElementDto neshanElementDto = new NeshanElementDto();
+        neshanElementDto=neshanMapService.getDistanceWithTraffic(fromLatitude,fromLongitude,toLatitude,toLongitude);
+        neshanElementDto.getDistance();
+        neshanElementDto.getDuration();
+
+        return orderId;
     }
 }
 
