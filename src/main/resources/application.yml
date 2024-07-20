@@ -21,15 +21,15 @@ spring:
               loggerLevel: full
 
 eureka:
-#  baseServerUrl: 192.168.100.10
-    baseServerUrl: localhost
+  #  baseServerUrl: 192.168.100.10
+  baseServerUrl: localhost
   client:
     service-url:
       defaultZone: http://${eureka.baseServerUrl}:8080/eureka
 
-PageRequest :
-  page : 0
-  size : 10
+PageRequest:
+  page: 0
+  size: 10
 
 map:
   neshan:
@@ -39,7 +39,7 @@ map:
 springdoc:
   swagger-ui:
     path: index.html
-    server-url: http://localhost:8083
+    server-url: http://localhost:8086
     #    server-url: http://ctiran.ir
     enabled: true
     config-url: /transportSwagger/v3/api-docs/swagger-config

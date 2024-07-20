@@ -29,4 +29,20 @@ public class Const {
     public static final Long REQUEST_STATUS_CONFIRM = 2L;
     public static final Long REQUEST_STATUS_REJECT = 3L;
 
+    //LOADING_TYPE
+    public static final Long TRANSPORTING_FOOD_MEDICINE_REQUIRES_REFRIGERATION = 1L;
+    public static final Long CARRYING_FOOD_MEDICINE_WITHOUT_NEED_FOR_REFRIGERATOR = 2L;
+    public static final Long CARRYING_FRUITS_VEGETABLES = 3L;
+    public static final Long TRANSPORTING_AGRICULTURAL_PRODUCTS = 4L;
+    public static final Long TRANSPORTING_CHEMICALS_PETROLEUM_FUELS = 5L;
+    public static final Long CARRYING_TOILETRIES = 6L;
+    public static final Long DRY_WASTE_TRANSPORTATION = 7L;
+    public static final Long TRANSPORTING_HOSPITAL_WASTE = 8L;
+    public static final Long CARRYING_HOME_FURNITURE = 9L;
+    public static final Long CARRYING_CONSTRUCTION_CONSTRUCTION_MATERIALS = 10L;
+
+    //PARAMETERS
+    public static final String TON_KILOMETERS = "TON_KILOMETERS";
+    public static final String ARRIVAL_TIME_FACTOR = "ARRIVAL_TIME_FACTOR";
+
 }

@@ -81,4 +81,13 @@ public class Order extends BaseEntity {
     private Float receiverLongitude;
     @Column(columnDefinition = "FLOAT", name = "distance")
     private Float distance;
+    @Column(columnDefinition = "FLOAT", name = "car_group_factor")
+    private Float carGroupFactor;
+    @Column(columnDefinition = "FLOAT", name = "loading_type_factor")
+    private Float loadingTypeFactor;
+    @Column(columnDefinition = "FLOAT", name = "ton_kilometers_factor")
+    private Float tonKilometersFactor;
+    @Column(columnDefinition = "FLOAT", name = "duration_factor")
+    private Float durationFactor;
+
 }

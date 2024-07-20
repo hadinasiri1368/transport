@@ -415,7 +415,7 @@ public class OrderService {
     }
 
     @Transactional
-    public Long cancelledOrder(Long orderId, Long userId, String token, String uuid) throws Exception {
+    public void cancelledOrder(Long orderId, Long userId, String token, String uuid) throws Exception {
         UserDto userDto = ObjectMapperUtils.map(authenticationServiceProxy.getUser(token, uuid), UserDto.class);
         if (CommonUtils.isNull(userDto))
             throw new RuntimeException("2002");
@@ -440,7 +440,7 @@ public class OrderService {
         if (order.getOrderStatusId().equals(Const.ORDER_STATUS_WAIT_FOR_CONFIRM) && order.getUserId().equals(userId)) {
             order.setOrderStatusId(Const.ORDER_STATUS_CANCELLED_CUSTOMER);
             update(order, userId);
-            return order.getOrderStatusId();
+            return;
         }
 
         if (order.getOrderStatusId().equals(Const.ORDER_STATUS_WAIT_FOR_CONFIRM) || order.getOrderStatusId().equals(Const.ORDER_STATUS_CAR_IN_LOADING_ORIGIN)
@@ -451,9 +451,23 @@ public class OrderService {
                 order.setOrderStatusId(Const.ORDER_STATUS_CANCELLED_DRIVER);
             }
             update(order, userId);
-            return order.getOrderStatusId();
+            return;
         }
         throw new RuntimeException("2001");
+    }
+
+    @Transactional
+    public Long price (Long orderId, String token, String uuid,double fromLatitude, double fromLongitude, double toLatitude, double toLongitude, Boolean withTraffic,Float weight,Long loadingTypeId,Long carTypeId) throws Exception {
+        UserDto userDto = ObjectMapperUtils.map(authenticationServiceProxy.getUser(token, uuid), UserDto.class);
+        if (CommonUtils.isNull(userDto))
+            throw new RuntimeException("2002");
+        NeshanElementDto neshanElementDto = new NeshanElementDto();
+        neshanElementDto=neshanMapService.getDistanceWithTraffic(fromLatitude,fromLongitude,toLatitude,toLongitude);
+        int distance=neshanElementDto.getDistance().getValue();
+        int duration=neshanElementDto.getDuration().getValue();
+
+
+        return orderId;
     }
 }
 
