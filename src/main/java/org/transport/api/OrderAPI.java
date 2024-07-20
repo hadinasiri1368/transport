@@ -116,12 +116,12 @@ public class OrderAPI {
     }
 
     private void validationData(List<OrderDetailDto> orderDetailDtos, List<OrderImage> orderImages) {
-        if (!CommonUtils.isNull(orderDetailDtos) && orderDetailDtos.size() > 0) {
+        if (!CommonUtils.isNull(orderDetailDtos) && !orderDetailDtos.isEmpty()) {
             int voucherCount = orderDetailDtos.stream().collect(Collectors.groupingBy(a -> a.getOrderId())).size();
             if (voucherCount > 1)
                 throw new RuntimeException("2005");
         }
-        if (!CommonUtils.isNull(orderImages) && orderImages.size() > 0) {
+        if (!CommonUtils.isNull(orderImages) && !orderImages.isEmpty()) {
             int voucherCount = orderImages.stream().collect(Collectors.groupingBy(a -> a.getOrderId())).size();
             if (voucherCount > 1)
                 throw new RuntimeException("2005");

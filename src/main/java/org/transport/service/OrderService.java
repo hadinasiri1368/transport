@@ -12,9 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.transport.common.CommonUtils;
 import org.transport.constant.Const;
 import org.transport.common.ObjectMapperUtils;
+import org.transport.dto.*;
 import org.transport.dto.Response.NeshanElementDto;
-import org.transport.dto.RoleDto;
-import org.transport.dto.UserDto;
 import org.transport.model.*;
 import org.transport.repository.JPA;
 
@@ -42,6 +41,8 @@ public class OrderService {
     private AuthenticationServiceProxy authenticationServiceProxy;
     @Autowired
     private NeshanMapServiceImpl neshanMapService;
+    @Autowired
+    private BasicDataServiceProxy basicDataServiceProxy;
 
     @Value("${PageRequest.page}")
     private Integer page;
@@ -210,6 +211,16 @@ public class OrderService {
         }
     }
 
+    private List<OrderDetail> getOrderDetail(Long orderId) {
+        Query query = entityManager.createQuery("select entity from orderDetail  entity where entity.order.id=:orderId");
+        query.setParameter("orderId", orderId);
+        List<OrderDetail> orderDetails = (List<OrderDetail>) query.getResultList();
+        if (CommonUtils.isNull(orderDetails) || orderDetails.size() == 0) {
+            throw new RuntimeException("order detail is null");
+        }
+        return orderDetails;
+    }
+
 
     public Page<Order> findAll(Long userId, String token, String uuid, Integer page, Integer size) throws Exception {
         List<Order> returnValue = new ArrayList<>();
@@ -290,12 +301,13 @@ public class OrderService {
             return CommonUtils.listPaging(returnValue);
         }
         PageRequest pageRequest = PageRequest.of(CommonUtils.isNull(page, this.page), CommonUtils.isNull(size, this.size));
-        return CommonUtils.listPaging(returnValue,pageRequest);
+        return CommonUtils.listPaging(returnValue, pageRequest);
     }
 
     public Order findOne(Long id) {
         return orderJPA.findOne(Order.class, id);
     }
+
 
     @Transactional
     public void acceptOrderCarDriver(Long orderId, Long carId, Long userId, String token, String uuid) throws Exception {
@@ -315,7 +327,7 @@ public class OrderService {
         Car car = carJPA.findOne(Car.class, carId);
         if (CommonUtils.isNull(car))
             throw new RuntimeException("2013");
-        Page<Order> orders = findAll(userId, token, uuid,0,100);
+        Page<Order> orders = findAll(userId, token, uuid, 0, 100);
         if (orders.isEmpty())
             throw new RuntimeException("2012");
 
@@ -415,7 +427,7 @@ public class OrderService {
     }
 
     @Transactional
-    public Long cancelledOrder(Long orderId, Long userId, String token, String uuid) throws Exception {
+    public void cancelledOrder(Long orderId, Long userId, String token, String uuid) throws Exception {
         UserDto userDto = ObjectMapperUtils.map(authenticationServiceProxy.getUser(token, uuid), UserDto.class);
         if (CommonUtils.isNull(userDto))
             throw new RuntimeException("2002");
@@ -440,7 +452,7 @@ public class OrderService {
         if (order.getOrderStatusId().equals(Const.ORDER_STATUS_WAIT_FOR_CONFIRM) && order.getUserId().equals(userId)) {
             order.setOrderStatusId(Const.ORDER_STATUS_CANCELLED_CUSTOMER);
             update(order, userId);
-            return order.getOrderStatusId();
+            return;
         }
 
         if (order.getOrderStatusId().equals(Const.ORDER_STATUS_WAIT_FOR_CONFIRM) || order.getOrderStatusId().equals(Const.ORDER_STATUS_CAR_IN_LOADING_ORIGIN)
@@ -451,9 +463,63 @@ public class OrderService {
                 order.setOrderStatusId(Const.ORDER_STATUS_CANCELLED_DRIVER);
             }
             update(order, userId);
-            return order.getOrderStatusId();
+            return;
         }
         throw new RuntimeException("2001");
+    }
+
+    @Transactional
+    public List priceDetail(Long orderId, Long companyID, String token, String uuid) throws Exception {
+        UserDto userDto = ObjectMapperUtils.map(authenticationServiceProxy.getUser(token, uuid), UserDto.class);
+        if (CommonUtils.isNull(userDto))
+            throw new RuntimeException("2002");
+        Order order = findOne(orderId);
+        double fromLatitude = order.getSenderLatitude();
+        double fromLongitude = order.getSenderLongitude();
+        double toLatitude = order.getReceiverLatitude();
+        double toLongitude = order.getReceiverLongitude();
+        List<OrderDetail> orderDetails = getOrderDetail(orderId);
+        List<Object> weightList = new ArrayList<>();
+        List<Long> loadingTypeList = new ArrayList<>();
+        for (OrderDetail orderDetail : orderDetails) {
+            Float weight = orderDetail.getWeight();
+            Long loadingTypeCode = orderDetail.getLoadingTypeId();
+            loadingTypeList.add(loadingTypeCode);
+            weightList.add(weight);
+        }
+        long weight = 0L;
+        for (Object w : weightList) {
+            if (w instanceof Float) {
+                weight += ((Float) w).longValue();
+            }
+        }
+        List<LoadingTypeDto> loadingTypeDtos = new ArrayList<>();
+        for (Long loadingTypeCode : loadingTypeList) {
+            LoadingTypeDto loadingTypeDto = basicDataServiceProxy.loadingTypeValue(token, uuid, loadingTypeCode, companyID);
+            loadingTypeDtos.add(loadingTypeDto);
+        }
+        List<Float> loadingTypeFactors = new ArrayList<>();
+        for (LoadingTypeDto loadingTypeDto : loadingTypeDtos) {
+            loadingTypeFactors.add(Float.valueOf(loadingTypeDto.getFactorValue()));
+        }
+        Float maxLoadingTypeFactor = loadingTypeFactors.stream()
+                .max(Float::compareTo)
+                .orElse(null);
+        Long carTypeId = order.getCarTypeId();
+        NeshanElementDto neshanElementDto = new NeshanElementDto();
+        neshanElementDto = neshanMapService.getDistanceWithTraffic(fromLatitude, fromLongitude, toLatitude, toLongitude);
+        int distance = neshanElementDto.getDistance().getValue();
+        int duration = neshanElementDto.getDuration().getValue();
+        CarGroupDto carGroupDto = basicDataServiceProxy.carGroupValue(token, uuid, carTypeId, weight, companyID);
+        String carGroupFactorValue = carGroupDto.getFactorValue();
+        ParametersDto parametersDtoTime = basicDataServiceProxy.parametersValue(token, uuid, Const.ARRIVAL_TIME_FACTOR, companyID);
+        String timeFactor = parametersDtoTime.getValue();
+        ParametersDto parametersDtoDistance = basicDataServiceProxy.parametersValue(token, uuid, Const.ARRIVAL_TIME_FACTOR, companyID);
+        String distanceFactor = parametersDtoDistance.getValue();
+        float price = distance * duration;
+        List<Object> priceDetail = new ArrayList<>();
+        priceDetail.addAll(Arrays.asList(timeFactor, distanceFactor, maxLoadingTypeFactor, carGroupFactorValue, price));
+        return priceDetail;
     }
 }
 

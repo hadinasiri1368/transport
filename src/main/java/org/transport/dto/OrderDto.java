@@ -1,6 +1,7 @@
 package org.transport.dto;
 
 
+import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -36,6 +37,10 @@ public class OrderDto {
     private String description;
     private Long price;
     private Long minPrice;
+    private Float carGroupFactor;
+    private Float loadingTypeFactor;
+    private Float tonKilometersFactor;
+    private Float durationFactor;
     private Boolean onlyMyCompanyDriver;
     private List<OrderDetailDto> orderDetails;
     private List<OrderImage> orderImages;
