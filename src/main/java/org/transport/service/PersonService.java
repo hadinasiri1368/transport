@@ -1,6 +1,7 @@
 package org.transport.service;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,7 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class PersonService {
-    @Autowired
+    @PersistenceContext
     private EntityManager entityManager;
 
     @Autowired

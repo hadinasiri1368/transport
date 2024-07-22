@@ -1,10 +1,10 @@
 package org.transport.service;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.annotation.Transient;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -23,7 +23,7 @@ public class VoucherService {
     private JPA<Voucher, Long> genericVoucherJPA;
     @Autowired
     private JPA<VoucherDetail, Long> genericVoucherDetailJPA;
-    @Autowired
+    @PersistenceContext
     private EntityManager entityManager;
 
     @Value("${PageRequest.page}")

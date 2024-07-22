@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -20,6 +21,7 @@ import org.transport.service.AuthenticationServiceProxy;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.sql.SQLException;
 import java.util.*;
 
 @Slf4j
@@ -93,6 +95,32 @@ public class CommonUtils {
             }
     }
 
+    public static Double doubleValue(Object number) {
+        if (isNull(number))
+            return null;
+        else if (number instanceof Number)
+            return ((Number) number).doubleValue();
+        else
+            try {
+                return Double.valueOf(number.toString());
+            } catch (NumberFormatException e) {
+                return null;
+            }
+    }
+
+    public static Float floatValue(Object number) {
+        if (isNull(number))
+            return null;
+        else if (number instanceof Number)
+            return ((Number) number).floatValue();
+        else
+            try {
+                return Float.valueOf(number.toString());
+            } catch (NumberFormatException e) {
+                return null;
+            }
+    }
+
     public static String getMessage(Exception e) {
         if (e.getCause() instanceof RuntimeException) {
             return ((RuntimeException) e.getCause()).getMessage();
@@ -155,6 +183,33 @@ public class CommonUtils {
 
         List<T> subList = aClass.subList(fromIndex, toIndex);
         return new PageImpl<>(subList, pageRequest, countResult);
+    }
+
+    public static ExceptionDto getException(SQLException exception) {
+        if (exception.getMessage().toLowerCase().contains("duplicate key")) {
+            return ExceptionDto.builder()
+                    .errorCode(409)
+                    .errorMessage(getMessage("2039"))
+                    .build();
+        } else {
+            return ExceptionDto.builder()
+                    .errorCode(409)
+                    .errorMessage("2040")
+                    .build();
+        }
+    }
+    public static ExceptionDto getException(DataIntegrityViolationException exception) {
+        if (exception.getMessage().toLowerCase().contains("duplicate key")) {
+            return ExceptionDto.builder()
+                    .errorCode(409)
+                    .errorMessage(getMessage("2039"))
+                    .build();
+        } else {
+            return ExceptionDto.builder()
+                    .errorCode(409)
+                    .errorMessage("2040")
+                    .build();
+        }
     }
 }
 

@@ -14,19 +14,6 @@ import java.util.stream.Collectors;
 @Component
 public class MapperUtil {
 
-    private static GenericService<Car> carService;
-    private static GenericService<Driver> driverService;
-
-    @Autowired
-    public void setCarService(GenericService<Car> service) {
-        MapperUtil.carService = service;
-    }
-
-    @Autowired
-    public void setDriverService(GenericService<Driver> service) {
-        MapperUtil.driverService = service;
-    }
-
     public static VoucherDetail mapToVoucherDetail(VoucherDetailDto voucherDetailDto) {
         VoucherDetail voucherDetail = ObjectMapperUtils.map(voucherDetailDto, VoucherDetail.class);
         voucherDetail.setDebitAmount(CommonUtils.isNull(voucherDetail.getDebitAmount()) ? 0 : voucherDetail.getDebitAmount());

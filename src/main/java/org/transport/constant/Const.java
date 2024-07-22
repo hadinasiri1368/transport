@@ -41,6 +41,16 @@ public class Const {
     public static final Long LOADING_TYPE_CARRYING_HOME_FURNITURE = 9L;
     public static final Long LOADING_TYPE_CARRYING_CONSTRUCTION_CONSTRUCTION_MATERIALS = 10L;
 
+    //CAR_CAPACITY
+    private static final Long CAR_CAPACITY_MAXIMUM_CAPACITY_OF_THREE_TONS = 1L;
+    private static final Long CAR_CAPACITY_GREATER_THREE_TONS_TO_MAXIMUM_SIX_TONS = 2L;
+    private static final Long CAR_CAPACITY_GREATER_THAN_SIX_TONS_TO_MAXIMUM_TEN_TONS = 3L;
+    private static final Long CAR_CAPACITY_MORE_THAN_TEN_TONS_TO_MAXIMUM_TWENTY_TONS = 4L;
+    private static final Long CAR_CAPACITY_MORE_THAN_TWENTY_TONS_TO_MAXIMUM_THIRTY_TONS = 5L;
+    private static final Long CAR_CAPACITY_MORE_THAN_THIRTY_TONS_TO_MAXIMUM_FORTY_TONS = 6L;
+    private static final Long CAR_CAPACITY_MORE_THAN_FORTY_TONS_TO_MAXIMUM_FIFTY_TONS = 7L;
+    private static final Long CAR_CAPACITY_MORE_THAN_FIFTY_TONS = 8L;
+
     //PARAMETERS
     public static final String TON_KILOMETERS = "TON_KILOMETERS";
     public static final String ARRIVAL_TIME_FACTOR = "ARRIVAL_TIME_FACTOR";

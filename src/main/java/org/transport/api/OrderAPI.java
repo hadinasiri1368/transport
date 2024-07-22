@@ -1,20 +1,18 @@
 package org.transport.api;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.transport.common.CommonUtils;
 import org.transport.common.MapperUtil;
 import org.transport.dto.OrderDetailDto;
 import org.transport.dto.OrderDto;
+import org.transport.dto.Response.PriceDto;
 import org.transport.model.*;
 import org.transport.service.AuthenticationServiceProxy;
 import org.transport.service.OrderService;
@@ -32,10 +30,6 @@ public class OrderAPI {
     @Autowired
     private AuthenticationServiceProxy authenticationServiceProxy;
 
-
-    @Operation(summary = "ثبت سفارش حمل")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "سفارش ثبت شد")})
     @PostMapping(path = "/transport/order/add")
     public Long addOrder(@RequestBody OrderDto orderDto, HttpServletRequest request) throws Exception {
         String uuid = request.getHeader("X-UUID");
@@ -117,14 +111,30 @@ public class OrderAPI {
 
     private void validationData(List<OrderDetailDto> orderDetailDtos, List<OrderImage> orderImages) {
         if (!CommonUtils.isNull(orderDetailDtos) && !orderDetailDtos.isEmpty()) {
-            int voucherCount = orderDetailDtos.stream().collect(Collectors.groupingBy(a -> a.getOrderId())).size();
+            int voucherCount = orderDetailDtos.stream().collect(Collectors.groupingBy(OrderDetailDto::getOrderId)).size();
             if (voucherCount > 1)
                 throw new RuntimeException("2005");
         }
         if (!CommonUtils.isNull(orderImages) && !orderImages.isEmpty()) {
-            int voucherCount = orderImages.stream().collect(Collectors.groupingBy(a -> a.getOrderId())).size();
+            int voucherCount = orderImages.stream().collect(Collectors.groupingBy(OrderImage::getOrderId)).size();
             if (voucherCount > 1)
                 throw new RuntimeException("2005");
         }
     }
+
+
+    @PostMapping(path = "/transport/price")
+    public ResponseEntity<?> price(@RequestParam Long orderId, @RequestParam(required = false) Long companyID, HttpServletRequest request) throws Exception {
+        String uuid = request.getHeader("X-UUID");
+        String token = CommonUtils.getToken(request);
+            if (companyID == null) {
+                List<PriceDto> priceDtos = service.price(orderId, token, uuid);
+                return ResponseEntity.ok(priceDtos);
+            } else {
+                PriceDto priceDto = service.calculatePricePerCompany(orderId, companyID, token, uuid);
+                return ResponseEntity.ok(priceDto);
+            }
+
+    }
+
 }

@@ -1,6 +1,7 @@
 package org.transport.service;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,7 +23,7 @@ import java.util.List;
 @Service
 @Slf4j
 public class CompanyDriverService {
-    @Autowired
+    @PersistenceContext
     private EntityManager entityManager;
 
     @Autowired
@@ -70,7 +71,7 @@ public class CompanyDriverService {
     private void checkData(CompanyDriver companyDriver, String token, String uuid) throws Exception {
         List<RoleDto> roleDtos = new ArrayList<>();
         roleDtos = authenticationServiceProxy.listRole(token, uuid);
-        if (roleDtos.stream().filter(a -> a.getId().equals(Const.ROLE_DRIVER)).count() <= 0)
+        if (roleDtos.stream().noneMatch(a -> a.getId().equals(Const.ROLE_DRIVER)))
             throw new RuntimeException("2016");
         Person company = personJPA.findOne(Person.class, companyDriver.getCompany().getId());
         if (CommonUtils.isNull(company))

@@ -1,6 +1,7 @@
 package org.transport.service;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.transport.constant.Const;
 import org.transport.common.ObjectMapperUtils;
 import org.transport.dto.*;
 import org.transport.dto.Response.NeshanElementDto;
+import org.transport.dto.Response.PriceDto;
 import org.transport.model.*;
 import org.transport.repository.JPA;
 
@@ -29,7 +31,7 @@ public class OrderService {
     private JPA<OrderDetail, Long> orderDetailJPA;
     @Autowired
     private JPA<OrderImage, Long> orderImageJPA;
-    @Autowired
+    @PersistenceContext
     private EntityManager entityManager;
     @Autowired
     private JPA<Car, Long> carJPA;
@@ -43,6 +45,8 @@ public class OrderService {
     private NeshanMapServiceImpl neshanMapService;
     @Autowired
     private BasicDataServiceProxy basicDataServiceProxy;
+    @Autowired
+    private PersonService personService;
 
     @Value("${PageRequest.page}")
     private Integer page;
@@ -468,58 +472,86 @@ public class OrderService {
         throw new RuntimeException("2001");
     }
 
-    @Transactional
-    public List priceDetail(Long orderId, Long companyID, String token, String uuid) throws Exception {
+    public List<PriceDto> price(Long orderId, String token, String uuid) throws Exception {
+        UserDto userDto = ObjectMapperUtils.map(authenticationServiceProxy.getUser(token, uuid), UserDto.class);
+        if (CommonUtils.isNull(userDto))
+            throw new RuntimeException("2002");
+        List<Person> companyList = personService.findPersonsRole(Const.ROLE_COMPANY, token, uuid);
+        List<PriceDto> priceDtos = new ArrayList<>();
+        for (Person person : companyList) {
+            priceDtos.add(calculatePricePerCompany(orderId, person.getId(), token, uuid));
+        }
+        return priceDtos;
+    }
+
+    public PriceDto calculatePricePerCompany(Long orderId, Long companyID, String token, String uuid) throws Exception {
         UserDto userDto = ObjectMapperUtils.map(authenticationServiceProxy.getUser(token, uuid), UserDto.class);
         if (CommonUtils.isNull(userDto))
             throw new RuntimeException("2002");
         Order order = findOne(orderId);
-        double fromLatitude = order.getSenderLatitude();
-        double fromLongitude = order.getSenderLongitude();
-        double toLatitude = order.getReceiverLatitude();
-        double toLongitude = order.getReceiverLongitude();
+        if (order == null) {
+            throw new RuntimeException("2006");
+        }
         List<OrderDetail> orderDetails = getOrderDetail(orderId);
-        List<Object> weightList = new ArrayList<>();
+        if (orderDetails.isEmpty()) {
+            throw new RuntimeException("2042");
+        }
+        List<Long> weightList = new ArrayList<>();
         List<Long> loadingTypeList = new ArrayList<>();
         for (OrderDetail orderDetail : orderDetails) {
-            Float weight = orderDetail.getWeight();
-            Long loadingTypeCode = orderDetail.getLoadingTypeId();
-            loadingTypeList.add(loadingTypeCode);
-            weightList.add(weight);
+            weightList.add(orderDetail.getWeight());
+            loadingTypeList.add(orderDetail.getLoadingTypeId());
         }
-        long weight = 0L;
-        for (Object w : weightList) {
-            if (w instanceof Float) {
-                weight += ((Float) w).longValue();
-            }
-        }
-        List<LoadingTypeDto> loadingTypeDtos = new ArrayList<>();
+        long totalWeight = weightList.stream().mapToLong(Long::longValue).sum();
+        List<Float> loadingTypeFactors = new ArrayList<>();
         for (Long loadingTypeCode : loadingTypeList) {
             LoadingTypeDto loadingTypeDto = basicDataServiceProxy.loadingTypeValue(token, uuid, loadingTypeCode, companyID);
-            loadingTypeDtos.add(loadingTypeDto);
+            loadingTypeFactors.add(loadingTypeDto.getFactorValue());
         }
-        List<Float> loadingTypeFactors = new ArrayList<>();
-        for (LoadingTypeDto loadingTypeDto : loadingTypeDtos) {
-            loadingTypeFactors.add(Float.valueOf(loadingTypeDto.getFactorValue()));
+        float totalLoadingTypeFactor = (float) loadingTypeFactors.stream().mapToLong(Float::longValue).sum();
+        NeshanElementDto neshanElementDto = neshanMapService.getDistanceWithTraffic(order.getSenderLatitude(), order.getSenderLongitude(), order.getReceiverLatitude(), order.getReceiverLongitude());
+        if (neshanElementDto == null) {
+            throw new RuntimeException("2041");
         }
-        Float maxLoadingTypeFactor = loadingTypeFactors.stream()
-                .max(Float::compareTo)
-                .orElse(null);
-        Long carTypeId = order.getCarTypeId();
-        NeshanElementDto neshanElementDto = new NeshanElementDto();
-        neshanElementDto = neshanMapService.getDistanceWithTraffic(fromLatitude, fromLongitude, toLatitude, toLongitude);
         int distance = neshanElementDto.getDistance().getValue();
         int duration = neshanElementDto.getDuration().getValue();
-        CarGroupDto carGroupDto = basicDataServiceProxy.carGroupValue(token, uuid, carTypeId, weight, companyID);
-        String carGroupFactorValue = carGroupDto.getFactorValue();
+
+        Page<CarCapacityDto> carCapacityPage = basicDataServiceProxy.listCarCapacity(token, uuid);
+        if (carCapacityPage.isEmpty()) {
+            throw new RuntimeException("2037");
+        }
+        List<CarCapacityDto> carCapacityList = carCapacityPage.getContent();
+        Optional<CarCapacityDto> carCapacityOptional = carCapacityList.stream()
+                .filter(a -> a.getMaxCapacity() != null && a.getMaxCapacity() > totalWeight)
+                .min(Comparator.comparingLong(CarCapacityDto::getMaxCapacity));
+        if (carCapacityOptional.isEmpty()) {
+            throw new RuntimeException("2037");
+        }
+        CarGroupDto carGroupDto = basicDataServiceProxy.carGroupValue(token, uuid, order.getCarTypeId(), carCapacityOptional.get().getId(), companyID);
+        if (carGroupDto == null) {
+            log.info("CarGroupDto is null for carTypeId: {}, carCapacityId: {}, companyID: {}", order.getCarTypeId(), carCapacityOptional.get().getId(), companyID);
+            throw new RuntimeException("2038");
+        }
+        Float carGroupFactorValue = carGroupDto.getFactorValue();
         ParametersDto parametersDtoTime = basicDataServiceProxy.parametersValue(token, uuid, Const.ARRIVAL_TIME_FACTOR, companyID);
-        String timeFactor = parametersDtoTime.getValue();
-        ParametersDto parametersDtoDistance = basicDataServiceProxy.parametersValue(token, uuid, Const.ARRIVAL_TIME_FACTOR, companyID);
-        String distanceFactor = parametersDtoDistance.getValue();
-        float price = distance * duration;
-        List<Object> priceDetail = new ArrayList<>();
-        priceDetail.addAll(Arrays.asList(timeFactor, distanceFactor, maxLoadingTypeFactor, carGroupFactorValue, price));
-        return priceDetail;
+        if (parametersDtoTime == null) {
+            throw new RuntimeException("2043");
+        }
+        Float timeFactor = CommonUtils.floatValue(parametersDtoTime.getValue());
+        ParametersDto parametersDtoDistance = basicDataServiceProxy.parametersValue(token, uuid, Const.TON_KILOMETERS, companyID);
+        if (parametersDtoDistance == null) {
+            throw new RuntimeException("2043");
+        }
+        Float distanceFactor = CommonUtils.floatValue(parametersDtoDistance.getValue());
+        float price = ((distance / 1000) * distanceFactor) * (1 + (duration * timeFactor)) * (1 + totalLoadingTypeFactor) * (1 + carGroupFactorValue);
+        PriceDto priceDto = new PriceDto();
+        priceDto.setCompanyId(companyID);
+        priceDto.setDistanceFactor(distanceFactor);
+        priceDto.setTimeFactor(timeFactor);
+        priceDto.setTotalLoadingTypeFactor(totalLoadingTypeFactor);
+        priceDto.setCarGroupFactorValue(carGroupFactorValue);
+        priceDto.setPrice(price);
+        return priceDto;
     }
 }
 

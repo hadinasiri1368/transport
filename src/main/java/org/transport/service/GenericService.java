@@ -1,6 +1,7 @@
 package org.transport.service;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,7 +25,7 @@ public class GenericService<Entity> {
     @Autowired
     private JPA<Entity, Long> genericJPA;
 
-    @Autowired
+    @PersistenceContext
     private EntityManager entityManager;
 
     @Value("${PageRequest.page}")
