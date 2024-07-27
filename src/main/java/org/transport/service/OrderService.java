@@ -472,11 +472,15 @@ public class OrderService {
         throw new RuntimeException("2001");
     }
 
-    public List<PriceDto> price(Long orderId, String token, String uuid) throws Exception {
+    public List<PriceDto> calculationPrice(Long orderId, Long companyId, String token, String uuid) throws Exception {
         UserDto userDto = ObjectMapperUtils.map(authenticationServiceProxy.getUser(token, uuid), UserDto.class);
         if (CommonUtils.isNull(userDto))
             throw new RuntimeException("2002");
         List<Person> companyList = personService.findPersonsRole(Const.ROLE_COMPANY, token, uuid);
+        if (CommonUtils.isNull(companyList))
+            throw new RuntimeException("2002");
+        if (!CommonUtils.isNull(companyId))
+            companyList = companyList.stream().filter(a -> a.getId() == companyId).collect(Collectors.toList());
         List<PriceDto> priceDtos = new ArrayList<>();
         for (Person person : companyList) {
             priceDtos.add(calculatePricePerCompany(orderId, person.getId(), token, uuid));
@@ -489,7 +493,7 @@ public class OrderService {
         if (CommonUtils.isNull(userDto))
             throw new RuntimeException("2002");
         Order order = findOne(orderId);
-        if (order == null) {
+        if (CommonUtils.isNull(order)) {
             throw new RuntimeException("2006");
         }
         List<OrderDetail> orderDetails = getOrderDetail(orderId);
@@ -528,18 +532,18 @@ public class OrderService {
             throw new RuntimeException("2037");
         }
         CarGroupDto carGroupDto = basicDataServiceProxy.carGroupValue(token, uuid, order.getCarTypeId(), carCapacityOptional.get().getId(), companyID);
-        if (carGroupDto == null) {
+        if (CommonUtils.isNull(carGroupDto)) {
             log.info("CarGroupDto is null for carTypeId: {}, carCapacityId: {}, companyID: {}", order.getCarTypeId(), carCapacityOptional.get().getId(), companyID);
             throw new RuntimeException("2038");
         }
         Float carGroupFactorValue = carGroupDto.getFactorValue();
         ParametersDto parametersDtoTime = basicDataServiceProxy.parametersValue(token, uuid, Const.ARRIVAL_TIME_FACTOR, companyID);
-        if (parametersDtoTime == null) {
+        if (CommonUtils.isNull(parametersDtoTime)) {
             throw new RuntimeException("2043");
         }
         Float timeFactor = CommonUtils.floatValue(parametersDtoTime.getValue());
         ParametersDto parametersDtoDistance = basicDataServiceProxy.parametersValue(token, uuid, Const.TON_KILOMETERS, companyID);
-        if (parametersDtoDistance == null) {
+        if (CommonUtils.isNull(parametersDtoDistance)) {
             throw new RuntimeException("2043");
         }
         Float distanceFactor = CommonUtils.floatValue(parametersDtoDistance.getValue());

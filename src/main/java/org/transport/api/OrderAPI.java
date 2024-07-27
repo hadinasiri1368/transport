@@ -123,18 +123,12 @@ public class OrderAPI {
     }
 
 
-    @PostMapping(path = "/transport/price")
-    public ResponseEntity<?> price(@RequestParam Long orderId, @RequestParam(required = false) Long companyID, HttpServletRequest request) throws Exception {
+    @PostMapping(path = "/transport/calculationPrice")
+    public ResponseEntity<?> calculationPrice(@RequestParam Long orderId, @RequestParam(required = false) Long companyId, HttpServletRequest request) throws Exception {
         String uuid = request.getHeader("X-UUID");
         String token = CommonUtils.getToken(request);
-            if (companyID == null) {
-                List<PriceDto> priceDtos = service.price(orderId, token, uuid);
-                return ResponseEntity.ok(priceDtos);
-            } else {
-                PriceDto priceDto = service.calculatePricePerCompany(orderId, companyID, token, uuid);
-                return ResponseEntity.ok(priceDto);
-            }
-
+        List<PriceDto> priceDtos = service.calculationPrice(orderId, companyId, token, uuid);
+        return ResponseEntity.ok(priceDtos);
     }
 
 }
