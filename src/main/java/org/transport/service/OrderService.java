@@ -472,21 +472,24 @@ public class OrderService {
         throw new RuntimeException("2001");
     }
 
+
     public List<PriceDto> calculationPrice(Long orderId, Long companyId, String token, String uuid) throws Exception {
         UserDto userDto = ObjectMapperUtils.map(authenticationServiceProxy.getUser(token, uuid), UserDto.class);
         if (CommonUtils.isNull(userDto))
             throw new RuntimeException("2002");
         List<Person> companyList = personService.findPersonsRole(Const.ROLE_COMPANY, token, uuid);
-        if (CommonUtils.isNull(companyList))
-            throw new RuntimeException("2002");
+        if (companyList.isEmpty())
+            throw new RuntimeException("2044");
         if (!CommonUtils.isNull(companyId))
-            companyList = companyList.stream().filter(a -> a.getId() == companyId).collect(Collectors.toList());
+            companyList = companyList.stream().filter(a -> a.getId().equals(companyId)).collect(Collectors.toList());
         List<PriceDto> priceDtos = new ArrayList<>();
         for (Person person : companyList) {
             priceDtos.add(calculatePricePerCompany(orderId, person.getId(), token, uuid));
         }
         return priceDtos;
     }
+
+
 
     public PriceDto calculatePricePerCompany(Long orderId, Long companyID, String token, String uuid) throws Exception {
         UserDto userDto = ObjectMapperUtils.map(authenticationServiceProxy.getUser(token, uuid), UserDto.class);
