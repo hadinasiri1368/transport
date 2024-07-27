@@ -472,6 +472,7 @@ public class OrderService {
         throw new RuntimeException("2001");
     }
 
+
     public List<PriceDto> calculationPrice(Long orderId, Long companyId, String token, String uuid) throws Exception {
         UserDto userDto = ObjectMapperUtils.map(authenticationServiceProxy.getUser(token, uuid), UserDto.class);
         if (CommonUtils.isNull(userDto))
@@ -487,6 +488,8 @@ public class OrderService {
         }
         return priceDtos;
     }
+
+
 
     public PriceDto calculatePricePerCompany(Long orderId, Long companyID, String token, String uuid) throws Exception {
         UserDto userDto = ObjectMapperUtils.map(authenticationServiceProxy.getUser(token, uuid), UserDto.class);
