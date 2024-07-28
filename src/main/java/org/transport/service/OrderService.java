@@ -219,8 +219,8 @@ public class OrderService {
         Query query = entityManager.createQuery("select entity from orderDetail  entity where entity.order.id=:orderId");
         query.setParameter("orderId", orderId);
         List<OrderDetail> orderDetails = (List<OrderDetail>) query.getResultList();
-        if (CommonUtils.isNull(orderDetails) || orderDetails.size() == 0) {
-            throw new RuntimeException("order detail is null");
+        if (CommonUtils.isNull(orderDetails)) {
+            throw new RuntimeException("2042");
         }
         return orderDetails;
     }
@@ -479,9 +479,9 @@ public class OrderService {
             throw new RuntimeException("2002");
         List<Person> companyList = personService.findPersonsRole(Const.ROLE_COMPANY, token, uuid);
         if (CommonUtils.isNull(companyList))
-            throw new RuntimeException("2002");
+            throw new RuntimeException("2044");
         if (!CommonUtils.isNull(companyId))
-            companyList = companyList.stream().filter(a -> a.getId() == companyId).collect(Collectors.toList());
+            companyList = companyList.stream().filter(a -> a.getId().equals(companyId)).collect(Collectors.toList());
         List<PriceDto> priceDtos = new ArrayList<>();
         for (Person person : companyList) {
             priceDtos.add(calculatePricePerCompany(orderId, person.getId(), token, uuid));
@@ -500,7 +500,7 @@ public class OrderService {
             throw new RuntimeException("2006");
         }
         List<OrderDetail> orderDetails = getOrderDetail(orderId);
-        if (orderDetails.isEmpty()) {
+        if (CommonUtils.isNull(orderDetails)) {
             throw new RuntimeException("2042");
         }
         List<Long> weightList = new ArrayList<>();
@@ -517,7 +517,7 @@ public class OrderService {
         }
         float totalLoadingTypeFactor = (float) loadingTypeFactors.stream().mapToLong(Float::longValue).sum();
         NeshanElementDto neshanElementDto = neshanMapService.getDistanceWithTraffic(order.getSenderLatitude(), order.getSenderLongitude(), order.getReceiverLatitude(), order.getReceiverLongitude());
-        if (neshanElementDto == null) {
+        if (CommonUtils.isNull(neshanElementDto)) {
             throw new RuntimeException("2041");
         }
         int distance = neshanElementDto.getDistance().getValue();
@@ -531,7 +531,7 @@ public class OrderService {
         Optional<CarCapacityDto> carCapacityOptional = carCapacityList.stream()
                 .filter(a -> a.getMaxCapacity() != null && a.getMaxCapacity() > totalWeight)
                 .min(Comparator.comparingLong(CarCapacityDto::getMaxCapacity));
-        if (carCapacityOptional.isEmpty()) {
+        if (CommonUtils.isNull(carCapacityOptional)) {
             throw new RuntimeException("2037");
         }
         CarGroupDto carGroupDto = basicDataServiceProxy.carGroupValue(token, uuid, order.getCarTypeId(), carCapacityOptional.get().getId(), companyID);
