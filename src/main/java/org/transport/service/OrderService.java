@@ -220,7 +220,7 @@ public class OrderService {
         query.setParameter("orderId", orderId);
         List<OrderDetail> orderDetails = (List<OrderDetail>) query.getResultList();
         if (CommonUtils.isNull(orderDetails) || orderDetails.size() == 0) {
-            throw new RuntimeException("order detail is null");
+            throw new RuntimeException("2042");
         }
         return orderDetails;
     }
@@ -232,7 +232,7 @@ public class OrderService {
         try {
             UserDto userDto = ObjectMapperUtils.map(authenticationServiceProxy.getUser(token, uuid), UserDto.class);
             if (CommonUtils.isNull(userDto)) {
-                throw new RuntimeException("can not identify token");
+                throw new RuntimeException("2002");
             }
             String hql;
             List<Long> orderIds = new ArrayList<>();
@@ -245,7 +245,7 @@ public class OrderService {
             }
             roleDtos = authenticationServiceProxy.listRole(token, uuid);
             if (CommonUtils.isNull(roleDtos))
-                throw new RuntimeException("connection.failed");
+                throw new RuntimeException("2015");
             if (roleDtos.stream().filter(a -> a.getId() == Const.ROLE_CUSTOMER).count() > 0) {
                 hql = "select o from order o where o.userId=:userId";
                 Query query = entityManager.createQuery(hql);
@@ -513,6 +513,12 @@ public class OrderService {
             loadingTypeFactors.add(loadingTypeDto.getFactorValue());
         }
         float totalLoadingTypeFactor = (float) loadingTypeFactors.stream().mapToLong(Float::longValue).sum();
+        if (CommonUtils.isNull(order.getSenderLatitude()) ||
+                CommonUtils.isNull(order.getSenderLongitude()) ||
+                CommonUtils.isNull(order.getReceiverLatitude()) ||
+                CommonUtils.isNull(order.getReceiverLongitude())) {
+            throw new RuntimeException("2044");
+        }
         NeshanElementDto neshanElementDto = neshanMapService.getDistanceWithTraffic(order.getSenderLatitude(), order.getSenderLongitude(), order.getReceiverLatitude(), order.getReceiverLongitude());
         if (neshanElementDto == null) {
             throw new RuntimeException("2041");
@@ -521,10 +527,10 @@ public class OrderService {
         int duration = neshanElementDto.getDuration().getValue();
 
         Page<CarCapacityDto> carCapacityPage = basicDataServiceProxy.listCarCapacity(token, uuid);
-        if (carCapacityPage.isEmpty()) {
+        List<CarCapacityDto> carCapacityList = carCapacityPage.getContent();
+        if (CommonUtils.isNull(carCapacityList)) {
             throw new RuntimeException("2037");
         }
-        List<CarCapacityDto> carCapacityList = carCapacityPage.getContent();
         Optional<CarCapacityDto> carCapacityOptional = carCapacityList.stream()
                 .filter(a -> a.getMaxCapacity() != null && a.getMaxCapacity() > totalWeight)
                 .min(Comparator.comparingLong(CarCapacityDto::getMaxCapacity));
