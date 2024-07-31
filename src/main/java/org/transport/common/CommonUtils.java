@@ -164,6 +164,8 @@ public class CommonUtils {
     }
 
     public static Long getUserId(String token, String uuid) {
+        if(isNull(token))
+            return null;
         return longValue(authenticationServiceProxy.getUserId(token, uuid));
     }
 
