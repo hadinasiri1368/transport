@@ -164,6 +164,8 @@ public class CommonUtils {
     }
 
     public static Long getUserId(String token, String uuid) {
+        if (isNull(token))
+            return null;
         return longValue(authenticationServiceProxy.getUserId(token, uuid));
     }
 
@@ -201,6 +203,7 @@ public class CommonUtils {
                     .build();
         }
     }
+
     public static ExceptionDto getException(DataIntegrityViolationException exception) {
         if (exception.getMessage().toLowerCase().contains("duplicate key")) {
             return ExceptionDto.builder()
