@@ -34,8 +34,7 @@ public class GeneralLedgerAPI {
 
     @DeleteMapping(path = "/transport/generalLedger/remove/{id}")
     public Long removeGeneralLedger(@PathVariable Long id) {
-        service.delete(id, GeneralLedger.class);
-        return id;
+        return (long) service.delete(id, GeneralLedger.class);
     }
 
     @GetMapping(path = "/transport/generalLedger/{id}")

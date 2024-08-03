@@ -73,8 +73,7 @@ public class VoucherAPI {
 
     @DeleteMapping(path = "/transport/voucher/remove/{id}")
     public Long removeVoucher(@PathVariable Long id) {
-        service.delete(id);
-        return id;
+        return (long) service.delete(id);
     }
 
     @GetMapping(path = "/transport/voucher/{id}")

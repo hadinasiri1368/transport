@@ -51,8 +51,7 @@ public class CompanyDriverAPI {
 
     @DeleteMapping(path = "/transport/companyDriver/remove/{id}")
     public Long removeCompanyDriver(@PathVariable Long id) {
-        companyDriverService.delete(id);
-        return id;
+        return (long) companyDriverService.delete(id);
     }
 
     @GetMapping(path = "/transport/companyDriver/{id}")

@@ -100,5 +100,6 @@ public class GlobalControllerExceptionHandler {
                 .errorStatus(HttpStatus.CONFLICT.value())
                 .build(), HttpStatus.CONFLICT);
     }
+
 }
 

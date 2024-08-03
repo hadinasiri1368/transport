@@ -49,8 +49,7 @@ public class UserCompanyAPI {
 
     @DeleteMapping(path = "/transport/userCompany/remove/{id}")
     public Long removeGUserCompany(@PathVariable Long id) {
-        service.delete(id);
-        return id;
+        return (long) service.delete(id);
     }
 
     @GetMapping(path = "/transport/userCompany/{id}")

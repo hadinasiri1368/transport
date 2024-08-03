@@ -50,8 +50,7 @@ public class SubsidiaryLedgerAPI {
 
     @DeleteMapping(path = "/transport/subsidiaryLedger/remove/{id}")
     public Long removeSubsidiaryLedger(@PathVariable Long id) {
-        service.delete(id, SubsidiaryLedger.class);
-        return id;
+        return (long) service.delete(id, SubsidiaryLedger.class);
     }
 
     @GetMapping(path = "/transport/subsidiaryLedger/{id}")

@@ -79,8 +79,7 @@ public class CarAPI {
 
     @DeleteMapping(path = "/transport/car/remove/{id}")
     public Long removeCar(@PathVariable Long id) throws Exception {
-        service.delete(id, Car.class);
-        return id;
+        return (long) service.delete(id, Car.class);
     }
 
     @GetMapping(path = "/transport/car/{id}")

@@ -2,6 +2,7 @@ package org.transport.service;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,9 +17,7 @@ import org.transport.model.CompanyDriver;
 import org.transport.model.Person;
 import org.transport.repository.JPA;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -26,46 +25,52 @@ public class CompanyDriverService {
     @PersistenceContext
     private EntityManager entityManager;
 
-    @Autowired
-    private JPA<CompanyDriver, Long> CompanyDriverJPA;
+    private final JPA<CompanyDriver, Long> companyDriverJPA;
 
-    @Autowired
-    private JPA<Person, Long> personJPA;
+    private final JPA<Person, Long> personJPA;
 
-    @Autowired
-    private AuthenticationServiceProxy authenticationServiceProxy;
+    private final AuthenticationServiceProxy authenticationServiceProxy;
+
+    public CompanyDriverService(AuthenticationServiceProxy authenticationServiceProxy, JPA<CompanyDriver, Long> companyDriverJPA, JPA<Person, Long> personJPA) {
+        this.authenticationServiceProxy = authenticationServiceProxy;
+        this.companyDriverJPA = companyDriverJPA;
+        this.personJPA = personJPA;
+    }
 
     @Transactional
-    public void insert(CompanyDriver companyDriver, Long userId, String token,String uuid) throws Exception {
-        checkData(companyDriver, token,uuid);
+    public void insert(CompanyDriver companyDriver, Long userId, String token, String uuid) throws Exception {
+        checkData(companyDriver, token, uuid);
         companyDriver.setId(null);
         companyDriver.setInsertedUserId(userId);
         companyDriver.setInsertedDateTime(new Date());
         companyDriver.setRequestStatusId(Const.REQUEST_STATUS_PENDING);
-        CompanyDriverJPA.save(companyDriver);
+        companyDriverJPA.save(companyDriver);
     }
 
     @Transactional
-    public void update(CompanyDriver companyDriver, Long userId, String token,String uuid) throws Exception {
+    public void update(CompanyDriver companyDriver, Long userId, String token, String uuid) throws Exception {
         if (!companyDriver.getRequestStatusId().equals(Const.REQUEST_STATUS_PENDING))
             throw new RuntimeException("2017");
-        checkData(companyDriver, token,uuid);
+        checkData(companyDriver, token, uuid);
         companyDriver.setId(null);
         companyDriver.setInsertedUserId(userId);
         companyDriver.setInsertedDateTime(new Date());
-        CompanyDriverJPA.update(companyDriver);
+        companyDriverJPA.update(companyDriver);
     }
 
     public int delete(Long id) {
-        return entityManager.createQuery("delete from companyDriver where companyDriver.id=" + id).executeUpdate();
+        Query query = entityManager.createQuery("delete from companyDriver where id = :id");
+        Map<String, Object> param = new HashMap<>();
+        param.put("id", id);
+        return companyDriverJPA.executeUpdate(query, param);
     }
 
     public CompanyDriver findOne(Long id) {
-        return CompanyDriverJPA.findOne(CompanyDriver.class, id);
+        return companyDriverJPA.findOne(CompanyDriver.class, id);
     }
 
     public List<CompanyDriver> findAll(Class<CompanyDriver> aClass) {
-        return CompanyDriverJPA.findAll(aClass);
+        return companyDriverJPA.findAll(aClass);
     }
 
     private void checkData(CompanyDriver companyDriver, String token, String uuid) throws Exception {
@@ -78,9 +83,9 @@ public class CompanyDriverService {
             throw new RuntimeException("2018");
         if (!company.getIsCompany())
             throw new RuntimeException("2019");
-        UserDto userDto = authenticationServiceProxy.findPersonUser(token,uuid,company.getId());
-        roleDtos = authenticationServiceProxy.listRole(token,uuid, userDto.getId());
-        if (roleDtos.stream().noneMatch(a -> a.getId().equals(Const.ROLE_COMPANY))){
+        UserDto userDto = authenticationServiceProxy.findPersonUser(token, uuid, company.getId());
+        roleDtos = authenticationServiceProxy.listRole(token, uuid, userDto.getId());
+        if (roleDtos.stream().noneMatch(a -> a.getId().equals(Const.ROLE_COMPANY))) {
             throw new RuntimeException("2028");
         }
     }

@@ -1,4 +1,5 @@
 package org.transport.api;
+
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,8 +38,7 @@ public class PersonAPI {
 
     @DeleteMapping(path = "/transport/person/remove/{id}")
     public Long removePerson(@PathVariable Long id) {
-        service.delete(id);
-        return id;
+        return (long) service.delete(id);
     }
 
     @GetMapping(path = "/transport/person/{id}")
@@ -48,7 +48,7 @@ public class PersonAPI {
 
     @GetMapping(path = "/transport/person")
     public Page<Person> listPerson(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size) {
-        return service.findAll(Person.class,page,size);
+        return service.findAll(Person.class, page, size);
     }
 
     @PostMapping(path = "/transport/personUser")
@@ -66,10 +66,10 @@ public class PersonAPI {
     }
 
     @GetMapping(path = "/transport/personsRole/{roleId}")
-    public List<Person> listPersonsRole(@PathVariable Long roleId, HttpServletRequest request){
+    public List<Person> listPersonsRole(@PathVariable Long roleId, HttpServletRequest request) {
         String uuid = request.getHeader("X-UUID");
         String token = CommonUtils.getToken(request);
-        return service.findPersonsRole(roleId,token,uuid);
+        return service.findPersonsRole(roleId, token, uuid);
     }
 
 

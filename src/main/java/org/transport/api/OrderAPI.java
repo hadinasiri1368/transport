@@ -68,8 +68,7 @@ public class OrderAPI {
 
     @DeleteMapping(path = "/transport/order/remove/{id}")
     public Long removeOrder(@PathVariable Long id) {
-        service.delete(id);
-        return id;
+        return (long) service.delete(id);
     }
 
     @GetMapping(path = "/transport/order/{id}")

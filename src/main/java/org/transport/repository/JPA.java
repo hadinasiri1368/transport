@@ -53,6 +53,7 @@ public class JPA<ENTITY, ID> {
             }
         return query.getResultList();
     }
+
     public void persist(Object o) {
         entityManager.persist(o);
     }
@@ -61,7 +62,7 @@ public class JPA<ENTITY, ID> {
         Entity entity = aClass.getAnnotation(Entity.class);
         Query query = entityManager.createQuery("select entity from " + entity.name() + " entity");
         List<ENTITY> fooList = query.getResultList();
-        PageRequest pageRequest = PageRequest.of(0,fooList.isEmpty() ? 1 : fooList.size());
+        PageRequest pageRequest = PageRequest.of(0, fooList.isEmpty() ? 1 : fooList.size());
         return new PageImpl<ENTITY>(fooList, pageRequest, fooList.isEmpty() ? 1 : fooList.size());
     }
 
@@ -78,7 +79,7 @@ public class JPA<ENTITY, ID> {
         return new PageImpl<ENTITY>(fooList, pageRequest, countResult);
     }
 
-    public Page listByQueryWithPaging(Query query, Map<String, Object> param,PageRequest pageRequest) {
+    public Page listByQueryWithPaging(Query query, Map<String, Object> param, PageRequest pageRequest) {
         if (!CommonUtils.isNull(param) && !param.isEmpty())
             for (String key : param.keySet()) {
                 query.setParameter(key, param.get(key));
@@ -89,6 +90,14 @@ public class JPA<ENTITY, ID> {
         query.setMaxResults(pageSize);
         List fooList = query.getResultList();
         long countResult = (long) fooList.size();
-        return new PageImpl (fooList, pageRequest, countResult);
+        return new PageImpl(fooList, pageRequest, countResult);
+    }
+
+    public int executeUpdate(Query query, Map<String, Object> param) {
+        if (!CommonUtils.isNull(param) && !param.isEmpty())
+            for (Map.Entry<String, Object> entry : param.entrySet()) {
+                query.setParameter(entry.getKey(), entry.getValue());
+            }
+        return query.executeUpdate();
     }
 }

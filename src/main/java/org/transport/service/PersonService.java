@@ -4,7 +4,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,16 +24,19 @@ public class PersonService {
     @PersistenceContext
     private EntityManager entityManager;
 
-    @Autowired
-    private JPA<Person, Long> personJPA;
+    private final JPA<Person, Long> personJPA;
 
-    @Autowired
-    private AuthenticationServiceProxy authenticationServiceProxy;
+    private final AuthenticationServiceProxy authenticationServiceProxy;
 
     @Value("${PageRequest.page}")
     private Integer page;
     @Value("${PageRequest.size}")
     private Integer size;
+
+    public PersonService(AuthenticationServiceProxy authenticationServiceProxy, JPA<Person, Long> personJPA) {
+        this.authenticationServiceProxy = authenticationServiceProxy;
+        this.personJPA = personJPA;
+    }
 
     @Transactional
     public void insert(Person person, Long userId) throws Exception {
@@ -62,11 +64,10 @@ public class PersonService {
 
     @Transactional
     public int delete(Long id) {
-        int returnValue = entityManager.createQuery("delete  person o where o.id=:id").setParameter("id", id).executeUpdate();
-        if (returnValue == 0) {
-            throw new RuntimeException("2004");
-        }
-        return returnValue;
+        Query query = entityManager.createQuery("delete from person where id = :id");
+        Map<String, Object> param = new HashMap<>();
+        param.put("id", id);
+        return personJPA.executeUpdate(query, param);
     }
 
     public Person findOne(Long id) {
@@ -78,7 +79,7 @@ public class PersonService {
     }
 
     public List<Person> findAll(List<UserDto> userDtos) {
-        List<Long> personIds = userDtos.stream().map(entity -> entity.getPersonId()).collect(Collectors.toList());
+        List<Long> personIds = userDtos.stream().map(UserDto::getPersonId).collect(Collectors.toList());
         String hql = "select p from person p where p.id in (:personIds) ";
         Query query = entityManager.createQuery(hql);
         Map<String, Object> param = new HashMap<>();
@@ -96,8 +97,7 @@ public class PersonService {
 
     public List<Person> findPersonsRole(Long roleId, String token, String uuid) {
         List<UserDto> userDtos = authenticationServiceProxy.findAllUserRole(token, uuid, roleId);
-        List<Person> personList = findAll(userDtos);
-        return personList;
+        return findAll(userDtos);
     }
 
 }

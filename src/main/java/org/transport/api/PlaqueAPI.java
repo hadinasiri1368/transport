@@ -51,8 +51,7 @@ public class PlaqueAPI {
 
     @DeleteMapping(path = "/transport/plaque/remove/{id}")
     public Long removePlaque(@PathVariable Long id) {
-        service.delete(id, Plaque.class);
-        return id;
+        return (long) service.delete(id, Plaque.class);
     }
 
     @GetMapping(path = "/transport/plaque/{id}")
