@@ -4,7 +4,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,33 +24,36 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class OrderService {
-    @Autowired
-    private JPA<Order, Long> orderJPA;
-    @Autowired
-    private JPA<OrderDetail, Long> orderDetailJPA;
-    @Autowired
-    private JPA<OrderImage, Long> orderImageJPA;
     @PersistenceContext
     private EntityManager entityManager;
-    @Autowired
-    private JPA<Car, Long> carJPA;
-    @Autowired
-    private JPA<Driver, Long> driverJPA;
-    @Autowired
-    private UserCompanyService userCompanyService;
-    @Autowired
-    private AuthenticationServiceProxy authenticationServiceProxy;
-    @Autowired
-    private NeshanMapServiceImpl neshanMapService;
-    @Autowired
-    private BasicDataServiceProxy basicDataServiceProxy;
-    @Autowired
-    private PersonService personService;
+    private final JPA<Order, Long> orderJPA;
+    private final JPA<OrderDetail, Long> orderDetailJPA;
+    private final JPA<OrderImage, Long> orderImageJPA;
+    private final JPA<Car, Long> carJPA;
+    private final JPA<Driver, Long> driverJPA;
+    private final UserCompanyService userCompanyService;
+    private final AuthenticationServiceProxy authenticationServiceProxy;
+    private final NeshanMapServiceImpl neshanMapService;
+    private final BasicDataServiceProxy basicDataServiceProxy;
+    private final PersonService personService;
 
     @Value("${PageRequest.page}")
     private Integer page;
     @Value("${PageRequest.size}")
     private Integer size;
+
+    public OrderService(JPA<Order, Long> orderJPA, JPA<OrderDetail, Long> orderDetailJPA, JPA<OrderImage, Long> orderImageJPA, JPA<Car, Long> carJPA, JPA<Driver, Long> driverJPA, UserCompanyService userCompanyService, AuthenticationServiceProxy authenticationServiceProxy, NeshanMapServiceImpl neshanMapService, BasicDataServiceProxy basicDataServiceProxy, PersonService personService) {
+        this.orderJPA = orderJPA;
+        this.orderDetailJPA = orderDetailJPA;
+        this.orderImageJPA = orderImageJPA;
+        this.carJPA = carJPA;
+        this.driverJPA = driverJPA;
+        this.userCompanyService = userCompanyService;
+        this.authenticationServiceProxy = authenticationServiceProxy;
+        this.neshanMapService = neshanMapService;
+        this.basicDataServiceProxy = basicDataServiceProxy;
+        this.personService = personService;
+    }
 
     private void insertDetail(Order order, List<OrderDetail> orderDetails, List<OrderImage> orderImages, Long userId) throws Exception {
         if (!CommonUtils.isNull(orderDetails) && orderDetails.size() > 0) {

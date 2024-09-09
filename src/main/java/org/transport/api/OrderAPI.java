@@ -39,6 +39,15 @@ public class OrderAPI {
         return order.getId();
     }
 
+    @PostMapping(path = "/transport/order/edit")
+    public Long editOrder(@RequestBody OrderDto orderDto, HttpServletRequest request) throws Exception {
+        String uuid = request.getHeader("X-UUID");
+        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request), uuid));
+        Order order = MapperUtil.mapToOrder(orderDto);
+        service.update(order, userId);
+        return order.getId();
+    }
+
     @PostMapping(path = "/transport/orderDetail/add")
     public Long addOrderDetail(@RequestBody List<OrderDetailDto> orderDetailDtos, HttpServletRequest request) throws Exception {
         String uuid = request.getHeader("X-UUID");

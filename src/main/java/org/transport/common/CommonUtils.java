@@ -15,8 +15,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.transport.dto.ExceptionDto;
-import org.transport.dto.RoleDto;
-import org.transport.dto.UserDto;
 import org.transport.service.AuthenticationServiceProxy;
 
 import java.lang.reflect.Field;
