@@ -130,7 +130,12 @@ public class CommonUtils {
     }
 
     public static String getMessage(String key) {
-        return messageSource.getMessage(key, null, null);
+        try {
+            return messageSource.getMessage(key, null, null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return messageSource.getMessage("2001", null, null);
+        }
     }
 
     public static void setNull(Object entity) throws Exception {

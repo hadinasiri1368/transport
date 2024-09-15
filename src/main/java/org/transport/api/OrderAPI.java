@@ -13,6 +13,7 @@ import org.transport.common.MapperUtil;
 import org.transport.dto.OrderDetailDto;
 import org.transport.dto.OrderDto;
 import org.transport.dto.Response.PriceDto;
+import org.transport.dto.UserPersonDto;
 import org.transport.model.*;
 import org.transport.service.AuthenticationServiceProxy;
 import org.transport.service.OrderService;
@@ -35,7 +36,14 @@ public class OrderAPI {
         String uuid = request.getHeader("X-UUID");
         Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request), uuid));
         Order order = MapperUtil.mapToOrder(orderDto);
-        service.insert(order, userId);
+        List <UserPersonDto> userPersonDtos = null;
+        if (orderDto.getIsMyOrder()) {
+            userPersonDtos = authenticationServiceProxy.listUserPersonByUserId(CommonUtils.getToken(request), null, null, userId).getContent();
+            if (CommonUtils.isNull(userPersonDtos)) {
+                throw new RuntimeException("2045");
+            }
+        }
+        service.insert(order, userId, CommonUtils.isNull(userPersonDtos)? null:userPersonDtos.get(0));
         return order.getId();
     }
 

@@ -32,10 +32,16 @@ public class GlobalControllerExceptionHandler {
     @ExceptionHandler(value = RuntimeException.class)
     public ResponseEntity<ExceptionDto> response(RuntimeException e, HttpServletRequest request) {
         String message = CommonUtils.getMessage(e.getMessage());
+        Integer errorCode;
+        try {
+            errorCode = CommonUtils.longValue(e.getMessage()).intValue();
+        } catch (Exception exception) {
+            errorCode = 2001;
+        }
         log.info("RequestURL:" + request.getRequestURL() + "  UUID=" + request.getHeader("X-UUID") + "  ServiceRuntimeException:" + message);
         return new ResponseEntity<>(ExceptionDto.builder()
                 .errorMessage(message)
-                .errorCode(CommonUtils.longValue(e.getMessage()).intValue())
+                .errorCode(errorCode)
                 .uuid(request.getHeader("X-UUID"))
                 .errorStatus(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .build(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -78,7 +84,7 @@ public class GlobalControllerExceptionHandler {
     }
 
     @ExceptionHandler(value = DataIntegrityViolationException.class)
-    public ResponseEntity<ExceptionDto> handleDuplicateKeyException(DataIntegrityViolationException  e, HttpServletRequest request) {
+    public ResponseEntity<ExceptionDto> handleDuplicateKeyException(DataIntegrityViolationException e, HttpServletRequest request) {
         ExceptionDto exceptionDto = CommonUtils.getException(e);
         log.info("RequestURL:" + request.getRequestURL() + "  UUID=" + request.getHeader("X-UUID") + "  DuplicateKey:" + e.getMessage());
         return new ResponseEntity<>(ExceptionDto.builder()
@@ -90,7 +96,7 @@ public class GlobalControllerExceptionHandler {
     }
 
     @ExceptionHandler(value = SQLException.class)
-    public ResponseEntity<ExceptionDto> handleDuplicateKeyException(SQLException  e, HttpServletRequest request) {
+    public ResponseEntity<ExceptionDto> handleDuplicateKeyException(SQLException e, HttpServletRequest request) {
         ExceptionDto exceptionDto = CommonUtils.getException(e);
         log.info("RequestURL:" + request.getRequestURL() + "  UUID=" + request.getHeader("X-UUID") + "  DuplicateKey:" + e.getMessage());
         return new ResponseEntity<>(ExceptionDto.builder()

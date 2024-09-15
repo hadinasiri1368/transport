@@ -46,4 +46,5 @@ public class OrderDto {
     private Boolean onlyMyCompanyDriver;
     private List<OrderDetailDto> orderDetails;
     private List<OrderImage> orderImages;
+    private Boolean isMyOrder ;
 }

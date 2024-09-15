@@ -127,11 +127,16 @@ public class OrderService {
     }
 
     @Transactional
-    public void insert(Order order, Long userId) throws Exception {
+    public void insert(Order order, Long userId, UserPersonDto userPersonDto) throws Exception {
         order.setId(null);
         order.setInsertedUserId(userId);
         order.setInsertedDateTime(new Date());
         order.setOrderStatusId(Const.ORDER_STATUS_DRAFT);
+        if (!CommonUtils.isNull(userPersonDto)) {
+            order.setUserId(userId);
+            order.setSenderFirstNameAndFamily(userPersonDto.getPerson().getName()+" "+userPersonDto.getPerson().getFamily());;
+            order.setSenderMobileNumber(userPersonDto.getPerson().getMobileNumber());
+        }
         orderJPA.save(order);
         insertDetail(order, CommonUtils.isNull(order.getOrderDetails()) ? null : order.getOrderDetails()
                 , CommonUtils.isNull(order.getOrderImages()) ? null : order.getOrderImages(), userId);
