@@ -134,7 +134,7 @@ public class CommonUtils {
             return messageSource.getMessage(key, null, null);
         } catch (Exception e) {
             e.printStackTrace();
-            return messageSource.getMessage("2001", null, null);
+            return null;
         }
     }
 
