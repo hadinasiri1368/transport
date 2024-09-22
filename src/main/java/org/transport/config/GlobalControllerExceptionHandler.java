@@ -35,7 +35,7 @@ public class GlobalControllerExceptionHandler {
         log.info("RequestURL:" + request.getRequestURL() + "  UUID=" + request.getHeader("X-UUID") + "  ServiceRuntimeException:" + message);
         return new ResponseEntity<>(ExceptionDto.builder()
                 .errorMessage(CommonUtils.isNull(message) ? CommonUtils.getMessage("2001") : message)
-                .errorCode(CommonUtils.isNull(message) ? 2001 : CommonUtils.longValue(message).intValue())
+                .errorCode(CommonUtils.isNull(message) ? 2001 : CommonUtils.longValue(e.getMessage()).intValue())
                 .uuid(request.getHeader("X-UUID"))
                 .errorStatus(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .build(), HttpStatus.INTERNAL_SERVER_ERROR);

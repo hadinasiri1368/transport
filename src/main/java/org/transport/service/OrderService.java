@@ -517,6 +517,9 @@ public class OrderService {
         List<Float> loadingTypeFactors = new ArrayList<>();
         for (Long loadingTypeCode : loadingTypeList) {
             LoadingTypeDto loadingTypeDto = basicDataServiceProxy.loadingTypeValue(token, uuid, loadingTypeCode, companyID);
+            if (CommonUtils.isNull(loadingTypeDto.getFactorValue())) {
+                throw new RuntimeException("2046");
+            }
             loadingTypeFactors.add(loadingTypeDto.getFactorValue());
         }
         float totalLoadingTypeFactor = (float) loadingTypeFactors.stream().mapToLong(Float::longValue).sum();
