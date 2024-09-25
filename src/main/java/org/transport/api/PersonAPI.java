@@ -59,7 +59,7 @@ public class PersonAPI {
         for (UserDto user : userDtos) {
             userPersonDto = new UserPersonDto();
             userPersonDto.setUser(user);
-            userPersonDto.setPerson(personList.stream().filter(a -> a.getId() == user.getPersonId()).findFirst().orElse(null));
+            userPersonDto.setPerson(personList.stream().filter(a -> a.getId().equals(user.getPersonId())).findFirst().orElse(null));
             userPersonDtos.add(userPersonDto);
         }
         return userPersonDtos;
