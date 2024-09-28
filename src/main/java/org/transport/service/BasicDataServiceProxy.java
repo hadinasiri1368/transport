@@ -19,9 +19,9 @@ public interface BasicDataServiceProxy {
     CarGroupDto carGroupValue(@RequestHeader("Authorization") String token, @RequestHeader("X-UUID") String uuid,
                               @RequestParam Long carTypeId, @RequestParam Long carCapacityId, @RequestParam Long companyId);
 
-    @GetMapping(path = "/basicData/loadingTypeValue")
+    @GetMapping(path = "/basicData/loadingTypeCompanyValue")
     LoadingTypeDto loadingTypeValue(@RequestHeader("Authorization") String token, @RequestHeader("X-UUID") String uuid,
-                                    @RequestParam Long code, @RequestParam Long companyId);
+                                    @RequestParam Long loadingTypeId, @RequestParam Long companyId);
 
     @GetMapping(path = "/basicData/paramCodeValue")
     ParametersDto parametersValue(@RequestHeader("Authorization") String token, @RequestHeader("X-UUID") String uuid,

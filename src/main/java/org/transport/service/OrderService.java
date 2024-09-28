@@ -104,7 +104,7 @@ public class OrderService {
                     .setParameter("orderId", orderId).executeUpdate();
         }
         if (deleteImage) {
-            returnValue += entityManager.createQuery("delete from orderImage entity where entity.order.id =:orderId")
+            returnValue += entityManager.createQuery("delete from orderImage entity where entity.orderId =:orderId")
                     .setParameter("orderId", orderId).executeUpdate();
         }
         returnValue += entityManager.createQuery("delete from order entity where entity.id =:orderId")
@@ -119,7 +119,7 @@ public class OrderService {
                     .setParameter("orderId", orderId).setParameter("detailIds", detailIds).executeUpdate();
         }
         if (!CommonUtils.isNull(ImageIds) && ImageIds.size() > 0) {
-            returnValue += entityManager.createQuery("delete from orderImage where orderImage.order.id =:orderId and orderImage.id in (:ImageIds)")
+            returnValue += entityManager.createQuery("delete from orderImage where orderImage.orderId =:orderId and orderImage.id in (:ImageIds)")
                     .setParameter("orderId", orderId).setParameter("ImageIds", ImageIds).executeUpdate();
         }
         checkOrder(orderId);
@@ -487,7 +487,7 @@ public class OrderService {
         if (CommonUtils.isNull(companyList))
             throw new RuntimeException("2002");
         if (!CommonUtils.isNull(companyId))
-            companyList = companyList.stream().filter(a -> a.getId() == companyId).collect(Collectors.toList());
+            companyList = companyList.stream().filter(a -> a.getId().equals(companyId)).collect(Collectors.toList());
         List<PriceDto> priceDtos = new ArrayList<>();
         for (Person person : companyList) {
             priceDtos.add(calculatePricePerCompany(orderId, person.getId(), token, uuid));
@@ -515,9 +515,9 @@ public class OrderService {
         }
         long totalWeight = weightList.stream().mapToLong(Long::longValue).sum();
         List<Float> loadingTypeFactors = new ArrayList<>();
-        for (Long loadingTypeCode : loadingTypeList) {
-            LoadingTypeDto loadingTypeDto = basicDataServiceProxy.loadingTypeValue(token, uuid, loadingTypeCode, companyID);
-            if (CommonUtils.isNull(loadingTypeDto.getFactorValue())) {
+        for (Long loadingTypeId : loadingTypeList) {
+            LoadingTypeDto loadingTypeDto = basicDataServiceProxy.loadingTypeValue(token, uuid, loadingTypeId, companyID);
+            if (CommonUtils.isNull(loadingTypeDto)) {
                 throw new RuntimeException("2046");
             }
             loadingTypeFactors.add(loadingTypeDto.getFactorValue());

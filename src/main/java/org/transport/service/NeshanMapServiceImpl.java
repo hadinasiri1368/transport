@@ -91,33 +91,16 @@ public class NeshanMapServiceImpl implements IMapService {
 
     @Override
     public String getExceptionCode(int code) {
-        String message = "";
-        switch (code) {
-            case 470:
-                message = "2029";
-                break;
-            case 480:
-                message = "2030";
-                break;
-            case 481:
-                message = "2031";
-                break;
-            case 482:
-                message = "2032";
-                break;
-            case 483:
-                message = "2033";
-                break;
-            case 484:
-                message = "2034";
-                break;
-            case 485:
-                message = "2035";
-                break;
-            case 500:
-                message = "2036";
-                break;
-        }
-        return message;
+        return switch (code) {
+            case 470 -> String.valueOf(new RuntimeException("2029"));
+            case 480 -> String.valueOf(new RuntimeException("2030"));
+            case 481 -> String.valueOf(new RuntimeException("2031"));
+            case 482 -> String.valueOf(new RuntimeException("2032"));
+            case 483 -> String.valueOf(new RuntimeException("2033"));
+            case 484 -> String.valueOf(new RuntimeException("2034"));
+            case 485 -> String.valueOf(new RuntimeException("2035"));
+            case 500 -> String.valueOf(new RuntimeException("2036"));
+            default -> "";
+        };
     }
 }
