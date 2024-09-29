@@ -161,6 +161,18 @@ public class OrderService {
     }
 
     @Transactional
+    public void update(Order order, Long userId, UserPersonDto userPersonDto) throws Exception {
+        order.setUpdatedUserId(userId);
+        order.setUpdatedDateTime(new Date());
+        if (!CommonUtils.isNull(userPersonDto)) {
+            order.setUserId(userId);
+            order.setSenderFirstNameAndFamily(userPersonDto.getPerson().getName()+" "+userPersonDto.getPerson().getFamily());;
+            order.setSenderMobileNumber(userPersonDto.getPerson().getMobileNumber());
+        }
+        orderJPA.update(order);
+    }
+
+    @Transactional
     public void update(Order order, Long userId) throws Exception {
         order.setUpdatedUserId(userId);
         order.setUpdatedDateTime(new Date());
