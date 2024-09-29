@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.transport.common.CommonUtils;
+import org.transport.common.DateUtil;
 import org.transport.constant.Const;
 import org.transport.common.ObjectMapperUtils;
 import org.transport.dto.*;
@@ -18,6 +19,7 @@ import org.transport.dto.Response.PriceDto;
 import org.transport.model.*;
 import org.transport.repository.JPA;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -132,6 +134,8 @@ public class OrderService {
         order.setInsertedUserId(userId);
         order.setInsertedDateTime(new Date());
         order.setOrderStatusId(Const.ORDER_STATUS_DRAFT);
+        LocalDate currentDate = LocalDate.now();
+        order.setOrderDate(DateUtil.getJalaliDate(currentDate));
         if (!CommonUtils.isNull(userPersonDto)) {
             order.setUserId(userId);
             order.setSenderFirstNameAndFamily(userPersonDto.getPerson().getName()+" "+userPersonDto.getPerson().getFamily());;
@@ -158,6 +162,18 @@ public class OrderService {
     public void insert(Long orderId, Long userId, List<OrderImage> orderImages) throws Exception {
         Order order = findOne(orderId);
         insertDetail(order, null, orderImages, userId);
+    }
+
+    @Transactional
+    public void update(Order order, Long userId, UserPersonDto userPersonDto) throws Exception {
+        order.setUpdatedUserId(userId);
+        order.setUpdatedDateTime(new Date());
+        if (!CommonUtils.isNull(userPersonDto)) {
+            order.setUserId(userId);
+            order.setSenderFirstNameAndFamily(userPersonDto.getPerson().getName()+" "+userPersonDto.getPerson().getFamily());;
+            order.setSenderMobileNumber(userPersonDto.getPerson().getMobileNumber());
+        }
+        orderJPA.update(order);
     }
 
     @Transactional
