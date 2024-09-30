@@ -12,5 +12,5 @@ public class CarGroupDto {
     private Long carCapacityId;
     private Long carTypeId;
     private Long companyId;
-    private Float factorValue;
+    private Double factorValue;
 }

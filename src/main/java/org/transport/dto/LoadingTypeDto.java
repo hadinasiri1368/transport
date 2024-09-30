@@ -12,5 +12,5 @@ public class LoadingTypeDto {
     private String code;
     private String name;
     private Long companyId;
-    private Float factorValue;
+    private Double factorValue;
 }

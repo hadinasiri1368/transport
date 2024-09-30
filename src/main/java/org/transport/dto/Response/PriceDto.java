@@ -9,9 +9,9 @@ import lombok.*;
 @Builder
 public class PriceDto {
     private Long companyId;
-    private Float timeFactor;
-    private Float distanceFactor;
-    private Float totalLoadingTypeFactor;
-    private Float carGroupFactorValue;
-    private Float price;
+    private Double timeFactor;
+    private Double distanceFactor;
+    private Double totalLoadingTypeFactor;
+    private Double carGroupFactorValue;
+    private Double price;
 }

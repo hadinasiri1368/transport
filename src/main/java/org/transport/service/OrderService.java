@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.transport.common.CommonUtils;
+import org.transport.common.DateUtil;
 import org.transport.constant.Const;
 import org.transport.common.ObjectMapperUtils;
 import org.transport.dto.*;
@@ -18,6 +19,7 @@ import org.transport.dto.Response.PriceDto;
 import org.transport.model.*;
 import org.transport.repository.JPA;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -132,6 +134,8 @@ public class OrderService {
         order.setInsertedUserId(userId);
         order.setInsertedDateTime(new Date());
         order.setOrderStatusId(Const.ORDER_STATUS_DRAFT);
+        LocalDate currentDate = LocalDate.now();
+        order.setOrderDate(DateUtil.getJalaliDate(currentDate));
         if (!CommonUtils.isNull(userPersonDto)) {
             order.setUserId(userId);
             order.setSenderFirstNameAndFamily(userPersonDto.getPerson().getName()+" "+userPersonDto.getPerson().getFamily());;
@@ -526,7 +530,7 @@ public class OrderService {
             loadingTypeList.add(orderDetail.getLoadingTypeId());
         }
         long totalWeight = weightList.stream().mapToLong(Long::longValue).sum();
-        List<Float> loadingTypeFactors = new ArrayList<>();
+        List<Double> loadingTypeFactors = new ArrayList<>();
         for (Long loadingTypeId : loadingTypeList) {
             LoadingTypeDto loadingTypeDto = basicDataServiceProxy.loadingTypeValue(token, uuid, loadingTypeId, companyID);
             if (CommonUtils.isNull(loadingTypeDto)) {
@@ -534,7 +538,7 @@ public class OrderService {
             }
             loadingTypeFactors.add(loadingTypeDto.getFactorValue());
         }
-        float totalLoadingTypeFactor = (float) loadingTypeFactors.stream().mapToLong(Float::longValue).sum();
+        double totalLoadingTypeFactor =  loadingTypeFactors.stream().mapToDouble(Double::doubleValue).sum();
         if (CommonUtils.isNull(order.getSenderLatitude()) ||
                 CommonUtils.isNull(order.getSenderLongitude()) ||
                 CommonUtils.isNull(order.getReceiverLatitude()) ||
@@ -564,18 +568,18 @@ public class OrderService {
             log.info("CarGroupDto is null for carTypeId: {}, carCapacityId: {}, companyID: {}", order.getCarTypeId(), carCapacityOptional.get().getId(), companyID);
             throw new RuntimeException("2038");
         }
-        Float carGroupFactorValue = carGroupDto.getFactorValue();
+        Double carGroupFactorValue = carGroupDto.getFactorValue();
         ParametersDto parametersDtoTime = basicDataServiceProxy.parametersValue(token, uuid, Const.ARRIVAL_TIME_FACTOR, companyID);
         if (CommonUtils.isNull(parametersDtoTime)) {
             throw new RuntimeException("2043");
         }
-        Float timeFactor = CommonUtils.floatValue(parametersDtoTime.getValue());
+        Double timeFactor = CommonUtils.doubleValue(parametersDtoTime.getValue());
         ParametersDto parametersDtoDistance = basicDataServiceProxy.parametersValue(token, uuid, Const.TON_KILOMETERS, companyID);
         if (CommonUtils.isNull(parametersDtoDistance)) {
             throw new RuntimeException("2043");
         }
-        Float distanceFactor = CommonUtils.floatValue(parametersDtoDistance.getValue());
-        float price = ((distance / 1000) * distanceFactor) * (1 + (duration * timeFactor)) * (1 + totalLoadingTypeFactor) * (1 + carGroupFactorValue);
+        Double distanceFactor = CommonUtils.doubleValue(parametersDtoDistance.getValue());
+        double price = ((distance / 1000) * distanceFactor) * (1 + (duration * timeFactor)) * (1 + totalLoadingTypeFactor) * (1 + carGroupFactorValue);
         PriceDto priceDto = new PriceDto();
         priceDto.setCompanyId(companyID);
         priceDto.setDistanceFactor(distanceFactor);

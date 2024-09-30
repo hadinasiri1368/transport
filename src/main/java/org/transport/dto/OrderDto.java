@@ -18,6 +18,7 @@ public class OrderDto {
     private Long id;
     private Long userId;
     private Long carTypeId;
+    private Long orderStatusId;
     private String senderFirstNameAndFamily;
     private String senderMobileNumber;
     private String senderAddress;

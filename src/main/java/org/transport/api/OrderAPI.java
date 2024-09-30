@@ -36,14 +36,14 @@ public class OrderAPI {
         String uuid = request.getHeader("X-UUID");
         Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request), uuid));
         Order order = MapperUtil.mapToOrder(orderDto);
-        List <UserPersonDto> userPersonDtos = null;
+        List<UserPersonDto> userPersonDtos = null;
         if (orderDto.getIsMyOrder()) {
             userPersonDtos = authenticationServiceProxy.listUserPersonByUserId(CommonUtils.getToken(request), null, null, userId).getContent();
             if (CommonUtils.isNull(userPersonDtos)) {
                 throw new RuntimeException("2045");
             }
         }
-        service.insert(order, userId, CommonUtils.isNull(userPersonDtos)? null:userPersonDtos.get(0));
+        service.insert(order, userId, CommonUtils.isNull(userPersonDtos) ? null : userPersonDtos.get(0));
         return order.getId();
     }
 
@@ -52,14 +52,7 @@ public class OrderAPI {
         String uuid = request.getHeader("X-UUID");
         Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request), uuid));
         Order order = MapperUtil.mapToOrder(orderDto);
-        List <UserPersonDto> userPersonDtos = null;
-        if (orderDto.getIsMyOrder()) {
-            userPersonDtos = authenticationServiceProxy.listUserPersonByUserId(CommonUtils.getToken(request), null, null, userId).getContent();
-            if (CommonUtils.isNull(userPersonDtos)) {
-                throw new RuntimeException("2045");
-            }
-        }
-        service.update(order, userId, CommonUtils.isNull(userPersonDtos)? null:userPersonDtos.get(0));
+        service.update(order, userId);
         return order.getId();
     }
 
