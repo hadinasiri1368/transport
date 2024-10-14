@@ -84,8 +84,10 @@ public class OrderAPI {
     }
 
     @DeleteMapping(path = "/transport/order/remove/{id}")
-    public Long removeOrder(@PathVariable Long id) {
-        return (long) service.delete(id);
+    public Long removeOrder(HttpServletRequest request,@PathVariable Long id) {
+        String uuid = request.getHeader("X-UUID");
+        Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request), uuid));
+        return (long) service.delete(id,userId);
     }
 
     @GetMapping(path = "/transport/order/{id}")

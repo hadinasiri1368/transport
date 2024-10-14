@@ -200,8 +200,15 @@ public class OrderService {
     }
 
     @Transactional
-    public int delete(Long orderId) {
-        return deleteDetail(orderId, true, true);
+    public int delete(Long orderId,Long userId) {
+        Order order = findOne(orderId);
+        if ( order.getUserId().equals(userId)) {
+            if (!order.getOrderStatusId().equals(Const.ORDER_STATUS_DRAFT)) {
+                throw new RuntimeException("2047");
+            }
+            return deleteDetail(orderId, true, true);
+        }
+        throw new RuntimeException("2047");
     }
 
     @Transactional
