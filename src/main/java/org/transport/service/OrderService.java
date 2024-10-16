@@ -114,17 +114,22 @@ public class OrderService {
         return returnValue;
     }
 
-    private int deleteDetail(Long orderId, List<Long> detailIds, List<Long> ImageIds) {
+    private int deleteDetail(Long orderId, List<Long> detailIds, List<Long> imageIds) {
+        return deleteDetail(orderId, detailIds, imageIds, true);
+    }
+
+    private int deleteDetail(Long orderId, List<Long> detailIds, List<Long> imageIds, boolean checkOrder) {
         int returnValue = 0;
         if (!CommonUtils.isNull(detailIds) && detailIds.size() > 0) {
-            returnValue += entityManager.createQuery("delete from orderDetail where orderDetail.order.id =:orderId and orderDetail.id in (:detailIds)")
+            returnValue += entityManager.createQuery("delete from orderDetail od where od.order.id =:orderId and od.id in (:detailIds)")
                     .setParameter("orderId", orderId).setParameter("detailIds", detailIds).executeUpdate();
         }
-        if (!CommonUtils.isNull(ImageIds) && ImageIds.size() > 0) {
-            returnValue += entityManager.createQuery("delete from orderImage where orderImage.orderId =:orderId and orderImage.id in (:ImageIds)")
-                    .setParameter("orderId", orderId).setParameter("ImageIds", ImageIds).executeUpdate();
+        if (!CommonUtils.isNull(imageIds) && imageIds.size() > 0) {
+            returnValue += entityManager.createQuery("delete from orderImage oi where oi.orderId =:orderId and oi.id in (:ImageIds)")
+                    .setParameter("orderId", orderId).setParameter("ImageIds", imageIds).executeUpdate();
         }
-        checkOrder(orderId);
+        if (checkOrder)
+            checkOrder(orderId);
         return returnValue;
     }
 
@@ -180,6 +185,22 @@ public class OrderService {
     public void update(Order order, Long userId) throws Exception {
         order.setUpdatedUserId(userId);
         order.setUpdatedDateTime(new Date());
+        List<Long> orderDetailIds = null;
+        List<Long> orderImageIds = null;
+        if (!CommonUtils.isNull(order.getOrderImages())) {
+            List<OrderImage> orderImages = getOrderImage(order.getId());
+            if (!CommonUtils.isNull(orderImages)) {
+                orderImageIds = orderImages.stream().map(OrderImage::getId).collect(Collectors.toList());
+            }
+        }
+        if (!CommonUtils.isNull(order.getOrderDetails())) {
+            List<OrderDetail> orderDetails = getOrderDetail(order.getId());
+            if (!CommonUtils.isNull(orderDetails)) {
+                orderDetailIds = orderDetails.stream().map(OrderDetail::getId).collect(Collectors.toList());
+            }
+        }
+        deleteDetail(order.getId(), orderDetailIds, orderImageIds,false);
+        insertDetail(order, order.getOrderDetails(), order.getOrderImages(), userId);
         orderJPA.update(order);
     }
 
@@ -246,6 +267,13 @@ public class OrderService {
             throw new RuntimeException("2042");
         }
         return orderDetails;
+    }
+
+    private List<OrderImage> getOrderImage(Long orderId) {
+        Query query = entityManager.createQuery("select entity from orderImage  entity where entity.orderId=:orderId");
+        query.setParameter("orderId", orderId);
+        List<OrderImage> orderImages = (List<OrderImage>) query.getResultList();
+        return orderImages;
     }
 
 
