@@ -61,7 +61,7 @@ public class MapperUtil {
                             .filter(status -> status.getId().equals(order.getOrderStatusId()))
                             .map(OrderStatusDto::getName)
                             .findFirst()
-                            .orElse("Unknown Status")
+                            .orElse(null)
             );
             orderDto.setCarTypeName(
                     carTypeDtos.stream()

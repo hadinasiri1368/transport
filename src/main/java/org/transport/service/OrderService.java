@@ -144,7 +144,6 @@ public class OrderService {
         if (!CommonUtils.isNull(userPersonDto)) {
             order.setUserId(userId);
             order.setSenderFirstNameAndFamily(userPersonDto.getPerson().getName() + " " + userPersonDto.getPerson().getFamily());
-            ;
             order.setSenderMobileNumber(userPersonDto.getPerson().getMobileNumber());
         }
         orderJPA.save(order);
@@ -177,7 +176,6 @@ public class OrderService {
         if (!CommonUtils.isNull(userPersonDto)) {
             order.setUserId(userId);
             order.setSenderFirstNameAndFamily(userPersonDto.getPerson().getName() + " " + userPersonDto.getPerson().getFamily());
-            ;
             order.setSenderMobileNumber(userPersonDto.getPerson().getMobileNumber());
         }
         orderJPA.update(order);
