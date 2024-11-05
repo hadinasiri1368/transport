@@ -2,65 +2,54 @@ package org.transport.api;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import org.transport.common.CommonUtils;
 import org.transport.dto.PlaqueDto;
 import org.transport.model.Plaque;
-import org.transport.service.GenericService;
+import org.transport.service.PlaqueService;
 
 
 @RestController
 @SecurityRequirement(name = "Bearer Authentication")
 public class PlaqueAPI {
-    @Autowired
-    private GenericService<Plaque> service;
+
+    private final PlaqueService plaqueService;
+
+    public PlaqueAPI(PlaqueService plaqueService) {
+        this.plaqueService = plaqueService;
+    }
 
     @PostMapping(path = "/transport/plaque/add")
-    public Long addPlaque(@RequestBody PlaqueDto plaqueDto, HttpServletRequest request) throws Exception {
+    public Long addPlaque(@RequestBody Plaque plaque, HttpServletRequest request) throws Exception {
         String uuid = request.getHeader("X-UUID");
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request), uuid);
-        Plaque plaque = new Plaque();
-        plaque.setId(plaqueDto.getId());
-        plaque.setLeftPlaqueTag(plaqueDto.getLeftPlaqueTag());
-        plaque.setPlaqueTagPersianPartId(plaqueDto.getPlaqueTagPersianPartId());
-        plaque.setMiddlePlaqueTag(plaqueDto.getMiddlePlaqueTag());
-        plaque.setRightPlaqueTag(plaqueDto.getRightPlaqueTag());
-        plaque.setLeftPlaqueFreeZoneTag(plaqueDto.getLeftPlaqueFreeZoneTag());
-        plaque.setRightPlaqueFreeZoneTag(plaqueDto.getRightPlaqueFreeZoneTag());
-        service.insert(plaque, userId);
+        plaqueService.insert(plaque, userId);
         return plaque.getId();
     }
 
     @PutMapping(path = "/transport/plaque/edit")
-    public Long editPlaque(@RequestBody PlaqueDto plaqueDto, HttpServletRequest request) throws Exception {
+    public Long editPlaque(@RequestBody Plaque plaque, HttpServletRequest request) throws Exception {
         String uuid = request.getHeader("X-UUID");
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request), uuid);
-        Plaque plaque = new Plaque();
-        plaque.setId(plaqueDto.getId());
-        plaque.setLeftPlaqueTag(plaqueDto.getLeftPlaqueTag());
-        plaque.setPlaqueTagPersianPartId(plaqueDto.getPlaqueTagPersianPartId());
-        plaque.setMiddlePlaqueTag(plaqueDto.getMiddlePlaqueTag());
-        plaque.setRightPlaqueTag(plaqueDto.getRightPlaqueTag());
-        plaque.setLeftPlaqueFreeZoneTag(plaqueDto.getLeftPlaqueFreeZoneTag());
-        plaque.setRightPlaqueFreeZoneTag(plaqueDto.getRightPlaqueFreeZoneTag());
-        service.update(plaque, userId, Plaque.class);
+        plaqueService.update(plaque, userId);
         return plaque.getId();
     }
 
     @DeleteMapping(path = "/transport/plaque/remove/{id}")
     public Long removePlaque(@PathVariable Long id) {
-        return (long) service.delete(id, Plaque.class);
+        return (long) plaqueService.delete(id);
     }
 
     @GetMapping(path = "/transport/plaque/{id}")
     public Plaque getPlaque(@PathVariable Long id) {
-        return service.findOne(Plaque.class, id);
+        return plaqueService.findOne(Plaque.class, id);
     }
 
     @GetMapping(path = "/transport/plaque")
-    public Page<Plaque> listPlaque(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size) {
-        return service.findAll(Plaque.class, size, page);
+    public Page<PlaqueDto> listPlaque(HttpServletRequest request, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size) {
+        String uuid = request.getHeader("X-UUID");
+        String token = CommonUtils.getToken(request);
+        return plaqueService.findAll( size, page , token,uuid);
     }
 }

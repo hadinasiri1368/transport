@@ -17,7 +17,7 @@ public class Plaque extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(columnDefinition = "BIT", name = "is_free_zone")
-    private boolean isFreeZone;
+    private Boolean isFreeZone;
     @Column(columnDefinition = "NVARCHAR(2)", name = "left_plaque_tag")
     private String leftPlaqueTag;
     @Column(columnDefinition = "DECIMAL(18,0)", name = "f_plaque_tag_persian_part_id")
