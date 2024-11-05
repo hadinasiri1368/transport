@@ -96,7 +96,7 @@ public class OrderAPI {
     }
 
     @GetMapping(path = "/transport/order")
-    public Page<Order> listOrder(HttpServletRequest request, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size) throws Exception {
+    public Page<OrderDto> listOrder(HttpServletRequest request, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size) throws Exception {
         String uuid = request.getHeader("X-UUID");
         Long userId = CommonUtils.longValue(authenticationServiceProxy.getUserId(CommonUtils.getToken(request), uuid));
         String token = CommonUtils.getToken(request);

@@ -11,11 +11,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.transport.common.CommonUtils;
 import org.transport.common.DateUtil;
+import org.transport.common.MapperUtil;
 import org.transport.constant.Const;
 import org.transport.common.ObjectMapperUtils;
 import org.transport.dto.*;
-import org.transport.dto.Response.NeshanElementDto;
-import org.transport.dto.Response.PriceDto;
+import org.transport.dto.Response.*;
 import org.transport.model.*;
 import org.transport.repository.JPA;
 
@@ -143,7 +143,8 @@ public class OrderService {
         order.setOrderDate(DateUtil.getJalaliDate(currentDate));
         if (!CommonUtils.isNull(userPersonDto)) {
             order.setUserId(userId);
-            order.setSenderFirstNameAndFamily(userPersonDto.getPerson().getName()+" "+userPersonDto.getPerson().getFamily());;
+            order.setSenderFirstNameAndFamily(userPersonDto.getPerson().getName() + " " + userPersonDto.getPerson().getFamily());
+            ;
             order.setSenderMobileNumber(userPersonDto.getPerson().getMobileNumber());
         }
         orderJPA.save(order);
@@ -175,7 +176,8 @@ public class OrderService {
         order.setUpdatedDateTime(new Date());
         if (!CommonUtils.isNull(userPersonDto)) {
             order.setUserId(userId);
-            order.setSenderFirstNameAndFamily(userPersonDto.getPerson().getName()+" "+userPersonDto.getPerson().getFamily());;
+            order.setSenderFirstNameAndFamily(userPersonDto.getPerson().getName() + " " + userPersonDto.getPerson().getFamily());
+            ;
             order.setSenderMobileNumber(userPersonDto.getPerson().getMobileNumber());
         }
         orderJPA.update(order);
@@ -199,7 +201,7 @@ public class OrderService {
                 orderDetailIds = orderDetails.stream().map(OrderDetail::getId).collect(Collectors.toList());
             }
         }
-        deleteDetail(order.getId(), orderDetailIds, orderImageIds,false);
+        deleteDetail(order.getId(), orderDetailIds, orderImageIds, false);
         insertDetail(order, order.getOrderDetails(), order.getOrderImages(), userId);
         orderJPA.update(order);
     }
@@ -283,8 +285,25 @@ public class OrderService {
         return orderImages;
     }
 
+    public Page<OrderDto> findAll(Long userId, String token, String uuid, Integer page, Integer size) throws Exception {
+        List<Order> orders = list(userId, token, uuid);
+        List<OrderDto> orderDtoList = new ArrayList<>();
+        OrderDto orderDto;
+        List<OrderStatusDto> orderStatusDtos = basicDataServiceProxy.listOrderStatus(token, uuid).getContent();
+        List<CarTypeDto> carTypeDtos = basicDataServiceProxy.listCarType(token, uuid).getContent();
+        List<BaseInfoGoodDto> baseInfoGoodDtos = basicDataServiceProxy.listBaseInfoGood(token, uuid).getContent();
+        List<PackingTypeDto> packingTypeDtos = basicDataServiceProxy.listPackingType(token, uuid).getContent();
+        List<LoadingTypeDto> loadingTypeDtos = basicDataServiceProxy.listLoadingType(token, uuid).getContent();
+        PageRequest pageRequest = PageRequest.of(CommonUtils.isNull(page, this.page), CommonUtils.isNull(size, this.size));
+        for (Order order : orders) {
+            orderDto = MapperUtil.mapToOrderDto(order, orderStatusDtos, carTypeDtos);
+            orderDto.setOrderDetails(MapperUtil.mapToOrderDetailDto(order.getOrderDetails(), baseInfoGoodDtos, packingTypeDtos, loadingTypeDtos));
+            orderDtoList.add(orderDto);
+        }
+        return CommonUtils.listPaging(orderDtoList, pageRequest);
+    }
 
-    public Page<Order> findAll(Long userId, String token, String uuid, Integer page, Integer size) throws Exception {
+    public List<Order> list(Long userId, String token, String uuid) throws Exception {
         List<Order> returnValue = new ArrayList<>();
         List<RoleDto> roleDtos = new ArrayList<>();
         try {
@@ -296,10 +315,9 @@ public class OrderService {
             List<Long> orderIds = new ArrayList<>();
             if (userDto.getIsAdmin()) {
                 if (CommonUtils.isNull(page) && CommonUtils.isNull(size)) {
-                    return orderJPA.findAllWithPaging(Order.class);
+                    return orderJPA.findAll(Order.class);
                 }
-                PageRequest pageRequest = PageRequest.of(CommonUtils.isNull(page, this.page), CommonUtils.isNull(size, this.size));
-                return orderJPA.findAllWithPaging(Order.class, pageRequest);
+                return orderJPA.findAll(Order.class);
             }
             roleDtos = authenticationServiceProxy.listRole(token, uuid);
             if (CommonUtils.isNull(roleDtos))
@@ -360,10 +378,9 @@ public class OrderService {
             throw e;
         }
         if (CommonUtils.isNull(page) && CommonUtils.isNull(size)) {
-            return CommonUtils.listPaging(returnValue);
+            return returnValue;
         }
-        PageRequest pageRequest = PageRequest.of(CommonUtils.isNull(page, this.page), CommonUtils.isNull(size, this.size));
-        return CommonUtils.listPaging(returnValue, pageRequest);
+        return returnValue;
     }
 
     public Order findOne(Long id) {
@@ -389,7 +406,7 @@ public class OrderService {
         Car car = carJPA.findOne(Car.class, carId);
         if (CommonUtils.isNull(car))
             throw new RuntimeException("2013");
-        Page<Order> orders = findAll(userId, token, uuid, 0, 100);
+        List<Order> orders = list(userId, token, uuid);
         if (orders.isEmpty())
             throw new RuntimeException("2012");
 
@@ -567,13 +584,13 @@ public class OrderService {
         long totalWeight = weightList.stream().mapToLong(Long::longValue).sum();
         List<Double> loadingTypeFactors = new ArrayList<>();
         for (Long loadingTypeId : loadingTypeList) {
-            LoadingTypeDto loadingTypeDto = basicDataServiceProxy.loadingTypeValue(token, uuid, loadingTypeId, companyID);
-            if (CommonUtils.isNull(loadingTypeDto)) {
+            LoadingTypeCompanyDto loadingTypeCompanyDto = basicDataServiceProxy.listLoadingTypeValue(token, uuid, loadingTypeId, companyID);
+            if (CommonUtils.isNull(loadingTypeCompanyDto)) {
                 throw new RuntimeException("2046");
             }
-            loadingTypeFactors.add(loadingTypeDto.getFactorValue());
+            loadingTypeFactors.add(loadingTypeCompanyDto.getFactorValue());
         }
-        double totalLoadingTypeFactor =  loadingTypeFactors.stream().mapToDouble(Double::doubleValue).sum();
+        double totalLoadingTypeFactor = loadingTypeFactors.stream().mapToDouble(Double::doubleValue).sum();
         if (CommonUtils.isNull(order.getSenderLatitude()) ||
                 CommonUtils.isNull(order.getSenderLongitude()) ||
                 CommonUtils.isNull(order.getReceiverLatitude()) ||

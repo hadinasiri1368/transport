@@ -18,7 +18,9 @@ public class OrderDto {
     private Long id;
     private Long userId;
     private Long carTypeId;
+    private String carTypeName;
     private Long orderStatusId;
+    private String orderStatusName;
     private String senderFirstNameAndFamily;
     private String senderMobileNumber;
     private String senderAddress;
@@ -26,7 +28,7 @@ public class OrderDto {
     private String senderPostalCode;
     private Float senderLatitude;
     private Float senderLongitude;
-    private String receiverFirstNameAndfamily;
+    private String receiverFirstNameAndFamily;
     private String receiverMobileNumber;
     private String receiverAddress;
     private Integer receiverUnit;

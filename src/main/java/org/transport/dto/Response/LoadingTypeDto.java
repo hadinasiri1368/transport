@@ -1,4 +1,4 @@
-package org.transport.dto;
+package org.transport.dto.Response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,6 +11,4 @@ public class LoadingTypeDto {
     private Long id;
     private String code;
     private String name;
-    private Long companyId;
-    private Double factorValue;
 }

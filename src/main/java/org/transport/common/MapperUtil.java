@@ -1,12 +1,11 @@
 package org.transport.common;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.transport.dto.OrderDetailDto;
 import org.transport.dto.OrderDto;
+import org.transport.dto.Response.*;
 import org.transport.dto.VoucherDetailDto;
 import org.transport.model.*;
-import org.transport.service.GenericService;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -51,5 +50,62 @@ public class MapperUtil {
         return orderDtos.stream()
                 .map(entity -> mapToOrder(entity))
                 .collect(Collectors.toList());
+    }
+
+    public static OrderDto mapToOrderDto(Order order, List<OrderStatusDto> orderStatusDtos,
+                                         List<CarTypeDto> carTypeDtos) {
+        OrderDto orderDto = ObjectMapperUtils.map(order, OrderDto.class);
+        if (orderDto != null) {
+            orderDto.setOrderStatusName(
+                    orderStatusDtos.stream()
+                            .filter(status -> status.getId().equals(order.getOrderStatusId()))
+                            .map(OrderStatusDto::getName)
+                            .findFirst()
+                            .orElse("Unknown Status")
+            );
+            orderDto.setCarTypeName(
+                    carTypeDtos.stream()
+                            .filter(carType -> carType.getId().equals(order.getCarTypeId()))
+                            .map(CarTypeDto::getName)
+                            .findFirst()
+                            .orElse(null)
+            );
+
+        }
+        return orderDto;
+    }
+
+    public static List<OrderDetailDto> mapToOrderDetailDto(List<OrderDetail> orderDetails, List<BaseInfoGoodDto> baseInfoGoodDtos, List<PackingTypeDto> packingTypeDtos, List<LoadingTypeDto> loadingTypeDtos) {
+        return orderDetails.stream()
+                .map(orderDetail -> {
+                    OrderDetailDto orderDetailDto = mapToOrderDetailDto(orderDetail);
+
+                    String baseInfoGoodName = baseInfoGoodDtos.stream()
+                            .filter(baseInfoGoodDto -> baseInfoGoodDto.getId().equals(orderDetail.getBaseInfoGoodId()))
+                            .map(BaseInfoGoodDto::getName)
+                            .findFirst()
+                            .orElse(null);
+
+                    String packingTypeName = packingTypeDtos.stream()
+                            .filter(packingTypeDto -> packingTypeDto.getId().equals(orderDetail.getPackingTypeId()))
+                            .map(PackingTypeDto::getName)
+                            .findFirst().orElse(null);
+
+                    String loadingTypeName = loadingTypeDtos.stream()
+                            .filter(loadingTypeDto -> loadingTypeDto.getId().equals(orderDetail.getLoadingTypeId()))
+                            .map(LoadingTypeDto::getName)
+                            .findFirst().orElse(null);
+                    orderDetailDto.setBaseInfoGoodName(baseInfoGoodName);
+                    orderDetailDto.setPackingTypeName(packingTypeName);
+                    orderDetailDto.setLoadingTypeName(loadingTypeName);
+                    return orderDetailDto;
+                })
+                .collect(Collectors.toList());
+    }
+
+    public static OrderDetailDto mapToOrderDetailDto(OrderDetail orderDetail) {
+        OrderDetailDto orderDetailDto = ObjectMapperUtils.map(orderDetail, OrderDetailDto.class);
+        orderDetailDto.setOrderId(orderDetail.getOrder().getId());
+        return orderDetailDto;
     }
 }
