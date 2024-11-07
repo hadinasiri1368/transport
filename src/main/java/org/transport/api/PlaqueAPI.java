@@ -50,6 +50,6 @@ public class PlaqueAPI {
     public Page<PlaqueDto> listPlaque(HttpServletRequest request, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size) {
         String uuid = request.getHeader("X-UUID");
         String token = CommonUtils.getToken(request);
-        return plaqueService.findAll( size, page , token,uuid);
+        return plaqueService.findAll(size, page, token, uuid);
     }
 }

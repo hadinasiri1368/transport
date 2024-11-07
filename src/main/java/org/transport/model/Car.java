@@ -15,9 +15,6 @@ public class Car extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne
-    @JoinColumn(name = "f_driver_id")
-    private Driver driver;
-    @ManyToOne
     @JoinColumn(name = "f_owner_id")
     private Person person;
     @Column(columnDefinition = "NVARCHAR(50)", name = "f_fuel_type_id")
