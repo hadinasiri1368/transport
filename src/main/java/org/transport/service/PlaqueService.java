@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.transport.common.CommonUtils;
+import org.transport.common.MapperUtil;
 import org.transport.common.ObjectMapperUtils;
 import org.transport.dto.PlaqueDto;
 import org.transport.dto.Response.PlaqueTagPersianPartDto;
@@ -18,6 +19,7 @@ import org.transport.model.Plaque;
 import org.transport.repository.JPA;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -77,6 +79,12 @@ public class PlaqueService {
         return jpaPlaque.findOne(aClass, id);
     }
 
+    public PlaqueDto findOne(Long id, String token, String uuid) {
+        Plaque plaque = jpaPlaque.findOne(Plaque.class, id);
+        List<PlaqueTagPersianPartDto> plaqueTagPersianPartDtos = basicDataServiceProxy.listPlaqueTagPersianPart(token, uuid).getContent();
+        return MapperUtil.mapToPlaqueDto(plaque, plaqueTagPersianPartDtos);
+    }
+
     public List<Plaque> findAll(Class<Plaque> aClass) {
         return jpaPlaque.findAll(aClass);
     }
@@ -84,18 +92,10 @@ public class PlaqueService {
     public Page<PlaqueDto> findAll(Integer page, Integer size, String token, String uuid) {
         List<Plaque> plaques = findAll(Plaque.class);
         List<PlaqueTagPersianPartDto> plaqueTagPersianPartDtos = basicDataServiceProxy.listPlaqueTagPersianPart(token, uuid).getContent();
-        List<PlaqueDto> plaqueDtos = new ArrayList<>();
+        List<PlaqueDto> plaqueDtos = plaques.stream()
+                .map(plaque -> MapperUtil.mapToPlaqueDto(plaque, plaqueTagPersianPartDtos))
+                .collect(Collectors.toList());
         PageRequest pageRequest = PageRequest.of(CommonUtils.isNull(page, this.page), CommonUtils.isNull(size, this.size));
-        for (Plaque plaque : plaques) {
-            PlaqueDto plaqueDto = ObjectMapperUtils.map(plaque, PlaqueDto.class);
-            String plaqueTagPersianPartName = plaqueTagPersianPartDtos.stream().filter(plaqueTagPersianPartDto -> plaqueTagPersianPartDto.getId().equals(plaque.getPlaqueTagPersianPartId())).
-                    map(PlaqueTagPersianPartDto::getName)
-                    .findFirst()
-                    .orElse(null);
-            Objects.requireNonNull(plaqueDto).setPlaqueTagPersianPartName(plaqueTagPersianPartName);
-            plaqueDtos.add(plaqueDto);
-        }
         return CommonUtils.listPaging(plaqueDtos, pageRequest);
-
     }
 }

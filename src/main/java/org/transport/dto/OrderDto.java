@@ -17,6 +17,14 @@ import java.util.List;
 public class OrderDto {
     private Long id;
     private Long userId;
+    private String driverName;
+    private Boolean isFreeZone;
+    private String leftPlaqueTag;
+    private String plaqueTagPersianPartName;
+    private String middlePlaqueTag;
+    private String rightPlaqueTag;
+    private String leftPlaqueFreeZoneTag;
+    private String rightPlaqueFreeZoneTag;
     private Long carTypeId;
     private String carTypeName;
     private Long orderStatusId;
@@ -49,5 +57,5 @@ public class OrderDto {
     private Boolean onlyMyCompanyDriver;
     private List<OrderDetailDto> orderDetails;
     private List<OrderImage> orderImages;
-    private Boolean isMyOrder ;
+    private Boolean isMyOrder;
 }

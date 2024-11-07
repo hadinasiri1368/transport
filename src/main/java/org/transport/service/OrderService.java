@@ -38,13 +38,14 @@ public class OrderService {
     private final NeshanMapServiceImpl neshanMapService;
     private final BasicDataServiceProxy basicDataServiceProxy;
     private final PersonService personService;
+    private final CarService carService;
 
     @Value("${PageRequest.page}")
     private Integer page;
     @Value("${PageRequest.size}")
     private Integer size;
 
-    public OrderService(JPA<Order, Long> orderJPA, JPA<OrderDetail, Long> orderDetailJPA, JPA<OrderImage, Long> orderImageJPA, JPA<Car, Long> carJPA, JPA<Driver, Long> driverJPA, UserCompanyService userCompanyService, AuthenticationServiceProxy authenticationServiceProxy, NeshanMapServiceImpl neshanMapService, BasicDataServiceProxy basicDataServiceProxy, PersonService personService) {
+    public OrderService(JPA<Order, Long> orderJPA, JPA<OrderDetail, Long> orderDetailJPA, JPA<OrderImage, Long> orderImageJPA, JPA<Car, Long> carJPA, JPA<Driver, Long> driverJPA, UserCompanyService userCompanyService, AuthenticationServiceProxy authenticationServiceProxy, NeshanMapServiceImpl neshanMapService, BasicDataServiceProxy basicDataServiceProxy, PersonService personService, CarService carService) {
         this.orderJPA = orderJPA;
         this.orderDetailJPA = orderDetailJPA;
         this.orderImageJPA = orderImageJPA;
@@ -55,6 +56,7 @@ public class OrderService {
         this.neshanMapService = neshanMapService;
         this.basicDataServiceProxy = basicDataServiceProxy;
         this.personService = personService;
+        this.carService = carService;
     }
 
     private void insertDetail(Order order, List<OrderDetail> orderDetails, List<OrderImage> orderImages, Long userId) throws Exception {

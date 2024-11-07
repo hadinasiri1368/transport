@@ -11,75 +11,40 @@ import org.transport.model.Car;
 import org.transport.model.Driver;
 import org.transport.model.Person;
 import org.transport.model.Plaque;
+import org.transport.service.CarService;
 import org.transport.service.GenericService;
 
 
 @RestController
 @SecurityRequirement(name = "Bearer Authentication")
 public class CarAPI {
-    @Autowired
-    private GenericService<Car> service;
+
+    private final CarService service;
+
+    public CarAPI(CarService service) {
+        this.service = service;
+    }
 
     //    @Operation(summary = "add car", description = "اضافه کردن ماشین")
     @PostMapping(path = "/transport/car/add")
-    public Long addCar(@RequestBody CarDto carDto, HttpServletRequest request) throws Exception {
+    public Long addCar(@RequestBody Car car, HttpServletRequest request) throws Exception {
         String uuid = request.getHeader("X-UUID");
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request), uuid);
-        Car car = new Car();
-        Plaque plaque = new Plaque();
-        Person person = new Person();
-        Driver driver = new Driver();
-        car.setId(carDto.getId());
-        person.setId(carDto.getOwnerId());
-        car.setPerson(person);
-        driver.setId(carDto.getDriverId());
-        car.setDriver(driver);
-        car.setFuelTypeId(carDto.getFuelTypeId());
-        car.setCarGroupId(carDto.getCarGroupId());
-        plaque.setId(carDto.getPlaqueId());
-        car.setPlaque(plaque);
-        car.setFleetTypeId(carDto.getFleetTypeId());
-        car.setVIN(carDto.getVIN());
-        car.setChassieNumber(carDto.getChassieNumber());
-        car.setEngineNumber(carDto.getEngineNumber());
-        car.setPIN(carDto.getPIN());
-        car.setPAN(carDto.getPAN());
-        car.setTrackingCode(carDto.getTrackingCode());
         service.insert(car, userId);
         return car.getId();
     }
 
     @PutMapping(path = "/transport/car/edit")
-    public Long editCar(@RequestBody CarDto carDto, HttpServletRequest request) throws Exception {
+    public Long editCar(@RequestBody Car car, HttpServletRequest request) throws Exception {
         String uuid = request.getHeader("X-UUID");
         Long userId = CommonUtils.getUserId(CommonUtils.getToken(request), uuid);
-        Car car = new Car();
-        Plaque plaque = new Plaque();
-        Person person = new Person();
-        Driver driver = new Driver();
-        car.setId(carDto.getId());
-        person.setId(carDto.getOwnerId());
-        car.setPerson(person);
-        driver.setId(carDto.getDriverId());
-        car.setDriver(driver);
-        car.setFuelTypeId(carDto.getFuelTypeId());
-        car.setCarGroupId(carDto.getCarGroupId());
-        plaque.setId(carDto.getPlaqueId());
-        car.setPlaque(plaque);
-        car.setFleetTypeId(carDto.getFleetTypeId());
-        car.setVIN(carDto.getVIN());
-        car.setChassieNumber(carDto.getChassieNumber());
-        car.setEngineNumber(carDto.getEngineNumber());
-        car.setPIN(carDto.getPIN());
-        car.setPAN(carDto.getPAN());
-        car.setTrackingCode(carDto.getTrackingCode());
-        service.update(car, userId, Car.class);
+        service.update(car, userId);
         return car.getId();
     }
 
     @DeleteMapping(path = "/transport/car/remove/{id}")
     public Long removeCar(@PathVariable Long id) throws Exception {
-        return (long) service.delete(id, Car.class);
+        return (long) service.delete(id);
     }
 
     @GetMapping(path = "/transport/car/{id}")
@@ -88,8 +53,10 @@ public class CarAPI {
     }
 
     @GetMapping(path = "/transport/car")
-    public Page<Car> listCar(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size) throws Exception {
-        return service.findAll(Car.class, page, size);
+    public Page<CarDto> listCar(HttpServletRequest request,@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size) throws Exception {
+        String uuid = request.getHeader("X-UUID");
+        String token = CommonUtils.getToken(request);
+        return service.findAll(size, page, token, uuid);
     }
 
 }

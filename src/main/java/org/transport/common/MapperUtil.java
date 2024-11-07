@@ -1,13 +1,12 @@
 package org.transport.common;
 
 import org.springframework.stereotype.Component;
-import org.transport.dto.OrderDetailDto;
-import org.transport.dto.OrderDto;
+import org.transport.dto.*;
 import org.transport.dto.Response.*;
-import org.transport.dto.VoucherDetailDto;
 import org.transport.model.*;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Component
@@ -108,4 +107,35 @@ public class MapperUtil {
         orderDetailDto.setOrderId(orderDetail.getOrder().getId());
         return orderDetailDto;
     }
+
+    public static PlaqueDto mapToPlaqueDto(Plaque plaque, List<PlaqueTagPersianPartDto> plaqueTagPersianPartDtos) {
+        PlaqueDto plaqueDto = mapToPlaqueDto(plaque);
+        if (!CommonUtils.isNull(plaqueDto)) {
+            String plaqueTagPersianPartName = plaqueTagPersianPartDtos.stream()
+                    .filter(partDto -> partDto.getId().equals(plaque.getPlaqueTagPersianPartId()))
+                    .map(PlaqueTagPersianPartDto::getName)
+                    .findFirst()
+                    .orElse(null);
+
+            Objects.requireNonNull(plaqueDto).setPlaqueTagPersianPartName(plaqueTagPersianPartName);
+        }
+
+        return plaqueDto;
+    }
+
+    public static PlaqueDto mapToPlaqueDto(Plaque plaque) {
+        PlaqueDto plaqueDto = ObjectMapperUtils.map(plaque, PlaqueDto.class);
+        return plaqueDto;
+    }
+
+    public static CarDto mapToCarDto(Car car, Plaque plaque, List<DriverDto> driverDtos, List<Person> persons) {
+        CarDto carDto = ObjectMapperUtils.map(car, CarDto.class);
+        if (!CommonUtils.isNull(carDto)){
+            carDto.setPlaque(mapToPlaqueDto(plaque));
+
+
+        }
+        return carDto;
+    }
+
 }
