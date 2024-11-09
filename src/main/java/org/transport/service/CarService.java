@@ -13,9 +13,9 @@ import org.transport.common.CommonUtils;
 import org.transport.common.MapperUtil;
 import org.transport.common.ObjectMapperUtils;
 import org.transport.dto.CarDto;
-import org.transport.dto.DriverDto;
+import org.transport.dto.Response.PersonDto;
+import org.transport.dto.Response.PlaqueTagPersianPartDto;
 import org.transport.model.Car;
-import org.transport.model.Driver;
 import org.transport.model.Person;
 import org.transport.model.Plaque;
 import org.transport.repository.JPA;
@@ -35,14 +35,11 @@ public class CarService {
 
     private final JPA<Car, Long> jpaCar;
 
-    private final PersonService personService;
+    private final BasicDataServiceProxy basicDataServiceProxy;
 
-    private final DriverService driverService;
-
-    public CarService(JPA<Car, Long> jpaCar, PlaqueService plaqueService, PersonService personService, DriverService driverService) {
+    public CarService(JPA<Car, Long> jpaCar, BasicDataServiceProxy basicDataServiceProxy) {
         this.jpaCar = jpaCar;
-        this.personService = personService;
-        this.driverService = driverService;
+        this.basicDataServiceProxy = basicDataServiceProxy;
     }
 
     @Transactional
@@ -87,14 +84,18 @@ public class CarService {
 
     public Page<CarDto> findAll(Integer page, Integer size, String token, String uuid) {
         List<Car> cars = findAll(Car.class);
-        List<Person> persons = personService.findAll();
-        List<DriverDto> drivers = ObjectMapperUtils.mapAll(driverService.findAll(),DriverDto.class);
+        List<CarDto> carDtos = new ArrayList<>();
+        List<PlaqueTagPersianPartDto> plaqueTagPersianPartDtos = basicDataServiceProxy.listPlaqueTagPersianPart(token, uuid).getContent();
         for (Car car : cars) {
+            CarDto carDto = new CarDto();
             Plaque plaque = car.getPlaque();
-            MapperUtil.mapToCarDto(car, plaque, drivers, persons);
+            Person person = car.getPerson();
+            carDto.setPerson(ObjectMapperUtils.map(person, PersonDto.class));
+            carDto = MapperUtil.mapToCarDto(car, plaque, plaqueTagPersianPartDtos);
+            carDtos.add(carDto);
         }
-
-        return null;
+        PageRequest pageRequest = PageRequest.of(CommonUtils.isNull(page, this.page), CommonUtils.isNull(size, this.size));
+        return CommonUtils.listPaging(carDtos, pageRequest);
     }
 
 

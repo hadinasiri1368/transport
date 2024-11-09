@@ -18,6 +18,7 @@ public class OrderDto {
     private Long id;
     private Long userId;
     private String driverName;
+    private String driverPhone;
     private Boolean isFreeZone;
     private String leftPlaqueTag;
     private String plaqueTagPersianPartName;
