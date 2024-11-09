@@ -294,10 +294,42 @@ public class OrderService {
         List<BaseInfoGoodDto> baseInfoGoodDtos = basicDataServiceProxy.listBaseInfoGood(token, uuid).getContent();
         List<PackingTypeDto> packingTypeDtos = basicDataServiceProxy.listPackingType(token, uuid).getContent();
         List<LoadingTypeDto> loadingTypeDtos = basicDataServiceProxy.listLoadingType(token, uuid).getContent();
+        List<PlaqueTagPersianPartDto> plaqueTagPersianPartDtos = basicDataServiceProxy.listPlaqueTagPersianPart(token, uuid).getContent();
         PageRequest pageRequest = PageRequest.of(CommonUtils.isNull(page, this.page), CommonUtils.isNull(size, this.size));
         for (Order order : orders) {
             orderDto = MapperUtil.mapToOrderDto(order, orderStatusDtos, carTypeDtos);
             orderDto.setOrderDetails(MapperUtil.mapToOrderDetailDto(order.getOrderDetails(), baseInfoGoodDtos, packingTypeDtos, loadingTypeDtos));
+
+            if (order.getCar() != null) {
+                Plaque plaque = order.getCar().getPlaque();
+                CarDto carDto = MapperUtil.mapToCarDto(order.getCar(), plaque, plaqueTagPersianPartDtos);
+                if (carDto != null && carDto.getPlaque() != null) {
+                    orderDto.setIsFreeZone(carDto.getPlaque().getIsFreeZone());
+                    orderDto.setLeftPlaqueTag(carDto.getPlaque().getLeftPlaqueTag());
+                    orderDto.setPlaqueTagPersianPartName(carDto.getPlaque().getPlaqueTagPersianPartName());
+                    orderDto.setMiddlePlaqueTag(carDto.getPlaque().getMiddlePlaqueTag());
+                    orderDto.setRightPlaqueTag(carDto.getPlaque().getRightPlaqueTag());
+                    orderDto.setLeftPlaqueFreeZoneTag(carDto.getPlaque().getLeftPlaqueFreeZoneTag());
+                }
+            } else {
+                orderDto.setIsFreeZone(null);
+                orderDto.setLeftPlaqueTag(null);
+                orderDto.setPlaqueTagPersianPartName(null);
+                orderDto.setMiddlePlaqueTag(null);
+                orderDto.setRightPlaqueTag(null);
+                orderDto.setLeftPlaqueFreeZoneTag(null);
+            }
+            if (order.getDriver() != null) {
+                DriverDto driverDto = MapperUtil.mapToDriverDto(order.getDriver());
+                if (driverDto != null && driverDto.getPerson() != null) {
+                    orderDto.setDriverName(driverDto.getPerson().getName().concat(" ").concat(driverDto.getPerson().getFamily()));
+                    orderDto.setDriverPhone(driverDto.getPerson().getMobileNumber());
+                }
+            } else {
+                orderDto.setDriverName(null);
+                orderDto.setDriverPhone(null);
+            }
+
             orderDtoList.add(orderDto);
         }
         return CommonUtils.listPaging(orderDtoList, pageRequest);

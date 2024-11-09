@@ -4,9 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.transport.model.Person;
-
-import java.util.List;
+import org.transport.dto.Response.PersonDto;
 
 @AllArgsConstructor
 @Getter
@@ -14,8 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 public class CarDto {
     private Long id;
-    private List <DriverDto> driver;
-    private List<Person> person;
+    private PersonDto person;
     private Long fuelTypeId;
     private Long carGroupId;
     private Long carCapacityId;

@@ -124,18 +124,19 @@ public class MapperUtil {
     }
 
     public static PlaqueDto mapToPlaqueDto(Plaque plaque) {
-        PlaqueDto plaqueDto = ObjectMapperUtils.map(plaque, PlaqueDto.class);
-        return plaqueDto;
+        return ObjectMapperUtils.map(plaque, PlaqueDto.class);
     }
 
-    public static CarDto mapToCarDto(Car car, Plaque plaque, List<DriverDto> driverDtos, List<Person> persons) {
+    public static CarDto mapToCarDto(Car car, Plaque plaque, List<PlaqueTagPersianPartDto> plaqueTagPersianPartDtos) {
         CarDto carDto = ObjectMapperUtils.map(car, CarDto.class);
-        if (!CommonUtils.isNull(carDto)){
-            carDto.setPlaque(mapToPlaqueDto(plaque));
-
-
+        if (!CommonUtils.isNull(carDto)) {
+            carDto.setPlaque(mapToPlaqueDto(plaque, plaqueTagPersianPartDtos));
         }
         return carDto;
+    }
+
+    public static DriverDto mapToDriverDto(Driver driver) {
+        return ObjectMapperUtils.map(driver, DriverDto.class);
     }
 
 }
