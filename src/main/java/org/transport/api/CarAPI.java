@@ -49,7 +49,7 @@ public class CarAPI {
 
     @GetMapping(path = "/transport/car/{id}")
     public Car getCar(@PathVariable Long id) throws Exception {
-        return service.findOne(Car.class, id);
+        return service.findOne(Car.class , id);
     }
 
     @GetMapping(path = "/transport/car")
